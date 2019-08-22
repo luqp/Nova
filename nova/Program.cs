@@ -16,13 +16,21 @@ namespace nova
                     return;
 
                 Parser parser = new Parser(line);
-                ExpressionSynax expression = parser.Parse();
+                SyntaxTree syntaxTree = parser.Parse();
 
                 var color = Console.ForegroundColor;
                 Console.ForegroundColor = ConsoleColor.DarkGray;
-
-                PrettyPrint(expression);
+                PrettyPrint(syntaxTree.Root);
                 Console.ForegroundColor = color;
+
+                if (syntaxTree.Diagnostics.Any())
+                {
+                    Console.ForegroundColor = ConsoleColor.DarkRed;
+                    foreach (string diagnostic in parser.Diagnostics)
+                        Console.WriteLine(diagnostic);
+
+                    Console.ForegroundColor = color;
+                }
             }
         }
         static void PrettyPrint(SyntaxNode node, string indent = "", bool islast = true)
@@ -39,7 +47,7 @@ namespace nova
 
             Console.WriteLine();
             indent += islast ? "    " : "│   ";
-            
+
             var lastChild = node.GetChildren().LastOrDefault();
             foreach (var child in node.GetChildren())
                 PrettyPrint(child, indent, child == lastChild);
@@ -88,12 +96,14 @@ namespace nova
     {
         private readonly string text;
         private int position;
+        private List<string> diagnostics = new List<string>();
 
         public Lexer(string text)
         {
             this.text = text;
         }
 
+        public IEnumerable<string> Diagnostics => diagnostics;
         private char Current
         {
             get
@@ -152,6 +162,7 @@ namespace nova
             else if (Current == ')')
                 return new SyntaxToken(SyntaxKind.CloseParenthesisToken, position++, ")", null);
 
+            diagnostics.Add($"ERROR: bad character input '{Current}'");
             return new SyntaxToken(SyntaxKind.BadToken, position++, text.Substring(position - 1, 1), null);
         }
     }
@@ -204,11 +215,25 @@ namespace nova
         }
     }
 
+    sealed class SyntaxTree
+    {
+        public SyntaxTree(IEnumerable<string> diagnostics, ExpressionSynax root, SyntaxToken endOfFileToken)
+        {
+            Diagnostics = diagnostics.ToArray();
+            Root = root;
+            EndOfFileToken = endOfFileToken;
+        }
+
+        public IReadOnlyList<string> Diagnostics { get; }
+        public ExpressionSynax Root { get; }
+        public SyntaxToken EndOfFileToken { get; }
+    }
+
     class Parser
     {
         private readonly SyntaxToken[] tokens;
         private int position;
-
+        private List<string> diagnostics = new List<string>();
         public Parser(string text)
         {
             var tokens = new List<SyntaxToken>();
@@ -226,8 +251,9 @@ namespace nova
             } while (token.Kind != SyntaxKind.EndOfFileToken);
 
             this.tokens = tokens.ToArray();
+            this.diagnostics.AddRange(lexer.Diagnostics);
         }
-
+        public IEnumerable<string> Diagnostics => diagnostics;
         private SyntaxToken Peek(int offset)
         {
             int index = position + offset;
@@ -251,10 +277,18 @@ namespace nova
             if (Current.Kind == kind)
                 return NextToken();
 
+            diagnostics.Add($"ERROR: Unexpected token <{Current.Kind}>, expected <{kind}>");
             return new SyntaxToken(kind, Current.Position, null, null);
         }
 
-        public ExpressionSynax Parse()
+        public SyntaxTree Parse()
+        {
+            ExpressionSynax expression = ParseExpression();
+            SyntaxToken endOfFileToken = Match(SyntaxKind.EndOfFileToken);
+            return new SyntaxTree(diagnostics, expression, endOfFileToken);
+        }
+
+        private ExpressionSynax ParseExpression()
         {
             var left = ParsePrimaryExpression();
             while (Current.Kind == SyntaxKind.PlusToken ||
