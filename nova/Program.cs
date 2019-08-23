@@ -73,7 +73,8 @@ namespace nova
         BadToken,
         EndOfFileToken,
         NumberExpression,
-        BinaryExpression
+        BinaryExpression,
+        ParenthesizedExpression
     }
 
     class SyntaxToken : SyntaxNode
@@ -223,6 +224,28 @@ namespace nova
         }
     }
 
+    sealed class ParenthesizedExpressionSyntax : ExpressionSyntax
+    {
+        public ParenthesizedExpressionSyntax(SyntaxToken openParenthesisToken, ExpressionSyntax expression, SyntaxToken closeParenthesisToken)
+        {
+            OpenParenthesisToken = openParenthesisToken;
+            Expression = expression;
+            CloseParenthesisToken = closeParenthesisToken;
+        }
+
+        public override SyntaxKind Kind => SyntaxKind.ParenthesizedExpression;
+        public SyntaxToken OpenParenthesisToken { get; }
+        public ExpressionSyntax Expression { get; }
+        public SyntaxToken CloseParenthesisToken { get; }
+
+        public override IEnumerable<SyntaxNode> GetChildren()
+        {
+            yield return OpenParenthesisToken;
+            yield return Expression;
+            yield return CloseParenthesisToken;
+        }
+    }
+
     sealed class SyntaxTree
     {
         public SyntaxTree(IEnumerable<string> diagnostics, ExpressionSyntax root, SyntaxToken endOfFileToken)
@@ -242,6 +265,11 @@ namespace nova
         private readonly SyntaxToken[] tokens;
         private int position;
         private List<string> diagnostics = new List<string>();
+        private ExpressionSyntax ParseExpression()
+        {
+            return ParseTerm();
+        }
+
         public Parser(string text)
         {
             var tokens = new List<SyntaxToken>();
@@ -324,6 +352,13 @@ namespace nova
 
         private ExpressionSyntax ParsePrimaryExpression()
         {
+            if (Current.Kind == SyntaxKind.OpenParenthesisToken)
+            {
+                SyntaxToken left = NextToken();
+                ExpressionSyntax expression = ParseExpression();
+                SyntaxToken right = Match(SyntaxKind.CloseParenthesisToken);
+                return new ParenthesizedExpressionSyntax(left, expression, right);
+            }
             var numberToken = Match(SyntaxKind.NumberToken);
             return new NumberExpressionSyntax(numberToken);
         }
@@ -364,7 +399,9 @@ namespace nova
                 else
                     throw new Exception($"Unexpected binary operator <{b.OperatorToken.Kind}>");
             }
-            
+            if (node is ParenthesizedExpressionSyntax p)
+                return EvaluateExpression(p.Expression);
+
             throw new Exception($"Unexpected node <{node.Kind}>");
         }
     }
