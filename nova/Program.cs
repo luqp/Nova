@@ -291,17 +291,28 @@ namespace nova
 
         public SyntaxTree Parse()
         {
-            ExpressionSyntax expression = ParseExpression();
+            ExpressionSyntax expression = ParseTerm();
             SyntaxToken endOfFileToken = Match(SyntaxKind.EndOfFileToken);
             return new SyntaxTree(diagnostics, expression, endOfFileToken);
         }
 
-        private ExpressionSyntax ParseExpression()
+        private ExpressionSyntax ParseTerm()
+        {
+            var left = ParseFactor();
+            while (Current.Kind == SyntaxKind.PlusToken ||
+                   Current.Kind == SyntaxKind.MinusToken)
+            {
+                var operatorToken = NextToken();
+                var right = ParseFactor();
+                left = new BinaryExpressionSyntax(left, operatorToken, right);
+            }
+            return left;
+        }
+
+        private ExpressionSyntax ParseFactor()
         {
             var left = ParsePrimaryExpression();
-            while (Current.Kind == SyntaxKind.PlusToken ||
-                   Current.Kind == SyntaxKind.MinusToken ||
-                   Current.Kind == SyntaxKind.StarToken ||
+            while (Current.Kind == SyntaxKind.StarToken ||
                    Current.Kind == SyntaxKind.SlashToken)
             {
                 var operatorToken = NextToken();
