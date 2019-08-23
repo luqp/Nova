@@ -23,7 +23,13 @@ namespace nova
                 PrettyPrint(syntaxTree.Root);
                 Console.ForegroundColor = color;
 
-                if (syntaxTree.Diagnostics.Any())
+                if (!syntaxTree.Diagnostics.Any())
+                {
+                    Evaluator e = new Evaluator(syntaxTree.Root);
+                    int result = e.Evaluate();
+                    Console.WriteLine(result);
+                }
+                else
                 {
                     Console.ForegroundColor = ConsoleColor.DarkRed;
                     foreach (string diagnostic in parser.Diagnostics)
@@ -135,7 +141,9 @@ namespace nova
                     Next();
                 int length = position - start;
                 string text_token = text.Substring(start, length);
-                int.TryParse(text_token, out var value);
+                if (!int.TryParse(text_token, out var value))
+                    diagnostics.Add($"The number {text} isn't valid Int32.");
+
                 return new SyntaxToken(SyntaxKind.NumberToken, start, text_token, value);
             }
             
@@ -174,11 +182,11 @@ namespace nova
         public abstract IEnumerable<SyntaxNode> GetChildren();
     }
 
-    abstract class ExpressionSynax : SyntaxNode
+    abstract class ExpressionSyntax : SyntaxNode
     {
     }
 
-    sealed class NumberExpressionSyntax : ExpressionSynax
+    sealed class NumberExpressionSyntax : ExpressionSyntax
     {
         public NumberExpressionSyntax(SyntaxToken numbreToken)
         {
@@ -194,18 +202,18 @@ namespace nova
         }
     }
 
-    sealed class BinaryExpressionSyntax : ExpressionSynax
+    sealed class BinaryExpressionSyntax : ExpressionSyntax
     {
-        public BinaryExpressionSyntax(ExpressionSynax left, SyntaxToken operatorToken, ExpressionSynax right)
+        public BinaryExpressionSyntax(ExpressionSyntax left, SyntaxToken operatorToken, ExpressionSyntax right)
         {
             Left = left;
             OperatorToken = operatorToken;
             Right = right;
         }
         public override SyntaxKind Kind => SyntaxKind.BinaryExpression;
-        public ExpressionSynax Left { get; }
+        public ExpressionSyntax Left { get; }
         public SyntaxToken OperatorToken { get; }
-        public ExpressionSynax Right { get; }
+        public ExpressionSyntax Right { get; }
 
         public override IEnumerable<SyntaxNode> GetChildren()
         {
@@ -217,7 +225,7 @@ namespace nova
 
     sealed class SyntaxTree
     {
-        public SyntaxTree(IEnumerable<string> diagnostics, ExpressionSynax root, SyntaxToken endOfFileToken)
+        public SyntaxTree(IEnumerable<string> diagnostics, ExpressionSyntax root, SyntaxToken endOfFileToken)
         {
             Diagnostics = diagnostics.ToArray();
             Root = root;
@@ -225,7 +233,7 @@ namespace nova
         }
 
         public IReadOnlyList<string> Diagnostics { get; }
-        public ExpressionSynax Root { get; }
+        public ExpressionSyntax Root { get; }
         public SyntaxToken EndOfFileToken { get; }
     }
 
@@ -283,16 +291,18 @@ namespace nova
 
         public SyntaxTree Parse()
         {
-            ExpressionSynax expression = ParseExpression();
+            ExpressionSyntax expression = ParseExpression();
             SyntaxToken endOfFileToken = Match(SyntaxKind.EndOfFileToken);
             return new SyntaxTree(diagnostics, expression, endOfFileToken);
         }
 
-        private ExpressionSynax ParseExpression()
+        private ExpressionSyntax ParseExpression()
         {
             var left = ParsePrimaryExpression();
             while (Current.Kind == SyntaxKind.PlusToken ||
-                   Current.Kind == SyntaxKind.MinusToken)
+                   Current.Kind == SyntaxKind.MinusToken ||
+                   Current.Kind == SyntaxKind.StarToken ||
+                   Current.Kind == SyntaxKind.SlashToken)
             {
                 var operatorToken = NextToken();
                 var right = ParsePrimaryExpression();
@@ -301,10 +311,51 @@ namespace nova
             return left;
         }
 
-        private ExpressionSynax ParsePrimaryExpression()
+        private ExpressionSyntax ParsePrimaryExpression()
         {
             var numberToken = Match(SyntaxKind.NumberToken);
             return new NumberExpressionSyntax(numberToken);
         }
     }
+
+    class Evaluator
+    {
+        private readonly ExpressionSyntax root;
+
+        public Evaluator(ExpressionSyntax root)
+        {
+            this.root = root;
+        }
+
+        public int Evaluate()
+        {
+            return EvaluateExpression(root);
+        }
+
+        private int EvaluateExpression(ExpressionSyntax node)
+        {
+            if (node is NumberExpressionSyntax n)
+                return (int) n.NumberToken.Value;
+
+            if (node is BinaryExpressionSyntax b)
+            {
+                var left = EvaluateExpression(b.Left);
+                var right = EvaluateExpression(b.Right);
+
+                if (b.OperatorToken.Kind == SyntaxKind.PlusToken)
+                    return left + right;
+                else if (b.OperatorToken.Kind == SyntaxKind.MinusToken)
+                    return left - right;
+                else if (b.OperatorToken.Kind == SyntaxKind.StarToken)
+                    return left * right;
+                else if (b.OperatorToken.Kind == SyntaxKind.SlashToken)
+                    return left / right;
+                else
+                    throw new Exception($"Unexpected binary operator <{b.OperatorToken.Kind}>");
+            }
+            
+            throw new Exception($"Unexpected node <{node.Kind}>");
+        }
+    }
+
 }
