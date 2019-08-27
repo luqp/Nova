@@ -63,7 +63,7 @@ Procedimiento para agregar un tipo de expresion (Siguiendo los ejemplos se puede
 
 * 3.2
         Crear la clase `BinaryExpresionSyntax`, representa una operacion, cada objeto tiene una expresion a la izquierda, un operador y una expresion a la derecha.
-## Sentencia en los Nodos
+## Sentencias en los Nodos
 [Second part 2:](https://github.com/luqp/Nova/pull/2/commits/f224cd3ba810b531eb1f89fe2694bd0ebbfd3472)
 
 Continuacion de la segunda parte...
