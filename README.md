@@ -64,7 +64,7 @@ Procedimiento para agregar un tipo de expresion (Siguiendo los ejemplos se puede
 * 3.2
         Crear la clase `BinaryExpresionSyntax`, representa una operacion, cada objeto tiene una expresion a la izquierda, un operador y una expresion a la derecha.
 ## Sentencias en los Nodos
-[Second part 2:](https://github.com/luqp/Nova/pull/2/commits/f224cd3ba810b531eb1f89fe2694bd0ebbfd3472)
+[Segunda parte 2:](https://github.com/luqp/Nova/pull/2/commits/f224cd3ba810b531eb1f89fe2694bd0ebbfd3472)
 
 Continuacion de la segunda parte...
 
@@ -76,13 +76,13 @@ Clase `Parser`, crear el metodo `Match`, para comprobar el correcto tipo del tok
 Clase `Parser`, crear los metodos `Parse` y `ParsePrimaryExpression`, para analizar la expresion en un nodo, y descomponerla si es necesario.
 
 ## Imprimir
-[Fourt part:](https://github.com/luqp/Nova/pull/2/commits/f224cd3ba810b531eb1f89fe2694bd0ebbfd3472):
+[Cuarta parte:](https://github.com/luqp/Nova/pull/2/commits/f224cd3ba810b531eb1f89fe2694bd0ebbfd3472):
 
 ### 4.1
 En la clase `Program`, crear el metodo estatido `PrettyPrint`, esta parte es solo para mostrar la estructura de los nodos en forma de arbol que el programa esta siguiendo.
 
 ## Errores
-[Five part :](https://github.com/luqp/Nova/pull/2/commits/5892ef4f443285cdc751d43c9e2c0cd48e9498d5)
+[Quinta parte :](https://github.com/luqp/Nova/pull/2/commits/5892ef4f443285cdc751d43c9e2c0cd48e9498d5)
 
 Implementa el diagnostico de errores, Identifica los tokens malos.
 
@@ -93,7 +93,7 @@ Con esto se modificando el metodo `Parse`, en la clase `Parser`.
 Ahora el metodo `Parse` revisa que la expresion se haya terminado de leer.
 
 ## Evaluacion
-[Six part 1:](https://github.com/luqp/Nova/pull/2/commits/b042a7bbad726568a54033aa5ad5a75b4690fe0e)
+[Sexta parte 1:](https://github.com/luqp/Nova/pull/2/commits/b042a7bbad726568a54033aa5ad5a75b4690fe0e)
 
 Evalua las expresiones en cada nodo del arbol
 
@@ -104,14 +104,14 @@ Create Evaluator class.
 
 Clase `Evaluator`, crear los metodos `Evaluate`y `EvaluateExpression`, que trabajan con los tipos de expresiones de nuestra aplicacion, ejm: BinaryExpressionSyntax, NumberExpressionSyntax, etc.
 
-### Triki tip [Six part 2:](https://github.com/luqp/Nova/pull/2/commits/70b52840847954c372f29c274e0db88d47b078ac)
+### Triki tip [Sexta parte 2:](https://github.com/luqp/Nova/pull/2/commits/70b52840847954c372f29c274e0db88d47b078ac)
 
 * Corrige el error, para evaluar los operadores `*, /` con mayor prioridad que los operadores `+, -`
 ### 6.2
 Dividimos `ParseExpression` method en `PaseFactor` y `ParserTerme`.
 
 ## Parentesis
-[Seven part :](https://github.com/luqp/Nova/pull/2/commits/05e5adc85f8160f4c5f39194f2f9599c6a82003a)
+[Septima parte :](https://github.com/luqp/Nova/pull/2/commits/05e5adc85f8160f4c5f39194f2f9599c6a82003a)
 
 Add Parenthesis expresion.
 
