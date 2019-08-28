@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace Nova.CodeAnalysis
 {
-    class Lexer
+    internal sealed class Lexer
     {
         private readonly string text;
         private int position;
