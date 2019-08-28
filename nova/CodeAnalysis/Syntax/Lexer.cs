@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace Nova.CodeAnalysis
+namespace Nova.CodeAnalysis.Syntax
 {
     internal sealed class Lexer
     {

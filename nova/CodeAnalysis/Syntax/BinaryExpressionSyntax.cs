@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace Nova.CodeAnalysis
+namespace Nova.CodeAnalysis.Syntax
 {
     public sealed class BinaryExpressionSyntax : ExpressionSyntax
     {
