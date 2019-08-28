@@ -16,6 +16,7 @@ namespace Nova.CodeAnalysis
 
         // Expressions
         LiteralExpression,
+        UnaryExpression,
         BinaryExpression,
         ParenthesizedExpression
     }
