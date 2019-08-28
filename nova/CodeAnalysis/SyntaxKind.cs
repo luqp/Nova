@@ -15,7 +15,7 @@ namespace Nova.CodeAnalysis
         CloseParenthesisToken,
 
         // Expressions
-        NumberExpression,
+        LiteralExpression,
         BinaryExpression,
         ParenthesizedExpression
     }
