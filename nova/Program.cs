@@ -4,9 +4,9 @@ using Nova.CodeAnalysis;
 
 namespace Nova
 {
-    class Program
+    internal static class Program
     {
-        static void Main(string[] args)
+        private static void Main()
         {
             bool showTree = false;
             Console.WriteLine("Commands: #trees, #cls");
@@ -15,7 +15,6 @@ namespace Nova
             {
                 Console.Write("> ");
                 string line = Console.ReadLine();
-                var color = Console.ForegroundColor;
 
                 if  (string.IsNullOrWhiteSpace(line))
                     return;
@@ -25,7 +24,7 @@ namespace Nova
                     showTree = !showTree;
                     Console.ForegroundColor = ConsoleColor.DarkYellow;
                     Console.WriteLine(showTree ? "Enabled trees to show" : "Disabled trees");
-                    Console.ForegroundColor = color;
+                    Console.ResetColor();
                     continue;
                 }
                 else if (line.ToLower() == "#cls")
@@ -40,7 +39,7 @@ namespace Nova
                 {
                     Console.ForegroundColor = ConsoleColor.DarkGray;
                     PrettyPrint(syntaxTree.Root);
-                    Console.ForegroundColor = color;
+                    Console.ResetColor();
                 }
 
                 if (!syntaxTree.Diagnostics.Any())
@@ -55,7 +54,7 @@ namespace Nova
                     foreach (string diagnostic in syntaxTree.Diagnostics)
                         Console.WriteLine(diagnostic);
 
-                    Console.ForegroundColor = color;
+                    Console.ResetColor();
                 }
             }
         }
@@ -72,10 +71,10 @@ namespace Nova
             }
 
             Console.WriteLine();
-            indent += islast ? "    " : "│   ";
+            indent += islast ? "   " : "│  ";
 
-            var lastChild = node.GetChildren().LastOrDefault();
-            foreach (var child in node.GetChildren())
+            SyntaxNode lastChild = node.GetChildren().LastOrDefault();
+            foreach (SyntaxNode child in node.GetChildren())
                 PrettyPrint(child, indent, child == lastChild);
         }
     }

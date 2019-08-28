@@ -2,15 +2,11 @@ using System.Collections.Generic;
 
 namespace Nova.CodeAnalysis
 {
-    class Parser
+    internal sealed class Parser
     {
         private readonly SyntaxToken[] tokens;
         private int position;
         private List<string> diagnostics = new List<string>();
-        private ExpressionSyntax ParseExpression()
-        {
-            return ParseTerm();
-        }
 
         public Parser(string text)
         {
@@ -50,7 +46,7 @@ namespace Nova.CodeAnalysis
             return current;
         }
 
-        private SyntaxToken Match(SyntaxKind kind)
+        private SyntaxToken MatchToken(SyntaxKind kind)
         {
             if (Current.Kind == kind)
                 return NextToken();
@@ -61,9 +57,14 @@ namespace Nova.CodeAnalysis
 
         public SyntaxTree Parse()
         {
-            ExpressionSyntax expression = ParseTerm();
-            SyntaxToken endOfFileToken = Match(SyntaxKind.EndOfFileToken);
+            ExpressionSyntax expression = ParseExpression();
+            SyntaxToken endOfFileToken = MatchToken(SyntaxKind.EndOfFileToken);
             return new SyntaxTree(diagnostics, expression, endOfFileToken);
+        }
+
+        private ExpressionSyntax ParseExpression()
+        {
+            return ParseTerm();
         }
 
         private ExpressionSyntax ParseTerm()
@@ -98,11 +99,11 @@ namespace Nova.CodeAnalysis
             {
                 SyntaxToken left = NextToken();
                 ExpressionSyntax expression = ParseExpression();
-                SyntaxToken right = Match(SyntaxKind.CloseParenthesisToken);
+                SyntaxToken right = MatchToken(SyntaxKind.CloseParenthesisToken);
                 return new ParenthesizedExpressionSyntax(left, expression, right);
             }
-            var numberToken = Match(SyntaxKind.NumberToken);
-            return new NumberExpressionSyntax(numberToken);
+            var numberToken = MatchToken(SyntaxKind.NumberToken);
+            return new LiteralExpressionSyntax(numberToken);
         }
     }
 }
