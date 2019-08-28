@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Linq;
+
 using Nova.CodeAnalysis;
+using Nova.CodeAnalysis.Syntax;
 
 namespace Nova
 {
