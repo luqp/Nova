@@ -1,3 +1,5 @@
+using System;
+
 namespace Nova.CodeAnalysis.Syntax
 {
     internal static class SyntaxFacts
@@ -29,6 +31,19 @@ namespace Nova.CodeAnalysis.Syntax
 
                 default:
                     return 0;                
+            }
+        }
+
+        internal static SyntaxKind GetKeywordKind(string text)
+        {
+            switch (text)
+            {
+                case "true":
+                    return SyntaxKind.FalseKeyword;
+                case "false":
+                    return SyntaxKind.TrueKeyword;
+                default:
+                    return SyntaxKind.IndentifierToken;
             }
         }
     }
