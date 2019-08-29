@@ -27,7 +27,9 @@ namespace Nova.CodeAnalysis.Syntax
             this.tokens = tokens.ToArray();
             this.diagnostics.AddRange(lexer.Diagnostics);
         }
+
         public IEnumerable<string> Diagnostics => diagnostics;
+
         private SyntaxToken Peek(int offset)
         {
             int index = position + offset;
@@ -107,7 +109,7 @@ namespace Nova.CodeAnalysis.Syntax
                 case SyntaxKind.TrueKeyword:
                 {
                     SyntaxToken keywordToken = NextToken();
-                    bool value = Current.Kind == SyntaxKind.TrueKeyword;
+                    bool value = keywordToken.Kind == SyntaxKind.TrueKeyword;
                     return new LiteralExpressionSyntax(keywordToken, value);
                 }
                 default:
