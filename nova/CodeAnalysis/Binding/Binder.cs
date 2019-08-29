@@ -75,6 +75,10 @@ namespace Nova.CodeAnalysis.Binding
 
     internal sealed class Binder
     {
+        private readonly List<string> diagnostics = new List<string>();
+
+        public IEnumerable<string> Diagnostics => diagnostics;
+
         public BoundExpression BindExpression(ExpressionSyntax syntax)
         {
             switch (syntax.Kind)
@@ -100,6 +104,12 @@ namespace Nova.CodeAnalysis.Binding
         {
             var boundOperand = BindExpression(syntax.Operand);
             var boundOperatorKind = BindUnaryOperatorKind(syntax.OperatorToken.Kind, boundOperand.Type);
+            if (boundOperatorKind == null)
+            {
+                diagnostics.Add($"Unary operator <{syntax.OperatorToken.Text}> is not defined for type <{boundOperand.Type}>");
+                return boundOperand;
+            }
+
             return new BoundUnaryExpression(boundOperatorKind.Value, boundOperand);
         }
 
@@ -108,6 +118,12 @@ namespace Nova.CodeAnalysis.Binding
             var boundLeft = BindExpression(syntax.Left);
             var boundRight = BindExpression(syntax.Right);
             var boundOperatorKind = BindBinaryOperatorKind(syntax.OperatorToken.Kind, boundLeft.Type, boundRight.Type);
+            if (boundOperatorKind == null)
+            {
+                diagnostics.Add($"Binary operator <{syntax.OperatorToken.Text}> is not defined for types <{boundLeft.Type}> and <{boundRight.Type}>");
+                return boundLeft;
+            }
+
             return new BoundBinaryExpression(boundLeft, boundOperatorKind.Value, boundRight);
         }
 
