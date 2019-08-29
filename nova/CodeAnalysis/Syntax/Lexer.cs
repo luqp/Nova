@@ -15,14 +15,16 @@ namespace Nova.CodeAnalysis.Syntax
 
         public IEnumerable<string> Diagnostics => diagnostics;
 
-        private char Current
+        private char Current => Peek(0);
+
+        private char Lookahead => Peek(1);
+
+        private char Peek(int offset)
         {
-            get
-            {
-                if (position >= text.Length)
-                    return '\0';
-                return text[position];
-            }
+            int index = position + offset;
+            if (index >= text.Length)
+                return '\0';
+            return text[index];
         }
 
         private void Next()
@@ -83,6 +85,22 @@ namespace Nova.CodeAnalysis.Syntax
                     return new SyntaxToken(SyntaxKind.OpenParenthesisToken, position++, "(", null);
                 case ')':
                     return new SyntaxToken(SyntaxKind.CloseParenthesisToken, position++, ")", null);
+                case '&':
+                    if (Lookahead == '&')
+                        return new SyntaxToken(SyntaxKind.AmpersanAmpersanToken, position += 2, "&&", null);
+                    break;
+                case '|':
+                    if (Lookahead == '|')
+                        return new SyntaxToken(SyntaxKind.PipePipeToken, position += 2, "||", null);
+                    break;
+                case '=':
+                    if (Lookahead == '=')
+                        return new SyntaxToken(SyntaxKind.EqualsEqualsToken, position += 2, "==", null);
+                    break;
+                case '!':
+                    if (Lookahead == '=')
+                        return new SyntaxToken(SyntaxKind.BangEqualsToken, position += 2, "!=", null);
+                    return new SyntaxToken(SyntaxKind.BangToken, position++, "!", null);
             }
 
             diagnostics.Add($"ERROR: bad character input '{Current}'");
