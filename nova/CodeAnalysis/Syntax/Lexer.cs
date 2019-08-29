@@ -14,6 +14,7 @@ namespace Nova.CodeAnalysis.Syntax
         }
 
         public IEnumerable<string> Diagnostics => diagnostics;
+
         private char Current
         {
             get
@@ -55,6 +56,17 @@ namespace Nova.CodeAnalysis.Syntax
                 int length = position - start;
                 string text_token = text.Substring(start, length);
                 return new SyntaxToken(SyntaxKind.WhiteSpaceToken, start, text_token, null);
+            }
+
+            if (char.IsLetter(Current))
+            {
+                int start = position;
+                while (char.IsLetter(Current))
+                    Next();
+                int length = position - start;
+                string text_token = text.Substring(start, length);
+                SyntaxKind kind = SyntaxFacts.GetKeywordKind(text_token);
+                return new SyntaxToken(kind, start, text_token, null);
             }
 
             switch (Current)

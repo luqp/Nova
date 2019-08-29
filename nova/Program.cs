@@ -53,7 +53,7 @@ namespace Nova
                 if (!diagnostics.Any())
                 {
                     Evaluator e = new Evaluator(boundExpression);
-                    int result = e.Evaluate();
+                    object result = e.Evaluate();
                     Console.WriteLine(result);
                 }
                 else

@@ -13,6 +13,11 @@ namespace Nova.CodeAnalysis.Syntax
         SlashToken,
         OpenParenthesisToken,
         CloseParenthesisToken,
+        IndentifierToken,
+
+        // Keywords
+        FalseKeyword,
+        TrueKeyword,
 
         // Expressions
         LiteralExpression,
