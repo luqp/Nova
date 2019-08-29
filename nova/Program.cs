@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 using Nova.CodeAnalysis;
+using Nova.CodeAnalysis.Binding;
 using Nova.CodeAnalysis.Syntax;
 
 namespace Nova
@@ -36,6 +38,10 @@ namespace Nova
                 }
 
                 SyntaxTree syntaxTree = SyntaxTree.Parse(line);
+                Binder binder = new Binder();
+                BoundExpression boundExpression = binder.BindExpression(syntaxTree.Root);
+
+                IReadOnlyList<string> diagnostics = syntaxTree.Diagnostics;
 
                 if (showTree)
                 {
@@ -44,16 +50,16 @@ namespace Nova
                     Console.ResetColor();
                 }
 
-                if (!syntaxTree.Diagnostics.Any())
+                if (!diagnostics.Any())
                 {
-                    Evaluator e = new Evaluator(syntaxTree.Root);
+                    Evaluator e = new Evaluator(boundExpression);
                     int result = e.Evaluate();
                     Console.WriteLine(result);
                 }
                 else
                 {
                     Console.ForegroundColor = ConsoleColor.DarkRed;
-                    foreach (string diagnostic in syntaxTree.Diagnostics)
+                    foreach (string diagnostic in diagnostics)
                         Console.WriteLine(diagnostic);
 
                     Console.ResetColor();
