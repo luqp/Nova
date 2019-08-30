@@ -233,4 +233,6 @@ Fix the Bug in the `Bilder` class, that returned a bad type.
 Class `Program`, Fix diagnostics error, binder's Diagnostics weren't concatenated.
 Fix 'BoundBinaryOperator' class. Remove duplicate code.
 Class `Binder`, Change <> characters by ''.
+Add parentheses to the new tree structure in the 'binder' class.
+Fix the invalid 'BoundNodeKind.UnaryExpression' into a binary expression
 
