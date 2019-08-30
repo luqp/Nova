@@ -104,7 +104,7 @@ namespace Nova.CodeAnalysis.Syntax
                         position += 2;
                         return new SyntaxToken(SyntaxKind.EqualsEqualsToken, start, "==", null);
                     }
-                    break;
+                    return new SyntaxToken(SyntaxKind.EqualsToken, position++, "=", null);
                 case '!':
                     if (Lookahead == '=')
                     {
