@@ -43,11 +43,11 @@ namespace Nova.CodeAnalysis.Syntax
                 while (char.IsDigit(Current))
                     Next();
                 int length = position - start;
-                string text_token = text.Substring(start, length);
-                if (!int.TryParse(text_token, out var value))
+                string tokenText = text.Substring(start, length);
+                if (!int.TryParse(tokenText, out var value))
                     diagnostics.Add($"The number {text} isn't valid Int32.");
 
-                return new SyntaxToken(SyntaxKind.NumberToken, start, text_token, value);
+                return new SyntaxToken(SyntaxKind.NumberToken, start, tokenText, value);
             }
             
             if (char.IsWhiteSpace(Current))
@@ -56,8 +56,8 @@ namespace Nova.CodeAnalysis.Syntax
                 while (char.IsWhiteSpace(Current))
                     Next();
                 int length = position - start;
-                string text_token = text.Substring(start, length);
-                return new SyntaxToken(SyntaxKind.WhiteSpaceToken, start, text_token, null);
+                string tokenText = text.Substring(start, length);
+                return new SyntaxToken(SyntaxKind.WhiteSpaceToken, start, tokenText, null);
             }
 
             if (char.IsLetter(Current))
@@ -66,9 +66,9 @@ namespace Nova.CodeAnalysis.Syntax
                 while (char.IsLetter(Current))
                     Next();
                 int length = position - start;
-                string text_token = text.Substring(start, length);
-                SyntaxKind kind = SyntaxFacts.GetKeywordKind(text_token);
-                return new SyntaxToken(kind, start, text_token, null);
+                string tokenText = text.Substring(start, length);
+                SyntaxKind kind = SyntaxFacts.GetKeywordKind(tokenText);
+                return new SyntaxToken(kind, start, tokenText, null);
             }
 
             switch (Current)
