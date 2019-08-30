@@ -54,5 +54,11 @@ namespace Nova.CodeAnalysis
             string message = $"Binary operator '{operatorText}' is not defined for types <{leftType}> and <{rightType}>";
             Report(span, message);
         }
+
+        public void ReportUndefinedName(TextSpan span, string name)
+        {
+            string message = $"Variable {name} doesn't exist";
+            Report(span, message);
+        }
     }
 }
