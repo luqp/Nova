@@ -1,6 +1,5 @@
 using System;
 using Nova.CodeAnalysis.Binding;
-using Nova.CodeAnalysis.Syntax;
 
 namespace Nova.CodeAnalysis
 {
