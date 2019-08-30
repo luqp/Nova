@@ -6,14 +6,14 @@ namespace Nova.CodeAnalysis.Syntax
     {
         private readonly string text;
         private int position;
-        private List<string> diagnostics = new List<string>();
+        private DiagnosticBag diagnostics = new DiagnosticBag();
 
         public Lexer(string text)
         {
             this.text = text;
         }
 
-        public IEnumerable<string> Diagnostics => diagnostics;
+        public DiagnosticBag Diagnostics => diagnostics;
 
         private char Current => Peek(0);
 
@@ -45,7 +45,7 @@ namespace Nova.CodeAnalysis.Syntax
                 int length = position - start;
                 string tokenText = text.Substring(start, length);
                 if (!int.TryParse(tokenText, out var value))
-                    diagnostics.Add($"The number {text} isn't valid Int32.");
+                    diagnostics.ReportInvalidNumber(new TextSpan(start, length) , tokenText, typeof(int));
 
                 return new SyntaxToken(SyntaxKind.NumberToken, start, tokenText, value);
             }
@@ -103,7 +103,7 @@ namespace Nova.CodeAnalysis.Syntax
                     return new SyntaxToken(SyntaxKind.BangToken, position++, "!", null);
             }
 
-            diagnostics.Add($"ERROR: bad character input '{Current}'");
+            diagnostics.ReportBadCharacter(position, Current);
             return new SyntaxToken(SyntaxKind.BadToken, position++, text.Substring(position - 1, 1), null);
         }
     }

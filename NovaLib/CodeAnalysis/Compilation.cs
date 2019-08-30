@@ -19,13 +19,13 @@ namespace Nova.CodeAnalysis
             Binder binder = new Binder();
             BoundExpression boundExpression = binder.BindExpression(Syntax.Root);
 
-            string[] diagnostics = Syntax.Diagnostics.Concat(binder.Diagnostics).ToArray();
+            Diagnostic[] diagnostics = Syntax.Diagnostics.Concat(binder.Diagnostics).ToArray();
             if (diagnostics.Any())
                 return new EvaluationResult(diagnostics, null);
             
             Evaluator evaluator = new Evaluator(boundExpression);
             object value = evaluator.Evaluate();
-            return new EvaluationResult(Array.Empty<string>(), value);
+            return new EvaluationResult(Array.Empty<Diagnostic>(), value);
         }
     }
 }

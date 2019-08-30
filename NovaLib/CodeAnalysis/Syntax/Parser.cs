@@ -6,7 +6,7 @@ namespace Nova.CodeAnalysis.Syntax
     {
         private readonly SyntaxToken[] tokens;
         private int position;
-        private List<string> diagnostics = new List<string>();
+        private DiagnosticBag diagnostics = new DiagnosticBag();
 
         public Parser(string text)
         {
@@ -28,7 +28,7 @@ namespace Nova.CodeAnalysis.Syntax
             this.diagnostics.AddRange(lexer.Diagnostics);
         }
 
-        public IEnumerable<string> Diagnostics => diagnostics;
+        public DiagnosticBag Diagnostics => diagnostics;
 
         private SyntaxToken Peek(int offset)
         {
@@ -53,7 +53,7 @@ namespace Nova.CodeAnalysis.Syntax
             if (Current.Kind == kind)
                 return NextToken();
 
-            diagnostics.Add($"ERROR: Unexpected token <{Current.Kind}>, expected <{kind}>");
+            diagnostics.ReportUnexpectedToken(Current.Span, Current.Kind, kind);
             return new SyntaxToken(kind, Current.Position, null, null);
         }
 
