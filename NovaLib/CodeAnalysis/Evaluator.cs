@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Nova.CodeAnalysis.Binding;
 
 namespace Nova.CodeAnalysis
@@ -6,10 +7,12 @@ namespace Nova.CodeAnalysis
     internal sealed class Evaluator
     {
         private readonly BoundExpression root;
+        private readonly Dictionary<string, object> variables;
 
-        public Evaluator(BoundExpression root)
+        public Evaluator(BoundExpression root, Dictionary<string, object> variables)
         {
             this.root = root;
+            this.variables = variables;
         }
 
         public object Evaluate()
@@ -19,6 +22,16 @@ namespace Nova.CodeAnalysis
 
         private object EvaluateExpression(BoundExpression node)
         {
+            if (node is BoundAssignmentExpression a)
+            {
+                object value = EvaluateExpression(a.Expression);
+                variables[a.Name] = value;
+                return value;
+            }
+
+            if (node is BoundVariableExpression v)
+                return variables[v.Name];
+
             if (node is BoundLiteralExpression n)
                 return n.Value;
 
