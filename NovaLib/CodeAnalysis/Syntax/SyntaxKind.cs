@@ -32,6 +32,5 @@ namespace Nova.CodeAnalysis.Syntax
         BinaryExpression,
         ParenthesizedExpression,
         AssignmentExpression
-        
     }
 }
