@@ -34,7 +34,7 @@ namespace Nova.CodeAnalysis.Syntax
 
         public SyntaxToken Lex()
         {
-            if (position == text.Length)
+            if (position >= text.Length)
                 return new SyntaxToken(SyntaxKind.EndOfFileToken, position, "\0", null);
 
             if (char.IsDigit(Current))
