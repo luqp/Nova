@@ -37,9 +37,10 @@ namespace Nova.CodeAnalysis.Syntax
             if (position >= text.Length)
                 return new SyntaxToken(SyntaxKind.EndOfFileToken, position, "\0", null);
 
+            int start = position;
+
             if (char.IsDigit(Current))
             {
-                int start = position;
                 while (char.IsDigit(Current))
                     Next();
                 int length = position - start;
@@ -52,7 +53,6 @@ namespace Nova.CodeAnalysis.Syntax
             
             if (char.IsWhiteSpace(Current))
             {
-                int start = position;
                 while (char.IsWhiteSpace(Current))
                     Next();
                 int length = position - start;
@@ -62,7 +62,6 @@ namespace Nova.CodeAnalysis.Syntax
 
             if (char.IsLetter(Current))
             {
-                int start = position;
                 while (char.IsLetter(Current))
                     Next();
                 int length = position - start;
@@ -87,19 +86,31 @@ namespace Nova.CodeAnalysis.Syntax
                     return new SyntaxToken(SyntaxKind.CloseParenthesisToken, position++, ")", null);
                 case '&':
                     if (Lookahead == '&')
-                        return new SyntaxToken(SyntaxKind.AmpersanAmpersanToken, position += 2, "&&", null);
+                    {
+                        position += 2;
+                        return new SyntaxToken(SyntaxKind.AmpersanAmpersanToken, start, "&&", null);
+                    }
                     break;
                 case '|':
                     if (Lookahead == '|')
-                        return new SyntaxToken(SyntaxKind.PipePipeToken, position += 2, "||", null);
+                    {
+                        position += 2;
+                        return new SyntaxToken(SyntaxKind.PipePipeToken, start, "||", null);
+                    }
                     break;
                 case '=':
                     if (Lookahead == '=')
-                        return new SyntaxToken(SyntaxKind.EqualsEqualsToken, position += 2, "==", null);
+                    {
+                        position += 2;
+                        return new SyntaxToken(SyntaxKind.EqualsEqualsToken, start, "==", null);
+                    }
                     break;
                 case '!':
                     if (Lookahead == '=')
-                        return new SyntaxToken(SyntaxKind.BangEqualsToken, position += 2, "!=", null);
+                    {
+                        position += 2;
+                        return new SyntaxToken(SyntaxKind.BangEqualsToken, start, "!=", null);
+                    }
                     return new SyntaxToken(SyntaxKind.BangToken, position++, "!", null);
             }
 
