@@ -6,7 +6,13 @@ namespace Nova.CodeAnalysis.Binding
 {
     internal sealed class Binder
     {
+        private Dictionary<string, object> variables;
         private readonly DiagnosticBag diagnostics = new DiagnosticBag();
+
+        public Binder(Dictionary<string, object> variables)
+        {
+            this.variables = variables;
+        }
 
         public DiagnosticBag Diagnostics => diagnostics;
 
@@ -44,12 +50,24 @@ namespace Nova.CodeAnalysis.Binding
 
         private BoundExpression BindNameExpression(NameExpressionSyntax syntax)
         {
-            throw new NotImplementedException();
+            string name = syntax.IdentifierToken.Text;
+
+            if (! variables.TryGetValue(name, out var value))
+            {
+                diagnostics.ReportUndefinedName(syntax.IdentifierToken.Span, name);
+                return new BoundLiteralExpression(0);
+            }
+
+            // var type = value?.GetType() ?? typeof(object);
+            Type type = typeof(int);
+            return new BoundVariableExpression(name, type);
         }
 
         private BoundExpression BindAssignmentExpression(AssignmentExpressionSyntax syntax)
         {
-            throw new NotImplementedException();
+            string name = syntax.IdentifierToken.Text;
+            BoundExpression boundExpression = BindExpression(syntax.Expression);
+            return new BoundAssignmentExpression(name, boundExpression);
         }
 
         private BoundExpression BindUnaryExpression(UnaryExpressionSyntax syntax)
