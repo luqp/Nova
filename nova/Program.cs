@@ -38,10 +38,10 @@ namespace Nova
                 }
 
                 SyntaxTree syntaxTree = SyntaxTree.Parse(line);
-                Binder binder = new Binder();
-                BoundExpression boundExpression = binder.BindExpression(syntaxTree.Root);
+                Compilation compilation = new Compilation(syntaxTree);
+                EvaluationResult result = compilation.Evaluate();
 
-                IReadOnlyList<string> diagnostics = syntaxTree.Diagnostics.Concat(binder.Diagnostics).ToArray();
+                IReadOnlyList<string> diagnostics = result.Diagnostics;
 
                 if (showTree)
                 {
@@ -52,9 +52,7 @@ namespace Nova
 
                 if (!diagnostics.Any())
                 {
-                    Evaluator e = new Evaluator(boundExpression);
-                    object result = e.Evaluate();
-                    Console.WriteLine(result);
+                    Console.WriteLine(result.Value);
                 }
                 else
                 {
