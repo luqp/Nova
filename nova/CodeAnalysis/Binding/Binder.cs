@@ -37,7 +37,7 @@ namespace Nova.CodeAnalysis.Binding
             var boundOperator = BoundUnaryOperator.Bind(syntax.OperatorToken.Kind, boundOperand.Type);
             if (boundOperator == null)
             {
-                diagnostics.Add($"Unary operator <{syntax.OperatorToken.Text}> is not defined for type <{boundOperand.Type}>");
+                diagnostics.Add($"Unary operator '{syntax.OperatorToken.Text}' is not defined for type <{boundOperand.Type}>");
                 return boundOperand;
             }
 
@@ -51,7 +51,7 @@ namespace Nova.CodeAnalysis.Binding
             var boundOperator = BoundBinaryOperator.Bind(syntax.OperatorToken.Kind, boundLeft.Type, boundRight.Type);
             if (boundOperator == null)
             {
-                diagnostics.Add($"Binary operator <{syntax.OperatorToken.Text}> is not defined for types <{boundLeft.Type}> and <{boundRight.Type}>");
+                diagnostics.Add($"Binary operator '{syntax.OperatorToken.Text}' is not defined for types <{boundLeft.Type}> and <{boundRight.Type}>");
                 return boundLeft;
             }
 

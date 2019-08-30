@@ -41,7 +41,7 @@ namespace Nova
                 Binder binder = new Binder();
                 BoundExpression boundExpression = binder.BindExpression(syntaxTree.Root);
 
-                IReadOnlyList<string> diagnostics = syntaxTree.Diagnostics;
+                IReadOnlyList<string> diagnostics = syntaxTree.Diagnostics.Concat(binder.Diagnostics).ToArray();
 
                 if (showTree)
                 {
