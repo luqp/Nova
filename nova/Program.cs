@@ -13,6 +13,7 @@ namespace Nova
         private static void Main()
         {
             bool showTree = false;
+            Dictionary<string, object> variables = new Dictionary<string, object>();
             Console.WriteLine("Commands: #trees, #cls");
 
             while (true)
@@ -20,7 +21,7 @@ namespace Nova
                 Console.Write("> ");
                 string line = Console.ReadLine();
 
-                if  (string.IsNullOrWhiteSpace(line))
+                if (string.IsNullOrWhiteSpace(line))
                     return;
 
                 if (line.ToLower() == "#trees")
@@ -39,7 +40,7 @@ namespace Nova
 
                 SyntaxTree syntaxTree = SyntaxTree.Parse(line);
                 Compilation compilation = new Compilation(syntaxTree);
-                EvaluationResult result = compilation.Evaluate();
+                EvaluationResult result = compilation.Evaluate(variables);
 
                 IReadOnlyList<Diagnostic> diagnostics = result.Diagnostics;
 
@@ -80,7 +81,7 @@ namespace Nova
         }
         static void PrettyPrint(SyntaxNode node, string indent = "", bool islast = true)
         {
-            string marker = islast ? "└──" : "├──"; 
+            string marker = islast ? "└──" : "├──";
             Console.Write(indent);
             Console.Write(marker);
             Console.Write(node.Kind);
