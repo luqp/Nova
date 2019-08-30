@@ -12,13 +12,14 @@ namespace Nova.CodeAnalysis.Syntax
         StarToken,
         SlashToken,
         BangToken,
+        EqualsToken,
         BangEqualsToken,
         EqualsEqualsToken,
         AmpersanAmpersanToken,
         PipePipeToken,
         OpenParenthesisToken,
         CloseParenthesisToken,
-        IndentifierToken,
+        IdentifierToken,
 
         // Keywords
         FalseKeyword,
@@ -31,5 +32,6 @@ namespace Nova.CodeAnalysis.Syntax
         BinaryExpression,
         ParenthesizedExpression,
         AssignmentExpression
+        
     }
 }

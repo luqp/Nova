@@ -53,7 +53,7 @@ namespace Nova.CodeAnalysis.Syntax
                 case "true":
                     return SyntaxKind.TrueKeyword;
                 default:
-                    return SyntaxKind.IndentifierToken;
+                    return SyntaxKind.IdentifierToken;
             }
         }
     }
