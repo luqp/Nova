@@ -125,4 +125,112 @@ Modificar el metodo `ParsePrimayExpression`, en la clase `Parser` y Agregar el m
 Modificar el metodo `EvaluateExpression`
 
 
-# Compiler part 2: Unary Operators
+# Compiler part 2:
+
+After clean the code:
+## 1.1 Operators precendence
+`Parser` class, add the `GetBinaryOperatorPrecendence` method, to defice the priority of operatores. This method simplifies the addition of other priority operators.
+
+## 2.0 Unary Operators
+```
+examples:
++2
+-1 * -3
+-(4 + 7)
+
+Term: -(1 + 2)
+~~~~~~~~~~~~~~
+Tree:
+    -
+    |
+    +
+   / \
+  1   2
+```
+### 2.1
+Create de `UnaryExpressionSyntax` class
+    * Contains an operator (Plus or Minus)
+    * Contains an operand (Expression to evaluate)
+
+### 2.2
+Add a way to evaluate the unary expression on `Evaluate` class.
+
+### 2.3
+`SyntaxFacts` class, add the unary precedence, with longer priority to avoid bugs.
+```
+Term: -1 + 2
+~~~~~~~~~~~~
+Bad precedence:
+    -
+    |
+    +
+   / \
+  1   2
+
+Correct precedence:
+     +
+    / \
+   -   2
+   |
+   1
+```
+### 2.4
+`Parser` class, parser the unary expression in `ParseExpression` method.
+
+## 3.0 Type-Checking
+Give the capacity to the compiler to know what type are each token.
+
+### 3.1
+Create some class about node representation.
+
+### 3.2
+Create the `Binder` class, this class handler the logic what the type-checker would do.
+
+### 3.3
+Add the handler errors in the Binder class, to avoid cascade errors for now.
+
+## 4.0 Evaluator evolution
+Change the `Evaluator` class, to work with nodes representation.
+
+## 5.0 Apply changes
+Class `Program`, modify the `Main` method and separate the code from the `binder` file into several files.
+
+## 6.0 Add Booleans
+App recognize `true` and `false` keywords
+
+### 6.1
+Class `lexer`, modify the `Lex` method to recognize letters.
+Class `Parser`, convert `true` and `false` keywords into `LiteralExpressionSyntax`.
+Class `Evaluator`, change the return of `Evaluate, EvaluateExpression` methods to `object` type.
+The app is `case sensitive` yet.
+There are a bug:
+```
+> false
+False
+> true
+False
+
+```
+
+## 7.0 Add more operators
+
+Class `Lexer`, and new operators '!, &&, ||, ==, !='.
+Class `SyntaxFacts`, Add precedence to new operators.
+Class `Binder`, handler Booleans types.
+Class `Evaluator`, can resolve expressions with new operators.
+
+The bug later was fixed.
+
+### 7.1 Replace switch with opertor lookup
+Class `Binder`, deleted `BindBinaryOperatorKind` and `BindUnaryOperatorKind` methods, to add new classes that handler bound operators.
+
+### 7.2 == and != with int types
+
+Modify `BoundBinaryOperator` class to add new items of `==, !=` to work with `int` types.
+Fix the Bug in the `Bilder` class, that returned a bad type.
+
+### 7.3 Fix more bugs
+Class `Program`, Fix diagnostics error, binder's Diagnostics weren't concatenated.
+Fix 'BoundBinaryOperator' class. Remove duplicate code.
+Class `Binder`, Change <> characters by ''.
+
