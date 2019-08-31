@@ -7,9 +7,9 @@ namespace Nova.CodeAnalysis
     internal sealed class Evaluator
     {
         private readonly BoundExpression root;
-        private readonly Dictionary<string, object> variables;
+        private readonly Dictionary<VariableSymbol, object> variables;
 
-        public Evaluator(BoundExpression root, Dictionary<string, object> variables)
+        public Evaluator(BoundExpression root, Dictionary<VariableSymbol, object> variables)
         {
             this.root = root;
             this.variables = variables;
@@ -25,12 +25,12 @@ namespace Nova.CodeAnalysis
             if (node is BoundAssignmentExpression a)
             {
                 object value = EvaluateExpression(a.Expression);
-                variables[a.Name] = value;
+                variables[a.Variable] = value;
                 return value;
             }
 
             if (node is BoundVariableExpression v)
-                return variables[v.Name];
+                return variables[v.Variable];
 
             if (node is BoundLiteralExpression n)
                 return n.Value;

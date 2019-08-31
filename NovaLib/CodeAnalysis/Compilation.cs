@@ -15,7 +15,7 @@ namespace Nova.CodeAnalysis
 
         public SyntaxTree Syntax { get; }
 
-        public EvaluationResult Evaluate(Dictionary<string, object> variables)
+        public EvaluationResult Evaluate(Dictionary<VariableSymbol, object> variables)
         {
             Binder binder = new Binder(variables);
             BoundExpression boundExpression = binder.BindExpression(Syntax.Root);

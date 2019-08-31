@@ -13,7 +13,7 @@ namespace Nova
         private static void Main()
         {
             bool showTree = false;
-            Dictionary<string, object> variables = new Dictionary<string, object>();
+            Dictionary<VariableSymbol, object> variables = new Dictionary<VariableSymbol, object>();
             Console.WriteLine("Commands: #trees, #cls");
 
             while (true)
