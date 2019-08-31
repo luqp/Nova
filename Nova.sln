@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "nova", "nova\nova.csproj", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NovaLib", "NovaLib\NovaLib.csproj", "{5CCB0B76-88E6-41C2-BDAD-5FCA27EEDCA7}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nova.Tests", "Nova.Tests\Nova.Tests.csproj", "{C9ACFB03-7836-49DE-8A26-04F00C8735B0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -44,5 +46,17 @@ Global
 		{5CCB0B76-88E6-41C2-BDAD-5FCA27EEDCA7}.Release|x64.Build.0 = Release|Any CPU
 		{5CCB0B76-88E6-41C2-BDAD-5FCA27EEDCA7}.Release|x86.ActiveCfg = Release|Any CPU
 		{5CCB0B76-88E6-41C2-BDAD-5FCA27EEDCA7}.Release|x86.Build.0 = Release|Any CPU
+		{C9ACFB03-7836-49DE-8A26-04F00C8735B0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C9ACFB03-7836-49DE-8A26-04F00C8735B0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C9ACFB03-7836-49DE-8A26-04F00C8735B0}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{C9ACFB03-7836-49DE-8A26-04F00C8735B0}.Debug|x64.Build.0 = Debug|Any CPU
+		{C9ACFB03-7836-49DE-8A26-04F00C8735B0}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{C9ACFB03-7836-49DE-8A26-04F00C8735B0}.Debug|x86.Build.0 = Debug|Any CPU
+		{C9ACFB03-7836-49DE-8A26-04F00C8735B0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C9ACFB03-7836-49DE-8A26-04F00C8735B0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C9ACFB03-7836-49DE-8A26-04F00C8735B0}.Release|x64.ActiveCfg = Release|Any CPU
+		{C9ACFB03-7836-49DE-8A26-04F00C8735B0}.Release|x64.Build.0 = Release|Any CPU
+		{C9ACFB03-7836-49DE-8A26-04F00C8735B0}.Release|x86.ActiveCfg = Release|Any CPU
+		{C9ACFB03-7836-49DE-8A26-04F00C8735B0}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
