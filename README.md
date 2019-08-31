@@ -236,3 +236,69 @@ Class `Binder`, Change <> characters by ''.
 Add parentheses to the new tree structure in the 'binder' class.
 Fix the invalid 'BoundNodeKind.UnaryExpression' into a binary expression
 
+# Compiler part3
+
+## 1.0 Extract compiler into a library
+Create a new library project, and move the `CodeAnalysis` folder to here.
+
+## 2.0 Public way to run
+
+Create a public class to compile de code, and show evaluation results.
+
+### 2.1 Apply library
+Use library in `Program` class.
+
+## 3.0 Improve diagnostics
+Centralizing it into a single type, and report diagnostic spans.
+
+### 3.1
+Create a `TextSpan` class, to handler length info.
+Create a new `Diagnostics` and `DiagnosticsBag` classes, to create a list of different types of diagnostics to apply into the app.
+
+## 4.0
+Fix the error to report positions in `operant tokens` of 2 characters.
+
+## 5.0
+`Program` class, render the diagnostics and spans in a nice way.
+
+# Variables
+
+## 6.0 New Expression Syntax
+Create the `NameExpressionSyntax ` class: represents the identifier of variable
+Create the `AssignmentExpressionSyntax` class: it is a way to represent a expression of assignment, contain:
+  *  `IdentifierToken`: will be the identifier
+  *  `EqualsToken
+  *  `Expression`: will be the expression to assignment
+
+## 7.0 Consisted in Binder
+Update `BindExpression` method, add new method for parenthesized expression.
+
+## 8.0 Add single = operator
+`Lexer` class, add the assignment operator '='.
+
+## 9.0 Parser assignment
+`Parser` class, add new method to `parse` assignment expressions.
+
+## 10.0 Variable into Dictionary
+`Compilation` class, use dictionary concept to place variables, and request their values.
+
+## 11.0 Add variables to semantic Tree
+Create new bound classes for assignment and variable.
+  * `BoundAssignmentExpression` handler name, and expression to be assignment
+  * `BoundVariableExpression ` handler name and types
+
+## 12.0 Binder
+
+Implement the new logic for variables.
+
+Select the bound expression to variables, and add diagnostic. when doesn't exist a variable
+In this fase the assignment is worked only to int type.
+
+# 13.0
+App can run and, use a new way to work with int and bool types
+
+# 14.0 VariableSymbol
+Use a class to place and request variables. To look similar to and API
+
+# 15.0
+Replace binding logic with proper symbols, of variables.
