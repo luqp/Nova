@@ -34,9 +34,27 @@ namespace Nova.Tests.CodeAnalysis.Syntax
             Assert.Equal(tokens[1].Text, t2Text);
         }
 
+        [Theory]
+        [MemberData(nameof(GetTokenPairsWithSeparatorData))]
+        public void LexerLexesTokenPairsWithSeparators(SyntaxKind t1Kind, string t1Text,
+                                                       SyntaxKind separatorKind, string separatorText,
+                                                       SyntaxKind t2Kind, string t2Text)
+        {
+            string text = t1Text + separatorText + t2Text;
+            SyntaxToken[] tokens = SyntaxTree.ParseTokens(text).ToArray();
+
+            Assert.Equal(3, tokens.Length);
+            Assert.Equal(tokens[0].Kind, t1Kind);
+            Assert.Equal(tokens[0].Text, t1Text);
+            Assert.Equal(tokens[1].Kind, separatorKind);
+            Assert.Equal(tokens[1].Text, separatorText);
+            Assert.Equal(tokens[2].Kind, t2Kind);
+            Assert.Equal(tokens[2].Text, t2Text);
+        }
+
         public static IEnumerable<object[]> GetTokensData()
         {
-            foreach (var t in GetTokens())
+            foreach (var t in GetTokens().Concat(GetSeparators()))
                 yield return new object[] { t.kind, t.text };
         }
 
@@ -44,6 +62,12 @@ namespace Nova.Tests.CodeAnalysis.Syntax
         {
             foreach (var t in GetTokenPairs())
                 yield return new object[] { t.t1Kind, t.t1Text, t.t2Kind, t.t2Text };
+        }
+
+        public static IEnumerable<object[]> GetTokenPairsWithSeparatorData()
+        {
+            foreach (var t in GetTokenPairsWithSeparator())
+                yield return new object[] { t.t1Kind, t.t1Text, t.separatorKind, t.separatorText, t.t2Kind, t.t2Text };
         }
 
         private static IEnumerable<(SyntaxKind kind, string text)> GetTokens()
@@ -64,15 +88,22 @@ namespace Nova.Tests.CodeAnalysis.Syntax
                 (SyntaxKind.CloseParenthesisToken, ")"),
                 (SyntaxKind.FalseKeyword, "false"),
                 (SyntaxKind.TrueKeyword, "true"),
-                // (SyntaxKind.WhiteSpaceToken, " "),
-                // (SyntaxKind.WhiteSpaceToken, "  "),
-                // (SyntaxKind.WhiteSpaceToken, "\r"),
-                // (SyntaxKind.WhiteSpaceToken, "\n"),
-                // (SyntaxKind.WhiteSpaceToken, "\r\n"),
                 (SyntaxKind.NumberToken, "1"),
                 (SyntaxKind.NumberToken, "923"),
                 (SyntaxKind.IdentifierToken, "a"),
                 (SyntaxKind.IdentifierToken, "abc"),
+            };
+        }
+
+        private static IEnumerable<(SyntaxKind kind, string text)> GetSeparators()
+        {
+            return new[]
+            {
+                (SyntaxKind.WhiteSpaceToken, " "),
+                (SyntaxKind.WhiteSpaceToken, "  "),
+                (SyntaxKind.WhiteSpaceToken, "\r"),
+                (SyntaxKind.WhiteSpaceToken, "\n"),
+                (SyntaxKind.WhiteSpaceToken, "\r\n")
             };
         }
 
@@ -122,5 +153,24 @@ namespace Nova.Tests.CodeAnalysis.Syntax
                 }
             }
         }
+    
+        private static IEnumerable<(
+            SyntaxKind t1Kind, string t1Text,
+            SyntaxKind separatorKind, string separatorText,
+            SyntaxKind t2Kind, string t2Text)> GetTokenPairsWithSeparator()
+        {
+            foreach (var t1 in GetTokens())
+            {
+                foreach (var t2 in GetTokens())
+                {
+                    if (RequiresSeparator(t1.kind, t2.kind))
+                    {
+                        foreach (var s in GetSeparators())
+                            yield return (t1.kind, t1.text, s.kind, s.text, t2.kind, t2.text);
+                    }
+                }
+            }
+        }
+    
     }
 }
