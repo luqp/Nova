@@ -11,6 +11,7 @@ pool:
 
 variables:
   buildConfiguration: 'Release'
+  tests: '.\Nova.Tests\Nova.Tests.csproj'
 
 steps:
 - task: DotNetCoreInstaller@1
@@ -19,3 +20,5 @@ steps:
     includePreviewVersions: true
 - script: dotnet build --configuration $(buildConfiguration)
   displayName: 'dotnet build $(buildConfiguration)'
+- script: dotnet test $(tests)
+  displayName: 'dotnet test'
