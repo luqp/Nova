@@ -11,7 +11,7 @@ pool:
 
 variables:
   buildConfiguration: 'Release'
-  tests: '.\Nova.Tests\Nova.Tests.csproj'
+  tests: './Nova.Tests/Nova.Tests.csproj'
 
 steps:
 - task: DotNetCoreInstaller@1
