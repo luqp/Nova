@@ -114,14 +114,20 @@ namespace Nova.CodeAnalysis.Syntax
                 case '5': case '6': case '7': case '8': case '9':
                     ReadNumberToken();
                     break;
+                case ' ':
+                case '\t':
+                case '\n':
+                case '\r':
+                    ReadWhiteSpace();
+                    break;
                 default:
-                    if (char.IsWhiteSpace(Current))
-                    {
-                        ReadWhiteSpace();
-                    }
-                    else if (char.IsLetter(Current))
+                    if (char.IsLetter(Current))
                     {
                         ReadIdentifierOrKeyword();
+                    }
+                    else if (char.IsWhiteSpace(Current))
+                    {
+                        ReadWhiteSpace();
                     }
                     else
                     {
