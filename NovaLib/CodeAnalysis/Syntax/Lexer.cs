@@ -44,7 +44,6 @@ namespace Nova.CodeAnalysis.Syntax
             {
                 case '\0':
                     kind = SyntaxKind.EndOfFileToken;
-                    position++;
                     break;
                 case '+':
                     kind = SyntaxKind.PlusToken;
@@ -157,6 +156,7 @@ namespace Nova.CodeAnalysis.Syntax
         {
             while (char.IsDigit(Current))
                 Next();
+
             int length = position - start;
             string tokenText = text.Substring(start, length);
             if (!int.TryParse(tokenText, out var tokenValue))
