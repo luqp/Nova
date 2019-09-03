@@ -302,3 +302,125 @@ Use a class to place and request variables. To look similar to and API
 
 # 15.0
 Replace binding logic with proper symbols, of variables.
+
+# Compiler part 4 - Tests
+
+## 1.0 Test Lexer
+### 1.1
+Add new Test project, and Create `LexerTest` file.
+
+### 1.2
+Expose method.
+`SyntaxTree` class, add the `ParseTokens` method, to accesses the `Lexer` methods, since the most part of them are private.
+
+### 1.3
+First approach, need to convert entry into correct tokens.
+```
+input:
+==
+==!
+=!=
+```
+`LexerTest` class, add the `GetToken` method. this method tests a single token.
+  * Define all simple text that you hope that will be a token plus their syntax kind.
+  * Add `Theories` and `memberData` decorators, to loop the `GetToken` method with another method.
+
+### 1.4
+
+`LexerTest` class, add the `GetTokenPairs` method, that tests a pair of tokens
+  * Use the `GetTokens` method to obtains tokens
+  * To work need a condition, and define the `RequiresSeparator` method.
+
+### 1.5
+We test white spaces, add the `GetSeparators` methods
+  * Concatenate this enumerable result with `GetTokens` result, to tests them like singles tokens
+
+### 1.6
+Add test to pipe-line
+
+## 2.0 Test SyntaxFacts
+Convert to public the `SyntaxFacts` class.
+
+### 2.1
+Add a new method to map from keyword, in `SyntaxFacts` class, the `GetText` method, to return the text value of a operand token's syntax kind.
+  * This is because we have many operators with a fixed text.
+
+### 2.2
+Create `SyntaxFactsTest`, to test the `GetText` method.
+
+## 3.0 Test Parser
+To test the correct structure of the tree
+
+### 3.1
+Create the `Parser` class.
+Add other methods to `SyntaxFacts` class, to get a list of operator kinds.
+
+### 3.2
+Test binary expression, analyzing the operators precedence that there are in an expression:
+
+### 3.3
+`SyntaxFacts` class, add methods `GetUnaryOperatorKinds` and `GetBinaryOperatorKinds`
+These methods take the precedence to return kinds.
+
+### 3.4
+to make that, add a new class `AssertingEnumerator`. This tests the way to build the tree and test the different Node and tokens that it has.
+handler assert each node and token
+
+### 3.5
+`ParserTests` class, add the test to be honor at binary precedence `ParserBinaryExpressionHonornsPrecedences` method.
+Test the building of a binary expression tree
+
+```
+Example, if have :
+  - op1 = precedence operator 1
+  - op2 = precedence operator 2
+
+if (op1 >= op2)
+
+          op2
+        /    \
+      op1     c
+    /    \
+  a       b
+
+else
+
+      op1
+    /    \
+  a      op2
+       /    \
+      c       b
+
+```
+
+### 3.6
+`ParserTests` class, Add tests to ensure we honor unary and binary precedences, add `ParserUnaryExpressionHonornsPrecedences` method.
+Test the building of a unary expression tree
+```
+Example, if have :
+  - unary = precedence operator 1
+  - binary = precedence operator 2
+
+if (unary >= binary)
+
+       binary
+      /      \
+  unary       b
+    |   
+    a   
+
+else
+
+        unary
+          |
+        binary
+       /     \
+      a       b
+
+```
+
+## 4.0 Test Evaluator
+
+### 4.1
+Test unary and binary evaluations, with numbers and booleans.
+and variables assignation.
