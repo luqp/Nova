@@ -63,7 +63,7 @@ namespace Nova.CodeAnalysis.Syntax
             SyntaxKind[] kinds = (SyntaxKind[]) Enum.GetValues(typeof(SyntaxKind));
             foreach (SyntaxKind kind in kinds)
             {
-                if (GetUnaryOperatorPrecedence(kind) > 5)
+                if (GetUnaryOperatorPrecedence(kind) > 0)
                     yield return kind;
             }
         }
