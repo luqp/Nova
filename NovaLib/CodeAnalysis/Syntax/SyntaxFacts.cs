@@ -1,8 +1,9 @@
 using System;
+using System.Collections.Generic;
 
 namespace Nova.CodeAnalysis.Syntax
 {
-    internal static class SyntaxFacts
+    public static class SyntaxFacts
     {
         public static int GetUnaryOperatorPrecedence(this SyntaxKind kind)
         {
@@ -54,6 +55,63 @@ namespace Nova.CodeAnalysis.Syntax
                     return SyntaxKind.TrueKeyword;
                 default:
                     return SyntaxKind.IdentifierToken;
+            }
+        }
+
+        public static IEnumerable<SyntaxKind> GetUnaryOperatorKinds()
+        {
+            SyntaxKind[] kinds = (SyntaxKind[]) Enum.GetValues(typeof(SyntaxKind));
+            foreach (SyntaxKind kind in kinds)
+            {
+                if (GetUnaryOperatorPrecedence(kind) > 5)
+                    yield return kind;
+            }
+        }
+
+        public static IEnumerable<SyntaxKind> GetBinaryOperatorKinds()
+        {
+            SyntaxKind[] kinds = (SyntaxKind[]) Enum.GetValues(typeof(SyntaxKind));
+            foreach (SyntaxKind kind in kinds)
+            {
+                if (GetBinaryOperatorPrecedence(kind) > 0)
+                    yield return kind;
+            }
+        }
+
+        public static string GetText(SyntaxKind kind)
+        {
+            switch (kind)
+            {
+                case SyntaxKind.PlusToken:
+                    return "+";
+                case SyntaxKind.MinusToken:
+                    return "-";
+                case SyntaxKind.StarToken:
+                    return "*";
+                case SyntaxKind.SlashToken:
+                    return "/";
+                case SyntaxKind.BangToken:
+                    return "!";
+                case SyntaxKind.EqualsToken:
+                    return "=";
+                case SyntaxKind.BangEqualsToken:
+                    return "!=";
+                case SyntaxKind.EqualsEqualsToken:
+                    return "==";
+                case SyntaxKind.AmpersanAmpersanToken:
+                    return "&&";
+                case SyntaxKind.PipePipeToken:
+                    return "||";
+                case SyntaxKind.OpenParenthesisToken:
+                    return "(";
+                case SyntaxKind.CloseParenthesisToken:
+                    return ")";
+                case SyntaxKind.FalseKeyword:
+                    return "false";
+                case SyntaxKind.TrueKeyword:
+                    return "true";
+                default:
+                    return null;
             }
         }
     }
