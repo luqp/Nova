@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using Nova.CodeAnalysis.Binding;
 using Nova.CodeAnalysis.Syntax;
@@ -20,13 +21,13 @@ namespace Nova.CodeAnalysis
             Binder binder = new Binder(variables);
             BoundExpression boundExpression = binder.BindExpression(Syntax.Root);
 
-            Diagnostic[] diagnostics = Syntax.Diagnostics.Concat(binder.Diagnostics).ToArray();
+            ImmutableArray<Diagnostic> diagnostics = Syntax.Diagnostics.Concat(binder.Diagnostics).ToImmutableArray();
             if (diagnostics.Any())
                 return new EvaluationResult(diagnostics, null);
             
             Evaluator evaluator = new Evaluator(boundExpression, variables);
             object value = evaluator.Evaluate();
-            return new EvaluationResult(Array.Empty<Diagnostic>(), value);
+            return new EvaluationResult(ImmutableArray<Diagnostic>.Empty, value);
         }
     }
 }
