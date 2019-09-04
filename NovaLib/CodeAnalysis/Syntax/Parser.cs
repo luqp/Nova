@@ -6,7 +6,7 @@ namespace Nova.CodeAnalysis.Syntax
     internal sealed class Parser
     {
         private readonly DiagnosticBag diagnostics = new DiagnosticBag();
-        private readonly SyntaxToken[] tokens;
+        private readonly ImmutableArray<SyntaxToken> tokens;
         private int position;
 
         public Parser(string text)
@@ -25,7 +25,7 @@ namespace Nova.CodeAnalysis.Syntax
                 }
             } while (token.Kind != SyntaxKind.EndOfFileToken);
 
-            this.tokens = tokens.ToArray();
+            this.tokens = tokens.ToImmutableArray();
             this.diagnostics.AddRange(lexer.Diagnostics);
         }
 
