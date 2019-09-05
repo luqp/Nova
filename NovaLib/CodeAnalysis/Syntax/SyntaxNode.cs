@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 
@@ -35,6 +36,40 @@ namespace Nova.CodeAnalysis.Syntax
                     foreach (SyntaxNode child in children)
                         yield return child;
                 }
+            }
+        }
+
+        public void WriteTo(TextWriter writer)
+        {
+            PrettyPrint(writer, this);
+        }
+
+        private static void PrettyPrint(TextWriter writer, SyntaxNode node, string indent = "", bool islast = true)
+        {
+            string marker = islast ? "└──" : "├──";
+            writer.Write(indent);
+            writer.Write(marker);
+            writer.Write(node.Kind);
+
+            if (node is SyntaxToken t && t.Value != null)
+            {
+                writer.Write($" {t.Value}");
+            }
+
+            writer.WriteLine();
+            indent += islast ? "   " : "│  ";
+
+            SyntaxNode lastChild = node.GetChildren().LastOrDefault();
+            foreach (SyntaxNode child in node.GetChildren())
+                PrettyPrint(writer, child, indent, child == lastChild);
+        }
+
+        public override string ToString()
+        {
+            using (StringWriter writer = new StringWriter())
+            {
+                WriteTo(writer);
+                return writer.ToString();
             }
         }
     }
