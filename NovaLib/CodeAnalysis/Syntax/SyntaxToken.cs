@@ -17,12 +17,6 @@ namespace Nova.CodeAnalysis.Syntax
         public int Position { get; }
         public string Text { get; }
         public object Value { get; }
-        public TextSpan Span => new TextSpan(Position, Text.Length);
-
-        public override IEnumerable<SyntaxNode> GetChildren()
-        {
-            return Enumerable.Empty<SyntaxNode>();
-        }
-            
+        public TextSpan Span => new TextSpan(Position, Text.Length);      
     }
 }
