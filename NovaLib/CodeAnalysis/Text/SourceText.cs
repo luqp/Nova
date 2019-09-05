@@ -20,7 +20,7 @@ namespace Nova.CodeAnalysis.Text
         public int GetLineIndex(int position)
         {
             int lower = 0;
-            int upper = text.Length - 1;
+            int upper = Lines.Length - 1;
 
             while (lower <= upper)
             {
