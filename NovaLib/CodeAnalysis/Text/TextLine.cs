@@ -17,5 +17,6 @@ namespace Nova.CodeAnalysis.Text
         public int LengthInclundingLineBreak { get; }
         public TextSpan Span => new TextSpan(Start, Length);
         public TextSpan SpanIncludingLineBreal => new TextSpan(Start, LengthInclundingLineBreak);
+        public override string ToString() => Text.ToString(Span);
     }
 }
