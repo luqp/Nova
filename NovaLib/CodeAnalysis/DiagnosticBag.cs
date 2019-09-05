@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Nova.CodeAnalysis.Syntax;
+using Nova.CodeAnalysis.Text;
 
 namespace Nova.CodeAnalysis
 {

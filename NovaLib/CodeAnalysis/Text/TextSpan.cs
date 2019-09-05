@@ -1,6 +1,6 @@
 using System;
 
-namespace Nova.CodeAnalysis
+namespace Nova.CodeAnalysis.Text
 {
     public struct TextSpan
     {

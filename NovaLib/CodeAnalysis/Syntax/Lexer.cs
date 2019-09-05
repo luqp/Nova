@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Nova.CodeAnalysis.Text;
 
 namespace Nova.CodeAnalysis.Syntax
 {
