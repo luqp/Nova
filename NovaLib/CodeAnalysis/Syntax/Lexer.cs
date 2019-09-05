@@ -5,7 +5,7 @@ namespace Nova.CodeAnalysis.Syntax
 {
     internal sealed class Lexer
     {
-        private readonly string text;
+        private readonly SourceText text;
         private readonly DiagnosticBag diagnostics = new DiagnosticBag();
         private int position;
 
@@ -13,7 +13,7 @@ namespace Nova.CodeAnalysis.Syntax
         private SyntaxKind kind;
         private object value;
 
-        public Lexer(string text)
+        public Lexer(SourceText text)
         {
             this.text = text;
         }
@@ -141,7 +141,7 @@ namespace Nova.CodeAnalysis.Syntax
             string tokenText = SyntaxFacts.GetText(kind);
 
             if (tokenText == null)
-                tokenText = text.Substring(start, length);
+                tokenText = text.ToString(start, length);
 
             return new SyntaxToken(kind, start, tokenText, value);
         }
@@ -159,7 +159,7 @@ namespace Nova.CodeAnalysis.Syntax
                 Next();
 
             int length = position - start;
-            string tokenText = text.Substring(start, length);
+            string tokenText = text.ToString(start, length);
             if (!int.TryParse(tokenText, out var tokenValue))
                 diagnostics.ReportInvalidNumber(new TextSpan(start, length), tokenText, typeof(int));
 
@@ -172,7 +172,7 @@ namespace Nova.CodeAnalysis.Syntax
             while (char.IsLetter(Current))
                 Next();
             int length = position - start;
-            string tokenText = text.Substring(start, length);
+            string tokenText = text.ToString(start, length);
             kind = SyntaxFacts.GetKeywordKind(tokenText);
         }
     }
