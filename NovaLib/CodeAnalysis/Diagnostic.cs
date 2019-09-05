@@ -1,3 +1,5 @@
+using Nova.CodeAnalysis.Text;
+
 namespace Nova.CodeAnalysis
 {
     public sealed class Diagnostic 
