@@ -6,8 +6,9 @@ namespace Nova.CodeAnalysis.Syntax
 {
     internal sealed class Parser
     {
-        private readonly DiagnosticBag diagnostics = new DiagnosticBag();
+        private readonly SourceText text;
         private readonly ImmutableArray<SyntaxToken> tokens;
+        private readonly DiagnosticBag diagnostics = new DiagnosticBag();
         private int position;
 
         public Parser(SourceText text)
@@ -26,6 +27,7 @@ namespace Nova.CodeAnalysis.Syntax
                 }
             } while (token.Kind != SyntaxKind.EndOfFileToken);
 
+            this.text = text;
             this.tokens = tokens.ToImmutableArray();
             this.diagnostics.AddRange(lexer.Diagnostics);
         }
@@ -63,7 +65,7 @@ namespace Nova.CodeAnalysis.Syntax
         {
             ExpressionSyntax expression = ParseExpression();
             SyntaxToken endOfFileToken = MatchToken(SyntaxKind.EndOfFileToken);
-            return new SyntaxTree(diagnostics.ToImmutableArray(), expression, endOfFileToken);
+            return new SyntaxTree(text, diagnostics.ToImmutableArray(), expression, endOfFileToken);
         }
 
         private ExpressionSyntax ParseExpression()
