@@ -5,9 +5,34 @@ namespace Nova.CodeAnalysis.Text
 {
     public sealed class SourceText
     {
+        private readonly string text;
+
         private SourceText(string text)
         {
+            this.text = text;
             Lines = ParseLines(this, text);
+        }
+
+        public ImmutableArray<TextLine> Lines { get; }
+
+        public int GetLineIndex(int position)
+        {
+            int lower = 0;
+            int upper = text.Length - 1;
+
+            while (lower <= upper)
+            {
+                int index = lower + (upper - lower) / 2;
+                int start = Lines[index].Start;
+
+                if (position == start)
+                    return index;
+                if (position > start)
+                    lower = index + 1;
+                else
+                    upper = index - 1;
+            }
+            return lower - 1; 
         }
 
         private static ImmutableArray<TextLine> ParseLines(SourceText sourceText, string text)
@@ -59,8 +84,6 @@ namespace Nova.CodeAnalysis.Text
             
             return 0;
         }
-
-        public ImmutableArray<TextLine> Lines { get; private set; }
 
         public static SourceText From(string text)
         {
