@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using Nova.CodeAnalysis.Text;
 
 namespace Nova.CodeAnalysis.Syntax
 {
@@ -9,7 +10,7 @@ namespace Nova.CodeAnalysis.Syntax
         private readonly ImmutableArray<SyntaxToken> tokens;
         private int position;
 
-        public Parser(string text)
+        public Parser(SourceText text)
         {
             var tokens = new List<SyntaxToken>();
 

@@ -13,6 +13,8 @@ namespace Nova.CodeAnalysis.Text
             Lines = ParseLines(this, text);
         }
 
+        public char this[int index] => text[index];
+        public int Length => text.Length;
         public ImmutableArray<TextLine> Lines { get; }
 
         public int GetLineIndex(int position)
