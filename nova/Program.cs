@@ -47,7 +47,7 @@ namespace Nova
                 if (showTree)
                 {
                     Console.ForegroundColor = ConsoleColor.DarkGray;
-                    PrettyPrint(syntaxTree.Root);
+                    syntaxTree.Root.WriteTo(Console.Out);
                     Console.ResetColor();
                 }
 
@@ -78,25 +78,6 @@ namespace Nova
                     Console.WriteLine();
                 }
             }
-        }
-        static void PrettyPrint(SyntaxNode node, string indent = "", bool islast = true)
-        {
-            string marker = islast ? "└──" : "├──";
-            Console.Write(indent);
-            Console.Write(marker);
-            Console.Write(node.Kind);
-
-            if (node is SyntaxToken t && t.Value != null)
-            {
-                Console.Write($" {t.Value}");
-            }
-
-            Console.WriteLine();
-            indent += islast ? "   " : "│  ";
-
-            SyntaxNode lastChild = node.GetChildren().LastOrDefault();
-            foreach (SyntaxNode child in node.GetChildren())
-                PrettyPrint(child, indent, child == lastChild);
         }
     }
 }
