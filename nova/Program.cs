@@ -57,10 +57,18 @@ namespace Nova
                 }
                 else
                 {
+                    var text = syntaxTree.Text;
+
                     foreach (Diagnostic diagnostic in diagnostics)
                     {
-                        Console.ForegroundColor = ConsoleColor.DarkRed;
+                        int lineIndex = text.GetLineIndex(diagnostic.Span.Start);
+                        int lineNumber = lineIndex + 1;
+                        int character = diagnostic.Span.Start - text.Lines[lineIndex].Start + 1;
+
                         Console.WriteLine();
+
+                        Console.ForegroundColor = ConsoleColor.DarkRed;
+                        Console.Write($"({lineNumber}, {character}): ");
                         Console.WriteLine(diagnostic);
                         Console.ResetColor();
 
