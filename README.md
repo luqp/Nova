@@ -424,3 +424,116 @@ else
 ### 4.1
 Test unary and binary evaluations, with numbers and booleans.
 and variables assignation.
+
+#Compiler part 5
+# Clean-Up
+
+## 1.0 Clean-up Lexer class
+
+### 1.1
+Optimize the `Lex` method, to match faster to dispatch, jumping to the corresponding case label.
+
+### 1.2
+Add white space more common like cases, but maintain a method to match other types of white spaces
+Order the default case by the most common occurrences first.
+
+## 2.0 Clean-up LexerTests
+
+### 2.1
+Refactor the `GetTokens` method, divide the large list into `fixedTokens`, these are defined in the `SyntaxFacts` class, and `dynamicTokens` that could have any value.
+
+### 2.1
+Create `LexerTestsAllTokens` method, to test we text all token kinds
+
+## 3.0 Clean-up Evaluator class
+Separate the 'Evaluate expression' method to read more easily and substantially
+  * Chance if - else conditions by switch cases
+
+## 4.0 Clean-up Parser class
+Separate the `ParsePrimaryExpression` method, cleaning the switch case.
+
+## 5.0 Immutable Collections
+To improve the API
+
+### 5.1
+Install `System.Collections.Immutable` package, in the library project.
+
+### 5.2
+Change the `IReadOnlyList` to `ImmutableArray` for `diagnostic` parameters, because nobody wanted to `cast` all time this parameter and modify the data parameter.
+
+### 5.3
+Use ImmutableArray<T> in Parser class.
+
+## 6.0 SyntaxNode more efficient
+Get SyntaxNode.GetChildren non-virtual.
+
+Make more efficient way to get elements. and avoid some of the downfalls when you do a evaluation of things and end up in recursion in parts that you're not supposed to be into.
+
+### 6.1
+Refactor the `GetChildren` method, using Reflection to obtain all class's properties that call this method
+  * Delete the other methods that overwrite this, in the child classes.
+  * The order of reflection return the elements is defined by the order of properties are declared into the class.
+
+## 7.0 Span in Nodes
+Construct the span over the first and last children.
+
+### 7.1
+Create `TextSpan.FromBounds()` helper method, to return a new `TextSpan` class.
+
+### 7.2
+(Not super efficient but it will work) `SyntaxNode` class, add virtual `Span` property, implement `TextSpan.FromBounds()` method, using the span of children.
+
+### 7.3
+Change `Span` property of `SyntaxToken` to override.
+
+# Line Numbers
+Change the app that is based in positions, that to reports error shows a bunch numbers of length of error, instead we want to show the line and column where is happened the error.
+
+We will remember effectively how long the lines are.
+And given a position we can compute the line number.
+## 8.0 Text namespace
+An new concept to API
+
+### 8.1
+Create 'Text' namespace and move 'TextSpan' into.
+
+### 8.2 Exposes line number information
+Create `SourceText` class, that handles information.
+Create `TextLine` class, that is the definition of a line.
+
+### 8.3
+`SourceText` class
+  * Create `ParseLines` method. that parse each line form the text.
+  * Create `GetLineBreakWidth` method, that controls when a line is on the end.
+  * Create `AddLine` method. Add each parse line to source result.
+
+## 9.0 Traditional Binary Search
+Apply this concept to look line index
+
+### 9.1
+`SourceText` class, create `GetLineIndex` method, that look for an line index into `Lines` immutable Array.
+
+## 10.0 Show Text
+Override `ToString` method.
+
+### 10.1
+`SourceText` class
+  * return string of text
+  * return string of text passing the star position and the length
+  * return string of text passing span parameters
+
+### 10.2
+`TextLine` class
+  * return text passing span parameters
+
+### 10.3
+Implement `SourceText` into the API
+  * Fix a bug in `SourceText.GetLineIndex` method.
+
+## 11.0 Diagnostics with more details
+`Program` class, show line and character when an error occurs.
+  * Fix a bug of null reference for cases where the token was inserted, `SyntaxToken` class.
+
+## 12.0 Support for multiple Lines
+`Program` class, add `textBuilder` parameter to handles multiple lines on console.
+  * Make sure that the last line is added to `SourceText`
