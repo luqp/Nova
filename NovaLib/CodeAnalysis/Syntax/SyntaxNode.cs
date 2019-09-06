@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -47,15 +48,26 @@ namespace Nova.CodeAnalysis.Syntax
 
         private static void PrettyPrint(TextWriter writer, SyntaxNode node, string indent = "", bool islast = true)
         {
+            bool isToConsole = writer == Console.Out;
             string marker = islast ? "└──" : "├──";
+
+            if (isToConsole)
+                Console.ForegroundColor = ConsoleColor.DarkGray;
+
             writer.Write(indent);
             writer.Write(marker);
+
+            if (isToConsole)
+                Console.ForegroundColor = node is SyntaxToken ? ConsoleColor.DarkBlue : ConsoleColor.Cyan;
+
             writer.Write(node.Kind);
 
             if (node is SyntaxToken t && t.Value != null)
             {
                 writer.Write($" {t.Value}");
             }
+            if (isToConsole)
+                Console.ResetColor();
 
             writer.WriteLine();
             indent += islast ? "   " : "│  ";
