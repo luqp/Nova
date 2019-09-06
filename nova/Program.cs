@@ -21,9 +21,16 @@ namespace Nova
             while (true)
             {
                 if (textBuilder.Length == 0)
-                    Console.Write("> ");
+                {
+                    Console.ForegroundColor = ConsoleColor.Cyan;
+                    Console.Write("» ");
+                }
                 else
-                    Console.Write("| ");
+                {
+                    Console.ForegroundColor = ConsoleColor.DarkGray;
+                    Console.Write("· ");
+                }
+                Console.ResetColor();
 
                 string input = Console.ReadLine();
                 bool isBlank = string.IsNullOrWhiteSpace(input);
@@ -70,8 +77,10 @@ namespace Nova
                 }
 
                 if (!diagnostics.Any())
-                {
+                {   
+                    Console.ForegroundColor = ConsoleColor.DarkMagenta;
                     Console.WriteLine(result.Value);
+                    Console.ResetColor();
                 }
                 else
                 {
