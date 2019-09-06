@@ -37,6 +37,11 @@ namespace Nova.CodeAnalysis.Text
             return lower - 1; 
         }
 
+        public static SourceText From(string text)
+        {
+            return new SourceText(text);
+        }
+
         private static ImmutableArray<TextLine> ParseLines(SourceText sourceText, string text)
         {
             var result = ImmutableArray.CreateBuilder<TextLine>();
@@ -60,7 +65,7 @@ namespace Nova.CodeAnalysis.Text
                 }
             }
 
-            if (position > lineStart)
+            if (position >= lineStart)
                 AddLine(result, sourceText, position, lineStart, 0);
 
             return result.ToImmutable();
@@ -85,11 +90,6 @@ namespace Nova.CodeAnalysis.Text
                 return 1;
             
             return 0;
-        }
-
-        public static SourceText From(string text)
-        {
-            return new SourceText(text);
         }
 
         public override string ToString() => text;
