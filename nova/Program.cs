@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-
+using System.Text;
 using Nova.CodeAnalysis;
 using Nova.CodeAnalysis.Binding;
 using Nova.CodeAnalysis.Syntax;
+using Nova.CodeAnalysis.Text;
 
 namespace Nova
 {
@@ -13,32 +14,49 @@ namespace Nova
         private static void Main()
         {
             bool showTree = false;
+            StringBuilder textBuilder = new StringBuilder();
             Dictionary<VariableSymbol, object> variables = new Dictionary<VariableSymbol, object>();
             Console.WriteLine("Commands: #trees, #cls");
 
             while (true)
             {
-                Console.Write("> ");
-                string line = Console.ReadLine();
+                if (textBuilder.Length == 0)
+                    Console.Write("> ");
+                else
+                    Console.Write("| ");
 
-                if (string.IsNullOrWhiteSpace(line))
-                    return;
+                string input = Console.ReadLine();
+                bool isBlank = string.IsNullOrWhiteSpace(input);
 
-                if (line.ToLower() == "#trees")
+                if (textBuilder.Length == 0)
                 {
-                    showTree = !showTree;
-                    Console.ForegroundColor = ConsoleColor.DarkYellow;
-                    Console.WriteLine(showTree ? "Enabled trees to show" : "Disabled trees");
-                    Console.ResetColor();
-                    continue;
-                }
-                else if (line.ToLower() == "#cls")
-                {
-                    Console.Clear();
-                    continue;
+                    if (isBlank)
+                    {
+                        break;
+                    }
+                    else if (input.ToLower() == "#trees")
+                    {
+                        showTree = !showTree;
+                        Console.ForegroundColor = ConsoleColor.DarkYellow;
+                        Console.WriteLine(showTree ? "Enabled trees to show" : "Disabled trees");
+                        Console.ResetColor();
+                        continue;
+                    }
+                    else if (input.ToLower() == "#cls")
+                    {
+                        Console.Clear();
+                        continue;
+                    }
                 }
 
-                SyntaxTree syntaxTree = SyntaxTree.Parse(line);
+                textBuilder.AppendLine(input);
+                string text = textBuilder.ToString();
+
+                SyntaxTree syntaxTree = SyntaxTree.Parse(text);
+
+                if (!isBlank && syntaxTree.Diagnostics.Any())
+                    continue;
+
                 Compilation compilation = new Compilation(syntaxTree);
                 EvaluationResult result = compilation.Evaluate(variables);
 
@@ -57,13 +75,13 @@ namespace Nova
                 }
                 else
                 {
-                    var text = syntaxTree.Text;
-
                     foreach (Diagnostic diagnostic in diagnostics)
                     {
-                        int lineIndex = text.GetLineIndex(diagnostic.Span.Start);
+                        SourceText treeText = syntaxTree.Text;
+                        int lineIndex = treeText.GetLineIndex(diagnostic.Span.Start);
+                        var line = treeText.Lines[lineIndex];
                         int lineNumber = lineIndex + 1;
-                        int character = diagnostic.Span.Start - text.Lines[lineIndex].Start + 1;
+                        int character = diagnostic.Span.Start - line.Start + 1;
 
                         Console.WriteLine();
 
@@ -72,9 +90,12 @@ namespace Nova
                         Console.WriteLine(diagnostic);
                         Console.ResetColor();
 
-                        string prefix = line.Substring(0, diagnostic.Span.Start);
-                        string error = line.Substring(diagnostic.Span.Start, diagnostic.Span.Length);
-                        string suffix = line.Substring(diagnostic.Span.End);
+                        TextSpan prefixSpan = TextSpan.FromBounds(line.Start, diagnostic.Span.Start);
+                        TextSpan suffixSpan = TextSpan.FromBounds(diagnostic.Span.End, line.End);
+
+                        string prefix = treeText.ToString(prefixSpan);
+                        string error = treeText.ToString(diagnostic.Span);
+                        string suffix = treeText.ToString(suffixSpan);
 
                         Console.Write($"   {prefix}");
                         Console.ForegroundColor = ConsoleColor.DarkRed;
@@ -85,6 +106,8 @@ namespace Nova
                     }
                     Console.WriteLine();
                 }
+
+                textBuilder.Clear();
             }
         }
     }
