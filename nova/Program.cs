@@ -16,6 +16,9 @@ namespace Nova
             bool showTree = false;
             StringBuilder textBuilder = new StringBuilder();
             Dictionary<VariableSymbol, object> variables = new Dictionary<VariableSymbol, object>();
+            Compilation previous = null;
+
+
             Console.WriteLine("Commands: #trees, #cls");
 
             while (true)
@@ -64,7 +67,10 @@ namespace Nova
                 if (!isBlank && syntaxTree.Diagnostics.Any())
                     continue;
 
-                Compilation compilation = new Compilation(syntaxTree);
+                Compilation compilation = previous == null 
+                                            ? new Compilation(syntaxTree)
+                                            : previous.ContinueWith(syntaxTree);
+
                 EvaluationResult result = compilation.Evaluate(variables);
 
                 IReadOnlyList<Diagnostic> diagnostics = result.Diagnostics;
@@ -81,6 +87,7 @@ namespace Nova
                     Console.ForegroundColor = ConsoleColor.DarkMagenta;
                     Console.WriteLine(result.Value);
                     Console.ResetColor();
+                    previous = compilation;
                 }
                 else
                 {

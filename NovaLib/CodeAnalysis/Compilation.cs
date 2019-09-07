@@ -12,12 +12,20 @@ namespace Nova.CodeAnalysis
     {
         private BoundGlobalScope globalScope;
 
-        public Compilation(SyntaxTree syntax)
+        public Compilation(SyntaxTree syntaxTree)
+        : this(null, syntaxTree)
         {
-            Syntax = syntax;
+            SyntaxTree = syntaxTree;
         }
 
-        public SyntaxTree Syntax { get; }
+        public Compilation(Compilation previous, SyntaxTree syntaxTree)
+        {
+            Previous = previous;
+            SyntaxTree = syntaxTree;
+        }
+
+        public Compilation Previous { get; }
+        public SyntaxTree SyntaxTree { get; }
 
         internal BoundGlobalScope GlobalScope
         {
@@ -25,16 +33,21 @@ namespace Nova.CodeAnalysis
             {
                 if (globalScope == null)
                 {
-                    BoundGlobalScope scope = Binder.BindGlobalScope(Syntax.Root);
+                    BoundGlobalScope scope = Binder.BindGlobalScope(Previous?.GlobalScope, SyntaxTree.Root);
                     Interlocked.CompareExchange(ref globalScope, scope, null);
                 }
                 return globalScope;
             }
         }
 
+        public Compilation ContinueWith(SyntaxTree syntaxTree)
+        {
+            return new Compilation(this, syntaxTree);
+        }
+
         public EvaluationResult Evaluate(Dictionary<VariableSymbol, object> variables)
         {
-            ImmutableArray<Diagnostic> diagnostics = Syntax.Diagnostics.Concat(GlobalScope.Diagnostics).ToImmutableArray();
+            ImmutableArray<Diagnostic> diagnostics = SyntaxTree.Diagnostics.Concat(GlobalScope.Diagnostics).ToImmutableArray();
             if (diagnostics.Any())
                 return new EvaluationResult(diagnostics, null);
             
