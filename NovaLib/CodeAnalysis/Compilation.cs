@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using System.Threading;
 using Nova.CodeAnalysis.Binding;
 using Nova.CodeAnalysis.Syntax;
 
@@ -23,8 +24,10 @@ namespace Nova.CodeAnalysis
             get
             {
                 if (globalScope == null)
-                    globalScope = Binder.BindGlobalScope(Syntax.Root);
-                
+                {
+                    BoundGlobalScope scope = Binder.BindGlobalScope(Syntax.Root);
+                    Interlocked.CompareExchange(ref globalScope, scope, null);
+                }
                 return globalScope;
             }
         }
