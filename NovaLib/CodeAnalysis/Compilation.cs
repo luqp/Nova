@@ -19,7 +19,7 @@ namespace Nova.CodeAnalysis
         public EvaluationResult Evaluate(Dictionary<VariableSymbol, object> variables)
         {
             Binder binder = new Binder(variables);
-            BoundExpression boundExpression = binder.BindExpression(Syntax.Root);
+            BoundExpression boundExpression = binder.BindExpression(Syntax.Root.Expression);
 
             ImmutableArray<Diagnostic> diagnostics = Syntax.Diagnostics.Concat(binder.Diagnostics).ToImmutableArray();
             if (diagnostics.Any())
