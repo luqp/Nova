@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using Nova.CodeAnalysis.Syntax;
 
@@ -7,12 +8,22 @@ namespace Nova.CodeAnalysis.Binding
 {
     internal sealed class Binder
     {
-        private Dictionary<VariableSymbol, object> variables;
         private readonly DiagnosticBag diagnostics = new DiagnosticBag();
+        
+        private BoundScope scope;
 
-        public Binder(Dictionary<VariableSymbol, object> variables)
+        public Binder(BoundScope parent)
         {
-            this.variables = variables;
+            scope = new BoundScope(parent);
+        }
+
+        public static BoundGlobalScope BindGlobalScope(CompilationUnitSyntax syntax)
+        {
+            Binder binder = new Binder(null);
+            BoundExpression expression = binder.BindExpression(syntax.Expression);
+            ImmutableArray<VariableSymbol> variables = binder.scope.GetDeclaredVariables();
+            ImmutableArray<Diagnostic> diagnostics = binder.Diagnostics.ToImmutableArray();
+            return new BoundGlobalScope(null, diagnostics, variables, expression);
         }
 
         public DiagnosticBag Diagnostics => diagnostics;
@@ -52,9 +63,8 @@ namespace Nova.CodeAnalysis.Binding
         private BoundExpression BindNameExpression(NameExpressionSyntax syntax)
         {
             string name = syntax.IdentifierToken.Text;
-            var variable = variables.Keys.FirstOrDefault(v => v.Name == name);
 
-            if (variable == null)
+            if (!scope.TryLookup(name, out var variable))
             {
                 diagnostics.ReportUndefinedName(syntax.IdentifierToken.Span, name);
                 return new BoundLiteralExpression(0);
@@ -66,13 +76,12 @@ namespace Nova.CodeAnalysis.Binding
         {
             string name = syntax.IdentifierToken.Text;
             BoundExpression boundExpression = BindExpression(syntax.Expression);
-
-            VariableSymbol existingVarible = variables.Keys.FirstOrDefault(v => v.Name == name);
-            if (existingVarible != null)
-                variables.Remove(existingVarible);
-
             VariableSymbol variable = new VariableSymbol(name, boundExpression.Type);
-            variables[variable] = null;
+
+            if (!scope.TryDeclare(variable))
+            {
+                diagnostics.ReportVariableAlreadyDeclared(syntax.IdentifierToken.Span, name);
+            }
 
             return new BoundAssignmentExpression(variable, boundExpression);
         }
