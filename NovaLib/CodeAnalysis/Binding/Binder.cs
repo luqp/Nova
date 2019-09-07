@@ -17,13 +17,37 @@ namespace Nova.CodeAnalysis.Binding
             scope = new BoundScope(parent);
         }
 
-        public static BoundGlobalScope BindGlobalScope(CompilationUnitSyntax syntax)
+        public static BoundGlobalScope BindGlobalScope(BoundGlobalScope previous, CompilationUnitSyntax syntax)
         {
-            Binder binder = new Binder(null);
+            BoundScope parentScope = CreateParentScopes(previous);
+            Binder binder = new Binder(parentScope);
             BoundExpression expression = binder.BindExpression(syntax.Expression);
             ImmutableArray<VariableSymbol> variables = binder.scope.GetDeclaredVariables();
             ImmutableArray<Diagnostic> diagnostics = binder.Diagnostics.ToImmutableArray();
-            return new BoundGlobalScope(null, diagnostics, variables, expression);
+            return new BoundGlobalScope(previous, diagnostics, variables, expression);
+        }
+
+        public static BoundScope CreateParentScopes(BoundGlobalScope previous)
+        {
+            Stack<BoundGlobalScope> stack = new Stack<BoundGlobalScope>();
+            while (previous != null)
+            {
+                stack.Push(previous);
+                previous = previous.Previous;
+            }
+
+            BoundScope parent = null;
+
+            while (stack.Count > 0)
+            {
+                previous = stack.Pop();
+                BoundScope scope = new BoundScope(parent);
+                foreach (VariableSymbol v in previous.Variables)
+                    scope.TryDeclare(v);
+                
+                parent = scope;
+            }
+            return parent;
         }
 
         public DiagnosticBag Diagnostics => diagnostics;
