@@ -19,6 +19,8 @@ namespace Nova.CodeAnalysis.Syntax
         PipePipeToken,
         OpenParenthesisToken,
         CloseParenthesisToken,
+        OpenBraceToken,
+        CloseBraceToken,
         IdentifierToken,
 
         // Keywords
