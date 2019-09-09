@@ -24,6 +24,10 @@ namespace Nova.CodeAnalysis.Binding
             BoundExpression expression = binder.BindExpression(syntax.Expression);
             ImmutableArray<VariableSymbol> variables = binder.scope.GetDeclaredVariables();
             ImmutableArray<Diagnostic> diagnostics = binder.Diagnostics.ToImmutableArray();
+
+            if (previous != null)
+                diagnostics = diagnostics.InsertRange(0, previous.Diagnostics);
+
             return new BoundGlobalScope(previous, diagnostics, variables, expression);
         }
 

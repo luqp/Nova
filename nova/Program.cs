@@ -57,6 +57,11 @@ namespace Nova
                         Console.Clear();
                         continue;
                     }
+                    else if (input.ToLower() == "#reset")
+                    {
+                        previous = null;
+                        continue;
+                    }
                 }
 
                 textBuilder.AppendLine(input);
@@ -70,7 +75,7 @@ namespace Nova
                 Compilation compilation = previous == null 
                                             ? new Compilation(syntaxTree)
                                             : previous.ContinueWith(syntaxTree);
-
+ 
                 EvaluationResult result = compilation.Evaluate(variables);
 
                 IReadOnlyList<Diagnostic> diagnostics = result.Diagnostics;
