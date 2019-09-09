@@ -70,6 +70,14 @@ namespace Nova.CodeAnalysis.Syntax
                     kind = SyntaxKind.CloseParenthesisToken;
                     position++;
                     break;
+                case '{':
+                    kind = SyntaxKind.OpenBraceToken;
+                    position++;
+                    break;
+                case '}':
+                    kind = SyntaxKind.CloseBraceToken;
+                    position++;
+                    break;
                 case '&':
                     position++;
                     if (Current == '&')
