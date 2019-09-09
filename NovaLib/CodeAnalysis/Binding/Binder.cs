@@ -104,11 +104,17 @@ namespace Nova.CodeAnalysis.Binding
         {
             string name = syntax.IdentifierToken.Text;
             BoundExpression boundExpression = BindExpression(syntax.Expression);
-            VariableSymbol variable = new VariableSymbol(name, boundExpression.Type);
 
-            if (!scope.TryDeclare(variable))
+            if (!scope.TryLookup(name, out var variable))
             {
-                diagnostics.ReportVariableAlreadyDeclared(syntax.IdentifierToken.Span, name);
+                variable = new VariableSymbol(name, boundExpression.Type);
+                scope.TryDeclare(variable);
+            }
+
+            if (boundExpression.Type != variable.Type)
+            {
+                diagnostics.ReportCannotConvert(syntax.Expression.Span, boundExpression.Type, variable.Type);
+                return boundExpression;
             }
 
             return new BoundAssignmentExpression(variable, boundExpression);

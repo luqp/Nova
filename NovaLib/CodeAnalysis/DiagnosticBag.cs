@@ -62,9 +62,9 @@ namespace Nova.CodeAnalysis
             Report(span, message);
         }
 
-        public void ReportVariableAlreadyDeclared(TextSpan span, string name)
+        public void ReportCannotConvert(TextSpan span, Type fromType, Type toType)
         {
-            string message = $"Variable {name} is already declared.";
+            string message = $"Cannot convert type '{fromType}' to '{toType}'.";
             Report(span, message);
         }
     }
