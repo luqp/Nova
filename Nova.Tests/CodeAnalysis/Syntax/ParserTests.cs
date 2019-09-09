@@ -15,7 +15,7 @@ namespace Nova.Tests.CodeAnalysis.Syntax
             string op1Text = SyntaxFacts.GetText(op1);
             string op2Text = SyntaxFacts.GetText(op2);
             string text = $"a {op1Text} b {op2Text} c";
-            ExpressionSyntax expression = SyntaxTree.Parse(text).Root.Expression;
+            ExpressionSyntax expression = ParseExpression(text);
 
             if (op1Precedence >= op2Precedence)
             {
@@ -60,7 +60,7 @@ namespace Nova.Tests.CodeAnalysis.Syntax
             string unaryText = SyntaxFacts.GetText(unaryKind);
             string binaryText = SyntaxFacts.GetText(binaryKind);
             string text = $"{unaryText} a {binaryText} b";
-            ExpressionSyntax expression = SyntaxTree.Parse(text).Root.Expression;
+            ExpressionSyntax expression = ParseExpression(text);
 
             if (unaryPrecedence >= binaryPrecedence)
             {
@@ -91,7 +91,14 @@ namespace Nova.Tests.CodeAnalysis.Syntax
                 }
             }
         }
-    
+
+        public static ExpressionSyntax ParseExpression(string text)
+        {
+            SyntaxTree syntaxTree = SyntaxTree.Parse(text);
+            CompilationUnitSyntax root = syntaxTree.Root;
+            return root.Expression;
+        }
+
         public static IEnumerable<object[]> GetBinaryOperatorPairsData()
         {
             foreach (var op1 in SyntaxFacts.GetBinaryOperatorKinds())
