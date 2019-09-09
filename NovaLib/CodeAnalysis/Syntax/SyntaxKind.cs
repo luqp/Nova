@@ -28,6 +28,10 @@ namespace Nova.CodeAnalysis.Syntax
         // Nodes
         CompilationUnit,
 
+        // Statements
+        BlockStatement,
+        ExpressionStatement,
+
         // Expressions
         LiteralExpression,
         NameExpression,
