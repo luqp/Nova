@@ -537,3 +537,176 @@ Implement `SourceText` into the API
 ## 12.0 Support for multiple Lines
 `Program` class, add `textBuilder` parameter to handles multiple lines on console.
   * Make sure that the last line is added to `SourceText`
+
+# Compiler part 6
+
+# Changes
+
+## 1.0 Test Text
+Create new name space to test Text
+
+### 1.1
+Add Test: To check that the correct number of lines is added to the 'SourceText' class.
+
+## 2.0 Color in console
+Add Colorization to REPL
+
+## 3.0 Represents entirety of the input
+Add compilation unit:
+  * The problem is when we need to pass multiples declarations or statements we don't have the singular root object
+  * There isn't an array of expression
+  * To pass a expression we have to pass the whole SyntaxTree first, and SyntaxTree isn't a node.
+
+### 3.1
+(in C++ each source file is effectively compiled to its own obj file)
+Create root node:
+  * Create `CompilationUnitSyntax` class: Represent the entire file.
+
+### 3.2
+ * Modify `SyntaxTree` constructor.
+ * Add `ParseCompilationUnit` method to `Parser` class
+ * Use the correct expression in `Compilation` class and tests.
+
+# Scope
+Things to change:
+ * The currency way to map variables is with dictionary in the binder.
+ * Binder should not even care about the values it just cares about the variables themselves
+ * Reassignment variables with different types.
+
+## 4.0 Handler variable symbols
+  * Support nesting scopes
+  * Support shadowing scopes
+
+### 4.1
+Create `BoundScope` class
+  * With a private dictionary, to look up variables names fast.
+  * Add `parent` parameter to handler scopes nested.
+  * Add `TryDeclare` method to report error when a variable already exist in the same scope or.
+  * and `TryLookup` method look for the variable on all scopes.
+
+### 4.2
+Create `BoundGlobalScope` class, catches the root of the program.
+  * This has access to diagnostics, variables, expression in the program.
+
+### 4.3
+`Binder` class, now return `BoundGlobalScope` with all data.
+Handles variables into the scope.
+
+### 4.4
+`Compilation` class is modify to work with `BoundGlobalScope`.
+  * There isn't a scope yet.
+
+## 5.0 Add scope
+
+### 5.1
+`Compilation` class, convert the global scope local variable to parameter
+  * It's not a good idea for thread safely
+
+### 5.2
+Global scope will give the same result
+  * Make thread safely
+  * Use a pattern in `GlobalScope` property
+
+## 6.0 Chain scopes
+```
+Chain previous submissions
+
+submissions 3 -> submissions 2 -> submissions 1
+
+```
+
+### 6.1
+`Binder` class, create `CreateParentScopes` method to map all scopes previous.
+  * It's a nested scope
+
+## 7.0 Chain the Compilation
+
+### 7.1
+Compilation is saved in previous variable to use it next time
+
+### 7.2
+  * Chain the diagnostics.
+  * Add `#reset` command to reset scopes.
+
+### 7.3
+  * Improve the behavior when declare variables.
+  * Add diagnostic to raise the error "cannot convert the types"
+
+### 7.4
+  * Doesn't have to declare a variable with different types in the same scope.
+  * Extract 'ParseExpression' method into tests.
+
+## 8.0 Add statements to the context
+Can chain one into the other.
+A single statement can be a block in which you nesting
+
+### 8.1
+Create the `StatementSyntax` class, and `BlockStatementSyntax` class, that represent a statements
+
+### 8.2
+Create the 'ExpressionStatementSyntax' class, in which can define the roles to valid statements.
+or what expression  will be considered valid.
+```
+Is valid:
+  a++ ,  a = 10 , a = a ,  M()
+Is not valid:
+  a + 1
+```
+### 8.3
+Add to `Lexer` class and `SyntaxFact` class the brace symbols '{}' to match them.
+
+### 8.4
+`CompilationUnitSyntax` class, apply the `StatementSyntax` concept instead of `ExpressionSyntax`.
+
+### 8.5
+`ParserTest`, in `ParseExpression` method add a new assert before return the expression.
+
+### 8.6
+Update `Parser` class, to parse statement expression.
+
+### 8.7
+Add `BoundStatement`, `BoundBlockStatement` and `BoundExpressionStatement` concept into semantic logic.
+
+### 8.8
+`Binder` class, Add `BindStatement` method, to match with statements concepts.
+  * Update `BoundGlobalScope` to receive  statements instead expressions.
+
+### 8.9
+`Evaluator` class
+  * Add `EvaluateStatement` method, to match with statements concepts to evaluate internal expressions.
+  * Create `lastValue` property map for the statements.
+
+Can not reassignment a variable with another type of data.
+
+## 9.0 Add variable declaration statement
+people not implicitly creating them on first assignment.
+
+### 9.1
+Create `VariableDeclarationSyntax`  class, where define how will be the variables
+```
+var x = 10
+let x = 10
+```
+
+### 9.2
+Add 'let' and 'var' keywords to `SyntaxFact` class.
+
+### 9.3
+`Parser` class, add `ParseVariableDeclaration` method that handles declaration variables concept.
+  * convert `if` conditional into `switch`, `ParseStatement` method.
+
+### 9.4
+Add `VariableDeclarationSyntax` class
+
+### 9.5
+`binder` class, add `BindVariableDeclaration` methos to analyze if is keyword of variable is `let`  or `var`.
+  * Add `isReadOnly` parameter to `VariableSymbol` class.
+
+### 9.6
+Create `BoundVariableDeclaration` class
+
+### 9.7
+Add new reports to diagnostic class.
+
+### 9.8
+`Evaluator` class, add `EvaluateVariableDeclaration` method to handler variables.
