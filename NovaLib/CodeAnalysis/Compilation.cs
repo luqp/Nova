@@ -51,7 +51,7 @@ namespace Nova.CodeAnalysis
             if (diagnostics.Any())
                 return new EvaluationResult(diagnostics, null);
             
-            Evaluator evaluator = new Evaluator(GlobalScope.Expression, variables);
+            Evaluator evaluator = new Evaluator(GlobalScope.Statement, variables);
             object value = evaluator.Evaluate();
             return new EvaluationResult(ImmutableArray<Diagnostic>.Empty, value);
         }

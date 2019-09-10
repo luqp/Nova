@@ -21,7 +21,7 @@ namespace Nova.CodeAnalysis.Binding
         {
             BoundScope parentScope = CreateParentScopes(previous);
             Binder binder = new Binder(parentScope);
-            BoundExpression expression = binder.BindExpression(syntax.Expression);
+            BoundStatement expression = binder.BindStatement(syntax.Statement);
             ImmutableArray<VariableSymbol> variables = binder.scope.GetDeclaredVariables();
             ImmutableArray<Diagnostic> diagnostics = binder.Diagnostics.ToImmutableArray();
 
@@ -56,7 +56,39 @@ namespace Nova.CodeAnalysis.Binding
 
         public DiagnosticBag Diagnostics => diagnostics;
 
-        public BoundExpression BindExpression(ExpressionSyntax syntax)
+        private BoundStatement BindStatement(StatementSyntax syntax)
+        {
+            switch (syntax.Kind)
+            {
+                case SyntaxKind.BlockStatement:
+                    return BindBlockStatement((BlockStatementSyntax)syntax);
+                case SyntaxKind.ExpressionStatement:
+                    return BindExpressionStatement((ExpressionStatementSyntax)syntax);
+                default:
+                    throw new Exception($"Unexpected syntax {syntax.Kind}");
+            }
+        }
+
+        private BoundStatement BindBlockStatement(BlockStatementSyntax syntax)
+        {
+            var statements = ImmutableArray.CreateBuilder<BoundStatement>();
+
+            foreach (StatementSyntax statementSyntax in syntax.Statements)
+            {
+                BoundStatement statement = BindStatement(statementSyntax);
+                statements.Add(statement);
+            }
+
+            return new BoundBlockStatement(statements.ToImmutable());
+        }
+
+        private BoundStatement BindExpressionStatement(ExpressionStatementSyntax syntax)
+        {
+            var expression = BindExpression(syntax.Expression);
+            return new BoundExpressionStatement(expression);
+        }
+
+        private BoundExpression BindExpression(ExpressionSyntax syntax)
         {
             switch (syntax.Kind)
             {
