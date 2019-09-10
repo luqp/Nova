@@ -53,6 +53,10 @@ namespace Nova.CodeAnalysis.Syntax
                     return SyntaxKind.FalseKeyword;
                 case "true":
                     return SyntaxKind.TrueKeyword;
+                case "let":
+                    return SyntaxKind.LetKeyword;
+                case "var":
+                    return SyntaxKind.VarKeyword;
                 default:
                     return SyntaxKind.IdentifierToken;
             }
@@ -114,6 +118,10 @@ namespace Nova.CodeAnalysis.Syntax
                     return "false";
                 case SyntaxKind.TrueKeyword:
                     return "true";
+                case SyntaxKind.LetKeyword:
+                    return "let";
+                case SyntaxKind.VarKeyword:
+                    return "var";
                 default:
                     return null;
             }
