@@ -15,7 +15,6 @@ namespace Nova.CodeAnalysis
         public Compilation(SyntaxTree syntaxTree)
         : this(null, syntaxTree)
         {
-            SyntaxTree = syntaxTree;
         }
 
         public Compilation(Compilation previous, SyntaxTree syntaxTree)
