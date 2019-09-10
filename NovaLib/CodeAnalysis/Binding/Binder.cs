@@ -72,12 +72,15 @@ namespace Nova.CodeAnalysis.Binding
         private BoundStatement BindBlockStatement(BlockStatementSyntax syntax)
         {
             var statements = ImmutableArray.CreateBuilder<BoundStatement>();
+            scope = new BoundScope(scope);
 
             foreach (StatementSyntax statementSyntax in syntax.Statements)
             {
                 BoundStatement statement = BindStatement(statementSyntax);
                 statements.Add(statement);
             }
+
+            scope = scope.Parent;
 
             return new BoundBlockStatement(statements.ToImmutable());
         }
