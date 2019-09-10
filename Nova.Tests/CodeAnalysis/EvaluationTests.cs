@@ -29,7 +29,7 @@ namespace Nova.Tests.CodeAnalysis
         [InlineData("false", false)]
         [InlineData("!true", false)]
         [InlineData("!false", true)]
-        [InlineData("(x = 5) * x", 25)]
+        [InlineData("{ var x = 0 (x = 5) * x }", 25)]
         public void EvaluateResult(string text, object expectedValue)
         {
             SyntaxTree syntaxTree = SyntaxTree.Parse(text);

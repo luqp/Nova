@@ -30,6 +30,9 @@ namespace Nova.CodeAnalysis
                 case BoundNodeKind.BlockStatement:
                     EvaluateBlockStatement((BoundBlockStatement)node);
                     break;
+                case BoundNodeKind.VariableDeclaration:
+                    EvaluateVariableDeclaration((BoundVariableDeclaration)node);
+                    break;
                 case BoundNodeKind.ExpressionStatement:
                     EvaluateExpressionStatement((BoundExpressionStatement)node);
                     break;
@@ -42,6 +45,13 @@ namespace Nova.CodeAnalysis
         {
             foreach (var statement in node.Statements)
                 EvaluateStatement(statement);
+        }
+
+        private void EvaluateVariableDeclaration(BoundVariableDeclaration node)
+        {
+            object value = EvaluateExpression(node.Initializer);
+            variables[node.Variable] = value;
+            lastValue = value;
         }
 
         private void EvaluateExpressionStatement(BoundExpressionStatement node)

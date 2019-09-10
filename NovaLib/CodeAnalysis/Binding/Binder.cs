@@ -62,6 +62,8 @@ namespace Nova.CodeAnalysis.Binding
             {
                 case SyntaxKind.BlockStatement:
                     return BindBlockStatement((BlockStatementSyntax)syntax);
+                case SyntaxKind.VariableDeclaration:
+                    return BindVariableDeclaration((VariableDeclarationSyntax)syntax);
                 case SyntaxKind.ExpressionStatement:
                     return BindExpressionStatement((ExpressionStatementSyntax)syntax);
                 default:
@@ -85,9 +87,22 @@ namespace Nova.CodeAnalysis.Binding
             return new BoundBlockStatement(statements.ToImmutable());
         }
 
+        private BoundStatement BindVariableDeclaration(VariableDeclarationSyntax syntax)
+        {
+            string name = syntax.Identifier.Text;
+            bool isReadOnly = syntax.Keyword.Kind == SyntaxKind.LetKeyword;
+            BoundExpression initializer = BindExpression(syntax.Initializer);
+            VariableSymbol variable = new VariableSymbol(name, isReadOnly, initializer.Type);
+
+            if (!scope.TryDeclare(variable))
+                diagnostics.ReportVariableAlreadyDeclared(syntax.Identifier.Span, name);
+            
+            return new BoundVariableDeclaration(variable, initializer);
+        } 
+
         private BoundStatement BindExpressionStatement(ExpressionStatementSyntax syntax)
         {
-            var expression = BindExpression(syntax.Expression);
+            BoundExpression expression = BindExpression(syntax.Expression);
             return new BoundExpressionStatement(expression);
         }
 
@@ -142,9 +157,12 @@ namespace Nova.CodeAnalysis.Binding
 
             if (!scope.TryLookup(name, out var variable))
             {
-                variable = new VariableSymbol(name, boundExpression.Type);
-                scope.TryDeclare(variable);
+                diagnostics.ReportUndefinedName(syntax.IdentifierToken.Span, name);
+                return boundExpression;
             }
+
+            if (variable.IsReadOnly)
+                diagnostics.ReportCannotAssign(syntax.IdentifierToken.Span, name);
 
             if (boundExpression.Type != variable.Type)
             {

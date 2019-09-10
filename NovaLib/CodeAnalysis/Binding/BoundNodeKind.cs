@@ -6,6 +6,7 @@ namespace Nova.CodeAnalysis.Binding
         
         BlockStatement,
         ExpressionStatement,
+        VariableDeclaration,
 
         // Expressions
         LiteralExpression,

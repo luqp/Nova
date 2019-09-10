@@ -71,10 +71,16 @@ namespace Nova.CodeAnalysis.Syntax
 
         private StatementSyntax ParseStatement()
         {
-            if (Current.Kind == SyntaxKind.OpenBraceToken)
-                return ParseBlockStatement();
-            
-            return ParseExpressionStatement();
+            switch (Current.Kind)
+            {
+                case SyntaxKind.OpenBraceToken:
+                    return ParseBlockStatement();
+                case SyntaxKind.LetKeyword:
+                case SyntaxKind.VarKeyword:
+                    return ParseVariableDeclaration();
+                default:
+                    return ParseExpressionStatement();
+            }
         }
 
         private BlockStatementSyntax ParseBlockStatement()
@@ -92,6 +98,16 @@ namespace Nova.CodeAnalysis.Syntax
             var closeBranceToken = MatchToken(SyntaxKind.CloseBraceToken);
 
             return new BlockStatementSyntax(openBranceToken, statements.ToImmutable(), closeBranceToken);
+        }
+
+        private StatementSyntax ParseVariableDeclaration()
+        {
+            SyntaxKind expected = Current.Kind == SyntaxKind.LetKeyword ? SyntaxKind.LetKeyword : SyntaxKind.VarKeyword;
+            SyntaxToken keyword = MatchToken(expected);
+            SyntaxToken identifier = MatchToken(SyntaxKind.IdentifierToken);
+            SyntaxToken equals = MatchToken(SyntaxKind.EqualsToken);
+            ExpressionSyntax initializer = ParseExpression();
+            return new VariableDeclarationSyntax(keyword, identifier, equals, initializer);
         }
 
         private ExpressionStatementSyntax ParseExpressionStatement()
