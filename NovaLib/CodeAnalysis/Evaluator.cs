@@ -6,10 +6,12 @@ namespace Nova.CodeAnalysis
 {
     internal sealed class Evaluator
     {
-        private readonly BoundExpression root;
+        private readonly BoundStatement root;
         private readonly Dictionary<VariableSymbol, object> variables;
 
-        public Evaluator(BoundExpression root, Dictionary<VariableSymbol, object> variables)
+        private object lastValue;
+
+        public Evaluator(BoundStatement root, Dictionary<VariableSymbol, object> variables)
         {
             this.root = root;
             this.variables = variables;
@@ -17,7 +19,34 @@ namespace Nova.CodeAnalysis
 
         public object Evaluate()
         {
-            return EvaluateExpression(root);
+            EvaluateStatement(root);
+            return lastValue;
+        }
+
+        private void EvaluateStatement(BoundStatement node)
+        {
+            switch (node.Kind)
+            {
+                case BoundNodeKind.BlockStatement:
+                    EvaluateBlockStatement((BoundBlockStatement)node);
+                    break;
+                case BoundNodeKind.ExpressionStatement:
+                    EvaluateExpressionStatement((BoundExpressionStatement)node);
+                    break;
+                default:
+                    throw new Exception($"Unexpected node <{node.Kind}>");
+            }
+        }
+
+        private void EvaluateBlockStatement(BoundBlockStatement node)
+        {
+            foreach (var statement in node.Statements)
+                EvaluateStatement(statement);
+        }
+
+        private void EvaluateExpressionStatement(BoundExpressionStatement node)
+        {
+            lastValue = EvaluateExpression(node.Expresion);
         }
 
         private object EvaluateExpression(BoundExpression node)
