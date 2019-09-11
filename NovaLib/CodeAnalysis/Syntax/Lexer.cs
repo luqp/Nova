@@ -118,6 +118,30 @@ namespace Nova.CodeAnalysis.Syntax
                         position++;
                     }
                     break;
+                case '<':
+                    position++;
+                    if (Current != '=')
+                    {
+                        kind = SyntaxKind.LessToken;
+                    }
+                    else
+                    {
+                        kind = SyntaxKind.LessOrEqualsToken;
+                        position++;
+                    }
+                    break;
+                case '>':
+                    position++;
+                    if (Current != '=')
+                    {
+                        kind = SyntaxKind.GreaterToken;
+                    }
+                    else
+                    {
+                        kind = SyntaxKind.GreaterOrEqualsToken;
+                        position++;
+                    }
+                    break;
                 case '0': case '1': case '2': case '3': case '4':
                 case '5': case '6': case '7': case '8': case '9':
                     ReadNumberToken();
