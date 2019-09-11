@@ -162,7 +162,7 @@ namespace Nova.CodeAnalysis.Binding
             }
 
             if (variable.IsReadOnly)
-                diagnostics.ReportCannotAssign(syntax.IdentifierToken.Span, name);
+                diagnostics.ReportCannotAssign(syntax.EqualsToken.Span, name);
 
             if (boundExpression.Type != variable.Type)
             {
