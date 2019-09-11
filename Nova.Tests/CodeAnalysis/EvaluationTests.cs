@@ -32,6 +32,102 @@ namespace Nova.Tests.CodeAnalysis
         [InlineData("{ var x = 0 (x = 5) * x }", 25)]
         public void EvaluateResult(string text, object expectedValue)
         {
+            AssertValue(text, expectedValue);
+        }
+
+        [Fact]
+        public void EvaluatorVaribleDeclarationReportsRedeclaration()
+        {
+            var text = @"
+                {
+                    var x = 10
+                    var y = 100
+                    {
+                        var x = 2
+                    }
+                    var [x] = 5
+                }
+            ";
+
+            var diagnostics = @"
+                Variable 'x' is already declared.
+            ";
+
+            AssertDiagnostics(text, diagnostics);
+        }
+
+        [Fact]
+        public void EvaluatorNameReportsUndefined()
+        {
+            var text = @"[x] * 10";
+
+            var diagnostics = @"
+                Variable 'x' doesn't exist.
+            ";
+
+            AssertDiagnostics(text, diagnostics);
+        }
+
+        [Fact]
+        public void EvaluatorAssignedReportsUndefined()
+        {
+            var text = @"
+                {
+                    let x = 40
+                    x [=] 10
+                }
+            ";
+
+            var diagnostics = @"
+                Variable 'x' is read-only and cannot be assigned to.
+            ";
+
+            AssertDiagnostics(text, diagnostics);
+        }
+
+        [Fact]
+        public void EvaluatorAssignedReportsCannotConvert()
+        {
+            var text = @"
+                {
+                    var x = 3
+                    x = [true]
+                }
+            ";
+
+            var diagnostics = @"
+                Cannot convert type 'System.Boolean' to 'System.Int32'.
+            ";
+
+            AssertDiagnostics(text, diagnostics);
+        }
+
+        [Fact]
+        public void EvaluatorUnaryReportsUndefined()
+        {
+            var text = @"[+] true";
+
+            var diagnostics = @"
+                Unary operator '+' is not defined for type <System.Boolean>.
+            ";
+
+            AssertDiagnostics(text, diagnostics);
+        }
+        
+        [Fact]
+        public void EvaluatorBinaryReportsUndefined()
+        {
+            var text = @"1 [*] true";
+
+            var diagnostics = @"
+                Binary operator '*' is not defined for types <System.Int32> and <System.Boolean>.
+            ";
+
+            AssertDiagnostics(text, diagnostics);
+        }
+
+        private static void AssertValue(string text, object expectedValue)
+        {
             SyntaxTree syntaxTree = SyntaxTree.Parse(text);
             Compilation compilation = new Compilation(syntaxTree);
             Dictionary<VariableSymbol, object> variables = new Dictionary<VariableSymbol, object>();
@@ -39,6 +135,32 @@ namespace Nova.Tests.CodeAnalysis
 
             Assert.Empty(result.Diagnostics);
             Assert.Equal(expectedValue, result.Value);
+        }
+
+        private void AssertDiagnostics(string text, string diagnosticText)
+        {
+            AnnotatedText annotatedText = AnnotatedText.Parse(text);
+            SyntaxTree syntaxTree = SyntaxTree.Parse(annotatedText.Text);
+            Compilation compilation = new Compilation(syntaxTree);
+            EvaluationResult result = compilation.Evaluate(new Dictionary<VariableSymbol, object>());
+
+            string[] expectedDiagnostics = AnnotatedText.UnindentLines(diagnosticText);
+
+            if (annotatedText.Spans.Length != expectedDiagnostics.Length)
+                throw new Exception("Error: Must mark as many spans as there are expected diagnostics.");
+
+            Assert.Equal(expectedDiagnostics.Length, result.Diagnostics.Length);
+
+            for (int i = 0; i < expectedDiagnostics.Length; i++)
+            {
+                string expectedMessage = expectedDiagnostics[i];
+                string actualMessage = result.Diagnostics[i].Message;
+                Assert.Equal(expectedMessage, actualMessage);
+
+                var expectedSpan = annotatedText.Spans[i];
+                var actualSpan = result.Diagnostics[i].Span;
+                Assert.Equal(expectedSpan, actualSpan);
+            }
         }
     }
 }
