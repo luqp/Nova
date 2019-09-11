@@ -33,7 +33,12 @@ namespace Nova.CodeAnalysis.Syntax
 
                 case SyntaxKind.EqualsEqualsToken:
                 case SyntaxKind.BangEqualsToken:
+                case SyntaxKind.LessToken:
+                case SyntaxKind.GreaterToken:
+                case SyntaxKind.LessOrEqualsToken:
+                case SyntaxKind.GreaterOrEqualsToken:
                     return 3;
+
                 case SyntaxKind.AmpersanAmpersanToken:
                     return 2;
 
@@ -98,6 +103,14 @@ namespace Nova.CodeAnalysis.Syntax
                     return "!";
                 case SyntaxKind.EqualsToken:
                     return "=";
+                case SyntaxKind.LessToken:
+                    return "<";
+                case SyntaxKind.GreaterToken:
+                    return ">";
+                case SyntaxKind.LessOrEqualsToken:
+                    return "<=";
+                case SyntaxKind.GreaterOrEqualsToken:
+                    return ">=";
                 case SyntaxKind.BangEqualsToken:
                     return "!=";
                 case SyntaxKind.EqualsEqualsToken:
