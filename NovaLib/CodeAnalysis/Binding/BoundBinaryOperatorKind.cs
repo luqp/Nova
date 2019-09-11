@@ -8,6 +8,10 @@ namespace Nova.CodeAnalysis.Binding
         Division,
         Equals,
         NotEquals,
+        Less,
+        Greater,
+        LessOrEquals,
+        GreaterOrEquals,
         LogicalAnd,
         LogicalOr
     }
