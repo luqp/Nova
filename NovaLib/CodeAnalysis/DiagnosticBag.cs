@@ -27,7 +27,7 @@ namespace Nova.CodeAnalysis
 
         public void ReportInvalidNumber(TextSpan span, string tokenText, Type type)
         {
-            string message = $"The number {tokenText} isn't valid {type}.";
+            string message = $"The number '{tokenText}' isn't valid <{type}>.";
             Report(span, message);
         }
 
@@ -58,7 +58,7 @@ namespace Nova.CodeAnalysis
 
         public void ReportUndefinedName(TextSpan span, string name)
         {
-            string message = $"Variable {name} doesn't exist.";
+            string message = $"Variable '{name}' doesn't exist.";
             Report(span, message);
         }
 
