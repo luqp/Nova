@@ -7,6 +7,7 @@ namespace Nova.CodeAnalysis.Binding
         BlockStatement,
         ExpressionStatement,
         VariableDeclaration,
+        IfStatement,
 
         // Expressions
         LiteralExpression,

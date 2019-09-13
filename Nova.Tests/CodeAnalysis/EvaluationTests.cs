@@ -42,6 +42,12 @@ namespace Nova.Tests.CodeAnalysis
         [InlineData("!true", false)]
         [InlineData("!false", true)]
         [InlineData("{ var x = 0 (x = 5) * x }", 25)]
+        [InlineData("{ var x = 0 if x == 0 x = 3 x }", 3)]
+        [InlineData("{ var x = 0 if x == 4 x = 8 x }", 0)]
+        [InlineData("{ var x = 0 if x == 0 x = 3 else x = 9 x }", 3)]
+        [InlineData("{ var x = 0 if x == 4 x = 8 else x = 9 x }", 9)]
+        [InlineData("{ var x = 0 if true x = 3 else x = 9 x }", 3)]
+        [InlineData("{ var x = 0 if false x = 8 else x = 9 x }", 9)]
         public void EvaluateResult(string text, object expectedValue)
         {
             AssertValue(text, expectedValue);
