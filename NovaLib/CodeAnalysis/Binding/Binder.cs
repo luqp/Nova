@@ -66,6 +66,8 @@ namespace Nova.CodeAnalysis.Binding
                     return BindVariableDeclaration((VariableDeclarationSyntax)syntax);
                 case SyntaxKind.IfStatement:
                     return BindIfStatement((IfStatementSyntax)syntax);
+                case SyntaxKind.WhileStatement:
+                    return BindWhileStatement((WhileStatementSyntax)syntax);
                 case SyntaxKind.ExpressionStatement:
                     return BindExpressionStatement((ExpressionStatementSyntax)syntax);
                 default:
@@ -85,7 +87,7 @@ namespace Nova.CodeAnalysis.Binding
             }
 
             scope = scope.Parent;
-
+            
             return new BoundBlockStatement(statements.ToImmutable());
         }
 
@@ -107,8 +109,14 @@ namespace Nova.CodeAnalysis.Binding
             BoundExpression condition = BindExpression(syntax.Condition, typeof(bool));
             BoundStatement thenStatement = BindStatement(syntax.ThenStatement);
             BoundStatement elseStatement = syntax.ElseClause == null ? null : BindStatement(syntax.ElseClause.ElseStatement);
-
             return new BoundIfStatement(condition, thenStatement, elseStatement);
+        }
+
+        private BoundStatement BindWhileStatement(WhileStatementSyntax syntax)
+        {
+            BoundExpression condition = BindExpression(syntax.Condition, typeof(bool));
+            BoundStatement body = BindStatement(syntax.Body);
+            return new BoundWhileStatement(condition, body);
         }
 
         private BoundStatement BindExpressionStatement(ExpressionStatementSyntax syntax)

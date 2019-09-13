@@ -3,17 +3,17 @@ namespace Nova.CodeAnalysis.Binding
     internal enum BoundNodeKind
     {
         // Statemens
-        
-        BlockStatement,
-        ExpressionStatement,
         VariableDeclaration,
+        ExpressionStatement,
+        BlockStatement,
         IfStatement,
+        WhileStatement,
 
         // Expressions
         LiteralExpression,
         VariableExpression,
         AssignmentExpression,
         UnaryExpression,
-        BinaryExpression
+        BinaryExpression,
     }
 }
