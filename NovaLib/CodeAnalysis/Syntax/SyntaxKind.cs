@@ -34,16 +34,18 @@ namespace Nova.CodeAnalysis.Syntax
         VarKeyword,
         IfKeyword,
         ElseKeyword,
+        WhileKeyword,
 
         // Nodes
         CompilationUnit,
         ElseClause,
 
         // Statements
-        BlockStatement,
-        ExpressionStatement,
-        IfStatement,
         VariableDeclaration,
+        ExpressionStatement,
+        BlockStatement,
+        IfStatement,
+        WhileStatement,
 
         // Expressions
         LiteralExpression,
@@ -51,6 +53,6 @@ namespace Nova.CodeAnalysis.Syntax
         UnaryExpression,
         BinaryExpression,
         ParenthesizedExpression,
-        AssignmentExpression
+        AssignmentExpression,
     }
 }
