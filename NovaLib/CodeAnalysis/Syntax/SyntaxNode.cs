@@ -30,13 +30,17 @@ namespace Nova.CodeAnalysis.Syntax
                 if (typeof(SyntaxNode).IsAssignableFrom(property.PropertyType))
                 {
                     SyntaxNode child = (SyntaxNode) property.GetValue(this);
-                    yield return child;
+                    if (child != null)
+                        yield return child;
                 }
                 else if (typeof(IEnumerable<SyntaxNode>).IsAssignableFrom(property.PropertyType))
                 {
                     IEnumerable<SyntaxNode> children = (IEnumerable<SyntaxNode>) property.GetValue(this);
                     foreach (SyntaxNode child in children)
-                        yield return child;
+                    {
+                        if (child != null)
+                            yield return child;
+                    }
                 }
             }
         }
