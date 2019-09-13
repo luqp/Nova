@@ -33,6 +33,9 @@ namespace Nova.CodeAnalysis
                 case BoundNodeKind.VariableDeclaration:
                     EvaluateVariableDeclaration((BoundVariableDeclaration)node);
                     break;
+                case BoundNodeKind.IfStatement:
+                    EvaluateIfStatement((BoundIfStatement)node);
+                    break;
                 case BoundNodeKind.ExpressionStatement:
                     EvaluateExpressionStatement((BoundExpressionStatement)node);
                     break;
@@ -52,6 +55,15 @@ namespace Nova.CodeAnalysis
             object value = EvaluateExpression(node.Initializer);
             variables[node.Variable] = value;
             lastValue = value;
+        }
+
+        private void EvaluateIfStatement(BoundIfStatement node)
+        {
+            bool condition = (bool) EvaluateExpression(node.Condition);
+            if (condition)
+                EvaluateStatement(node.ThenStatement);
+            else if (node.ElseStatement != null)
+                EvaluateStatement(node.ElseStatement);
         }
 
         private void EvaluateExpressionStatement(BoundExpressionStatement node)

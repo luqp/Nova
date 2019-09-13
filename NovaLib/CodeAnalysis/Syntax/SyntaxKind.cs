@@ -32,13 +32,17 @@ namespace Nova.CodeAnalysis.Syntax
         TrueKeyword,
         LetKeyword,
         VarKeyword,
+        IfKeyword,
+        ElseKeyword,
 
         // Nodes
         CompilationUnit,
+        ElseClause,
 
         // Statements
         BlockStatement,
         ExpressionStatement,
+        IfStatement,
         VariableDeclaration,
 
         // Expressions

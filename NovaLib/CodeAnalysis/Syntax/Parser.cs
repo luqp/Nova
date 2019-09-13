@@ -78,6 +78,8 @@ namespace Nova.CodeAnalysis.Syntax
                 case SyntaxKind.LetKeyword:
                 case SyntaxKind.VarKeyword:
                     return ParseVariableDeclaration();
+                case SyntaxKind.IfKeyword:
+                    return ParseIfStatement();
                 default:
                     return ParseExpressionStatement();
             }
@@ -108,6 +110,25 @@ namespace Nova.CodeAnalysis.Syntax
             SyntaxToken equals = MatchToken(SyntaxKind.EqualsToken);
             ExpressionSyntax initializer = ParseExpression();
             return new VariableDeclarationSyntax(keyword, identifier, equals, initializer);
+        }
+
+        private StatementSyntax ParseIfStatement()
+        {
+            SyntaxToken keyword = MatchToken(SyntaxKind.IfKeyword);
+            ExpressionSyntax condition = ParseExpression();
+            StatementSyntax statement = ParseStatement();
+            ElseClauseSyntax elseClause = ParseElseClause();
+            return new IfStatementSyntax(keyword, condition, statement, elseClause);
+        }
+
+        private ElseClauseSyntax ParseElseClause()
+        {
+            if (Current.Kind != SyntaxKind.ElseKeyword)
+                return null;
+            
+            SyntaxToken keyword = NextToken();
+            StatementSyntax statement = ParseStatement();
+            return new ElseClauseSyntax(keyword, statement);
         }
 
         private ExpressionStatementSyntax ParseExpressionStatement()
