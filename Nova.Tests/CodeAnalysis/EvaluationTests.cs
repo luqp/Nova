@@ -77,6 +77,23 @@ namespace Nova.Tests.CodeAnalysis
         }
 
         [Fact]
+        public void EvaluatorBlockStatementNoInfiniteLoop()
+        {
+            var text = @"
+                {
+                [)]
+                []
+            ";
+
+            var diagnostics = @"
+                Unexpected token <CloseParenthesisToken>, expected <IdentifierToken>.
+                Unexpected token <EndOfFileToken>, expected <CloseBraceToken>.
+            ";
+
+            AssertDiagnostics(text, diagnostics);
+        }
+
+        [Fact]
         public void EvaluatorIfStatementReportsCannotConvert()
         {
             var text = @"
