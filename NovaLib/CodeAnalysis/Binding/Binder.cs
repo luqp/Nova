@@ -68,6 +68,8 @@ namespace Nova.CodeAnalysis.Binding
                     return BindIfStatement((IfStatementSyntax)syntax);
                 case SyntaxKind.WhileStatement:
                     return BindWhileStatement((WhileStatementSyntax)syntax);
+                case SyntaxKind.ForStatement:
+                    return BindForStatement((ForStatementSyntax)syntax);
                 case SyntaxKind.ExpressionStatement:
                     return BindExpressionStatement((ExpressionStatementSyntax)syntax);
                 default:
@@ -117,6 +119,23 @@ namespace Nova.CodeAnalysis.Binding
             BoundExpression condition = BindExpression(syntax.Condition, typeof(bool));
             BoundStatement body = BindStatement(syntax.Body);
             return new BoundWhileStatement(condition, body);
+        }
+
+        private BoundStatement BindForStatement(ForStatementSyntax syntax)
+        {
+            BoundExpression lowerBound = BindExpression(syntax.LowerBound, typeof(int));
+            BoundExpression upperBound = BindExpression(syntax.UpperBound, typeof(int));
+
+            scope = new BoundScope (scope);
+
+            string name = syntax.Identifier.Text;
+            VariableSymbol variable = new VariableSymbol(name, true, typeof(int));
+            if (!scope.TryDeclare(variable))
+                diagnostics.ReportVariableAlreadyDeclared(syntax.Identifier.Span, name);
+            
+            BoundStatement body = BindStatement(syntax.Body);
+            scope = scope.Parent;
+            return new BoundForStatement(variable, lowerBound, upperBound, body);
         }
 
         private BoundStatement BindExpressionStatement(ExpressionStatementSyntax syntax)

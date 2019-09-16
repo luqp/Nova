@@ -49,6 +49,7 @@ namespace Nova.Tests.CodeAnalysis
         [InlineData("{ var x = 0 if true x = 3 else x = 9 x }", 3)]
         [InlineData("{ var x = 0 if false x = 8 else x = 9 x }", 9)]
         [InlineData("{ var i = 0 var result = 10 while i < 10  { result = result + i i = i + 1 } result }", 55)]
+        [InlineData("{ var result = 10 for i = 1 to 10  { result = result + i } result }", 55)]
         public void EvaluateResult(string text, object expectedValue)
         {
             AssertValue(text, expectedValue);
@@ -152,6 +153,42 @@ namespace Nova.Tests.CodeAnalysis
 
             var diagnostics = @"
                 Cannot convert type 'System.Int32' to 'System.Boolean'.
+            ";
+
+            AssertDiagnostics(text, diagnostics);
+        }
+
+        [Fact]
+        public void EvaluatorForStatementReportsCannotConvertLowerBound()
+        {
+            var text = @"
+                {
+                    var result = 0
+                    for i = [false] to 10
+                        result = result + i
+                }
+            ";
+
+            var diagnostics = @"
+                Cannot convert type 'System.Boolean' to 'System.Int32'.
+            ";
+
+            AssertDiagnostics(text, diagnostics);
+        }
+
+        [Fact]
+        public void EvaluatorForStatementReportsCannotConvertUpperBound()
+        {
+            var text = @"
+                {
+                    var result = 0
+                    for i = 1 to [true]
+                        result = result + i
+                }
+            ";
+
+            var diagnostics = @"
+                Cannot convert type 'System.Boolean' to 'System.Int32'.
             ";
 
             AssertDiagnostics(text, diagnostics);
