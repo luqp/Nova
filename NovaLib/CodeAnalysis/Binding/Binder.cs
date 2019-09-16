@@ -189,6 +189,11 @@ namespace Nova.CodeAnalysis.Binding
         {
             string name = syntax.IdentifierToken.Text;
 
+            if (string.IsNullOrEmpty(name))
+            {
+                return new BoundLiteralExpression(0);
+            }
+
             if (!scope.TryLookup(name, out var variable))
             {
                 diagnostics.ReportUndefinedName(syntax.IdentifierToken.Span, name);
