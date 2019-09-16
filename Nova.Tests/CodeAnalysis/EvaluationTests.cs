@@ -77,64 +77,6 @@ namespace Nova.Tests.CodeAnalysis
         }
 
         [Fact]
-        public void EvaluatorNameExpressionReportsUndefined()
-        {
-            var text = @"[x] * 10";
-
-            var diagnostics = @"
-                Variable 'x' doesn't exist.
-            ";
-
-            AssertDiagnostics(text, diagnostics);
-        }
-
-        [Fact]
-        public void EvaluatorAssignmentExpressionReportsUndefined()
-        {
-            var text = @"[x] = 10";
-
-            var diagnostics = @"
-                Variable 'x' doesn't exist.
-            ";
-
-            AssertDiagnostics(text, diagnostics);
-        }
-
-        [Fact]
-        public void EvaluatorAssignmentExpressionReportsCannotAssign()
-        {
-            var text = @"
-                {
-                    let x = 40
-                    x [=] 10
-                }
-            ";
-
-            var diagnostics = @"
-                Variable 'x' is read-only and cannot be assigned to.
-            ";
-
-            AssertDiagnostics(text, diagnostics);
-        }
-
-        [Fact]
-        public void EvaluatorAssignmentExpressionReportsCannotConvert()
-        {
-            var text = @"
-                {
-                    var x = 3
-                    x = [true]
-                }
-            ";
-
-            var diagnostics = @"
-                Cannot convert type 'System.Boolean' to 'System.Int32'.
-            ";
-
-            AssertDiagnostics(text, diagnostics);
-        }
-
-        [Fact]
         public void EvaluatorIfStatementReportsCannotConvert()
         {
             var text = @"
@@ -207,6 +149,30 @@ namespace Nova.Tests.CodeAnalysis
         }
 
         [Fact]
+        public void EvaluatorNameExpressionReportsUndefined()
+        {
+            var text = @"[x] * 10";
+
+            var diagnostics = @"
+                Variable 'x' doesn't exist.
+            ";
+
+            AssertDiagnostics(text, diagnostics);
+        }
+
+        [Fact]
+        public void EvaluatorNameExpressionReportsNoErrorForInsertedToken()
+        {
+            var text = @"[]";
+
+            var diagnostics = @"
+                Unexpected token <EndOfFileToken>, expected <IdentifierToken>.
+            ";
+
+            AssertDiagnostics(text, diagnostics);
+        }
+
+        [Fact]
         public void EvaluatorUnaryExpressionReportsUndefined()
         {
             var text = @"[+] true";
@@ -225,6 +191,52 @@ namespace Nova.Tests.CodeAnalysis
 
             var diagnostics = @"
                 Binary operator '*' is not defined for types <System.Int32> and <System.Boolean>.
+            ";
+
+            AssertDiagnostics(text, diagnostics);
+        }
+
+        [Fact]
+        public void EvaluatorAssignmentExpressionReportsUndefined()
+        {
+            var text = @"[x] = 10";
+
+            var diagnostics = @"
+                Variable 'x' doesn't exist.
+            ";
+
+            AssertDiagnostics(text, diagnostics);
+        }
+
+        [Fact]
+        public void EvaluatorAssignmentExpressionReportsCannotAssign()
+        {
+            var text = @"
+                {
+                    let x = 40
+                    x [=] 10
+                }
+            ";
+
+            var diagnostics = @"
+                Variable 'x' is read-only and cannot be assigned to.
+            ";
+
+            AssertDiagnostics(text, diagnostics);
+        }
+
+        [Fact]
+        public void EvaluatorAssignmentExpressionReportsCannotConvert()
+        {
+            var text = @"
+                {
+                    var x = 3
+                    x = [true]
+                }
+            ";
+
+            var diagnostics = @"
+                Cannot convert type 'System.Boolean' to 'System.Int32'.
             ";
 
             AssertDiagnostics(text, diagnostics);
