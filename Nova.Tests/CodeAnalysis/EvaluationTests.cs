@@ -77,7 +77,7 @@ namespace Nova.Tests.CodeAnalysis
         }
 
         [Fact]
-        public void EvaluatorNameReportsUndefined()
+        public void EvaluatorNameExpressionReportsUndefined()
         {
             var text = @"[x] * 10";
 
@@ -89,7 +89,19 @@ namespace Nova.Tests.CodeAnalysis
         }
 
         [Fact]
-        public void EvaluatorAssignedReportsUndefined()
+        public void EvaluatorAssignmentExpressionReportsUndefined()
+        {
+            var text = @"[x] = 10";
+
+            var diagnostics = @"
+                Variable 'x' doesn't exist.
+            ";
+
+            AssertDiagnostics(text, diagnostics);
+        }
+
+        [Fact]
+        public void EvaluatorAssignmentExpressionReportsCannotAssign()
         {
             var text = @"
                 {
@@ -106,7 +118,7 @@ namespace Nova.Tests.CodeAnalysis
         }
 
         [Fact]
-        public void EvaluatorAssignedReportsCannotConvert()
+        public void EvaluatorAssignmentExpressionReportsCannotConvert()
         {
             var text = @"
                 {
@@ -195,7 +207,7 @@ namespace Nova.Tests.CodeAnalysis
         }
 
         [Fact]
-        public void EvaluatorUnaryReportsUndefined()
+        public void EvaluatorUnaryExpressionReportsUndefined()
         {
             var text = @"[+] true";
 
@@ -207,7 +219,7 @@ namespace Nova.Tests.CodeAnalysis
         }
         
         [Fact]
-        public void EvaluatorBinaryReportsUndefined()
+        public void EvaluatorBinaryExpressionReportsUndefined()
         {
             var text = @"1 [*] true";
 
