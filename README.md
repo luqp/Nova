@@ -710,3 +710,120 @@ Add new reports to diagnostic class.
 
 ### 9.8
 `Evaluator` class, add `EvaluateVariableDeclaration` method to handler variables.
+
+# Compiler part 7
+# Improve test
+
+## 1.0 Helper type
+case:
+`[]` show the location of expected errors.
+```
+{
+    let = [100]
+    x [=] 10    <- a variable `let` is read-only
+}
+```
+### 1.1
+Create `AnnotatedText` class into Texts project.
+
+### 1.2
+`AnnotatedText` class, add `Parse` method, to analyze the input text without worry for whitespaces.
+
+### 1.3
+Create the `Unindent` method to take care of unindenting.
+```
+Delete extra whitespaces:
+      var textToTest = @"
+~~~~~~~~~~{
+~~~~~~~~~~    var x = 10
+~~~~~~~~~~    let x = 2
+~~~~~~~~~~}
+~~~~~~";
+```
+  * Provide `ToString` method to `TextSpan` class
+  * Mark error messages consistent, `DiagnosticBag` class
+
+### 1.4
+`EvaluationTests` class, add test cases to report error for span in the text, Extract 'AssertValue' method.
+  * Fix 'IdentifierToken' to 'EqualsToken' to report error in read-only variables, `Binder` class.
+
+# Conditional operators
+
+## 2.0 Add Conditional operators
+` <  >  <=  >=`
+
+### 2.1
+`Lexer` class, add operators symbols.
+
+### 2.2
+`SyntaxFacts` class, add precedence and text to conditional operators.
+
+### 2.3
+Add them to operator table, `BoundBinaryOperator` class.
+  * Compare between `int`
+
+### 2.4
+Add operators to 'Evaluator' class
+
+### 2.5
+Add tests cases to conditional operators
+
+## 3.0 Conditionals `if` and `else`
+### 3.1
+  * Create `IfStatementSyntax` class like IfStatementSyntax
+  * Create `ElseClauseSyntax` class like a node, because not need an expression or values.
+
+### 3.2
+`SyntaxFacts` class, add keywords
+
+### 3.3
+`Parser` class, add `ParseIfStatement` method to create new `if` statement, this calls `ParseElseClause` method
+
+### 3.4
+`Binder` class, add `BindIfStatement` method and override the `BindExpression` method to check the type of condition.
+  * Create `BoundIfStatement` class.
+
+### 3.5
+`Evaluator` class, add `EvaluateIfStatement` that evaluates `ThenStatement` or `ElseStatement`.
+
+### 3.6
+`EvaluationTests` class, Add if-else cases to test.
+
+## 4.0 While Statement
+  * Add `while` keyword to `SyntaxFacts` class.
+  * Add `ParseWhileStatement` method to `Parser` class.
+  * Create `WhileStatementSyntax` class.
+  * Create `BoundWhileStatement`class.
+  * Add `BindWhileStatement` method to `Binder` class.
+  * Add `EvaluateWhileStatement` method to `Evaluator` class.
+  * Add test cases.
+
+## 5.0 For statement
+```
+for i = 0 to 10
+{
+}
+```
+  * Add `for` keyword to `SyntaxFacts` class.
+  * Create `ForStatementSyntax` class.
+  * Add `ParseForStatement` method to `Parser` class.
+  * Add `BindForStatement` method to `Binder` class.
+  * Create `BoundForStatement` class
+  * Add `EvaluateForStatement` method to `Evaluator` class.
+  * Add tests.
+
+## 6.0 Consume Tokens
+  Ensure binder doesn't crash when binding fabricated identifiers
+    * Modify `ParseBlockStatement` method in `Parser` class, to skip to next position when parse statement parse void.
+    * Add test to control this.
+
+## 7.0 Fix infinite loop
+### 7.1
+Modify `ParseBlockStatement` method in `Parser` class:
+  * If `ParseStatement()`  did not consume any tokens, need to skip the current token and continue in order to avoid an infinite loop.
+  * Do not need to report an error, because already tried to parse an expression statement and reported one.
+
+### 7.2
+Modify `BindNameExpression` method in `Binder` class:
+  * This means the token was inserted by the parser.
+  * We already reported error so we can just return an error expression.
