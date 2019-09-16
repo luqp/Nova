@@ -35,6 +35,7 @@ namespace Nova.CodeAnalysis.Syntax
         IfKeyword,
         ElseKeyword,
         WhileKeyword,
+        ForKeyword,
 
         // Nodes
         CompilationUnit,
@@ -46,6 +47,8 @@ namespace Nova.CodeAnalysis.Syntax
         BlockStatement,
         IfStatement,
         WhileStatement,
+        ForStatement,
+        ToKeyword,
 
         // Expressions
         LiteralExpression,
