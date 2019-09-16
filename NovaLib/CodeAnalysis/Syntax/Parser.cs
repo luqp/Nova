@@ -97,8 +97,13 @@ namespace Nova.CodeAnalysis.Syntax
             while (Current.Kind != SyntaxKind.EndOfFileToken &&
                    Current.Kind != SyntaxKind.CloseBraceToken)
             {
+                SyntaxToken startToken = Current;
+
                 StatementSyntax statement = ParseStatement();
                 statements.Add(statement);
+
+                if (Current == startToken)
+                    NextToken();
             }
 
             var closeBranceToken = MatchToken(SyntaxKind.CloseBraceToken);
