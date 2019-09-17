@@ -15,7 +15,7 @@ namespace Nova.CodeAnalysis.Syntax
         EqualsToken,
         BangEqualsToken,
         EqualsEqualsToken,
-        AmpersanAmpersanToken,
+        AmpersandAmpersandToken,
         PipePipeToken,
         LessToken,
         LessOrEqualsToken,

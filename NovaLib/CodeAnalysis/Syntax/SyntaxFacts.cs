@@ -39,7 +39,7 @@ namespace Nova.CodeAnalysis.Syntax
                 case SyntaxKind.GreaterOrEqualsToken:
                     return 3;
 
-                case SyntaxKind.AmpersanAmpersanToken:
+                case SyntaxKind.AmpersandAmpersandToken:
                     return 2;
 
                 case SyntaxKind.PipePipeToken:
@@ -125,7 +125,7 @@ namespace Nova.CodeAnalysis.Syntax
                     return "!=";
                 case SyntaxKind.EqualsEqualsToken:
                     return "==";
-                case SyntaxKind.AmpersanAmpersanToken:
+                case SyntaxKind.AmpersandAmpersandToken:
                     return "&&";
                 case SyntaxKind.PipePipeToken:
                     return "||";
