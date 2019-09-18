@@ -34,6 +34,29 @@ namespace Nova.CodeAnalysis.Binding
             }
         }
 
+        private IEnumerable<(string Name, object Value)> GetProperties()
+        {
+            PropertyInfo[] properties = GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance);
+
+            foreach (PropertyInfo property in properties)
+            {
+                if (property.Name == nameof(Kind) ||
+                    property.Name == nameof(BoundBinaryExpression.Op) ||
+                    property.Name == nameof(BoundUnaryExpression.Op)
+                    )
+                    continue;
+
+                if (typeof(BoundNode).IsAssignableFrom(property.PropertyType) ||
+                    typeof(IEnumerable<BoundNode>).IsAssignableFrom(property.PropertyType))
+                    continue;
+
+                object value = property.GetValue(this);
+                if (value != null)
+                    yield return (property.Name, value);
+
+            }
+        }
+
         public void WriteTo(TextWriter writer)
         {
             PrettyPrint(writer, this);
@@ -50,8 +73,44 @@ namespace Nova.CodeAnalysis.Binding
             writer.Write(indent);
             writer.Write(marker);
 
-            WriteNode(writer, node);
-            
+            if (isToConsole)
+                Console.ForegroundColor = GetColor(node);
+
+            string text = GetText(node);
+            writer.Write(text);
+
+            bool isFirstProperty = true;
+
+            foreach (var p in node.GetProperties())
+            {
+                if (isFirstProperty)
+                    isFirstProperty = false;
+                else
+                {
+                    if (isToConsole)
+                        Console.ForegroundColor = ConsoleColor.DarkGray;
+
+                    writer.Write(",");   
+                }
+
+                writer.Write(" ");   
+                
+                if (isToConsole)
+                    Console.ForegroundColor = ConsoleColor.White;
+                
+                writer.Write(p.Name);
+                
+                if (isToConsole)
+                    Console.ForegroundColor = ConsoleColor.DarkGray;
+
+                writer.Write(" = ");
+
+                if (isToConsole)
+                    Console.ForegroundColor = ConsoleColor.DarkYellow;
+
+                writer.Write(p.Value);
+            }
+
             if (isToConsole)
                 Console.ResetColor();
 
@@ -63,11 +122,14 @@ namespace Nova.CodeAnalysis.Binding
                 PrettyPrint(writer, child, indent, child == lastChild);
         }
 
-        private static void WriteNode(TextWriter writer, BoundNode node)
+        private static string GetText(BoundNode node)
         {
-            Console.ForegroundColor = GetColor(node);
-            writer.Write(node.Kind);
-            Console.ResetColor();
+            if (node is BoundBinaryExpression b)
+                return b.Op.Kind.ToString() + "Expression";
+            if (node is BoundUnaryExpression u)
+                return u.Op.Kind.ToString() + "Expression";
+            
+            return node.Kind.ToString();
         }
 
         private static ConsoleColor GetColor(BoundNode node)
