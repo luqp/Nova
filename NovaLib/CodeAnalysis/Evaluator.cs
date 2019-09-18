@@ -92,7 +92,7 @@ namespace Nova.CodeAnalysis
 
         private void EvaluateExpressionStatement(BoundExpressionStatement node)
         {
-            lastValue = EvaluateExpression(node.Expresion);
+            lastValue = EvaluateExpression(node.Expression);
         }
 
         private object EvaluateExpression(BoundExpression node)
