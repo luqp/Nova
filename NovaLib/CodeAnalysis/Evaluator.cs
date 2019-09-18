@@ -83,7 +83,7 @@ namespace Nova.CodeAnalysis
             int lowerBound = (int) EvaluateExpression(node.LowerBound);
             int upperBound = (int) EvaluateExpression(node.UpperBound);
 
-            for (int i = lowerBound; i < upperBound; i++)
+            for (int i = lowerBound; i <= upperBound; i++)
             {
                 variables[node.Variable] = i;
                 EvaluateStatement(node.Body);
