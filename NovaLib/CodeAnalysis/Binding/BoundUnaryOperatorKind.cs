@@ -4,6 +4,7 @@ namespace Nova.CodeAnalysis.Binding
     {
         Identity,
         Negation,
-        LogicalNegation
+        LogicalNegation,
+        OnesComplement
     }
 }

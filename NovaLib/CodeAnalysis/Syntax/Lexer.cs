@@ -78,17 +78,33 @@ namespace Nova.CodeAnalysis.Syntax
                     kind = SyntaxKind.CloseBraceToken;
                     position++;
                     break;
+                case '~':
+                    kind = SyntaxKind.TildeToken;
+                    position++;
+                    break;
+                case '^':
+                    kind = SyntaxKind.HatToken;
+                    position++;
+                    break;
                 case '&':
                     position++;
-                    if (Current == '&')
+                    if (Current != '&')
                     {
-                        kind = SyntaxKind.AmpersanAmpersanToken;
+                        kind = SyntaxKind.AmpersandToken;
+                    }
+                    else
+                    {
+                        kind = SyntaxKind.AmpersandAmpersandToken;
                         position++;
                     }
                     break;
                 case '|':
                     position++;
-                    if (Current == '|')
+                    if (Current != '|')
+                    {
+                        kind = SyntaxKind.PipeToken;
+                    }
+                    else
                     {
                         kind = SyntaxKind.PipePipeToken;
                         position++;
