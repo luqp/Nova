@@ -12,7 +12,10 @@ namespace Nova.CodeAnalysis.Binding
         Greater,
         LessOrEquals,
         GreaterOrEquals,
+        BitwiseAnd,
+        BitwiseOr,
+        BitwiseXor,
         LogicalAnd,
-        LogicalOr
+        LogicalOr,
     }
 }
