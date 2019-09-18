@@ -65,7 +65,19 @@ namespace Nova.CodeAnalysis.Binding
 
         private static void WriteNode(TextWriter writer, BoundNode node)
         {
+            Console.ForegroundColor = GetColor(node);
             writer.Write(node.Kind);
+            Console.ResetColor();
+        }
+
+        private static ConsoleColor GetColor(BoundNode node)
+        {
+            if (node is BoundExpression)
+                return ConsoleColor.Blue;
+            if (node is BoundStatement)
+                return ConsoleColor.Cyan;
+            
+            return ConsoleColor.Yellow;
         }
 
         public override string ToString()
