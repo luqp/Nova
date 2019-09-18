@@ -14,6 +14,7 @@ namespace Nova
         private static void Main()
         {
             bool showTree = false;
+            bool showProgram = false;
             StringBuilder textBuilder = new StringBuilder();
             Dictionary<VariableSymbol, object> variables = new Dictionary<VariableSymbol, object>();
             Compilation previous = null;
@@ -48,7 +49,15 @@ namespace Nova
                     {
                         showTree = !showTree;
                         Console.ForegroundColor = ConsoleColor.DarkYellow;
-                        Console.WriteLine(showTree ? "Enabled trees to show" : "Disabled trees");
+                        Console.WriteLine(showTree ? "Enabled parse trees." : "Disabled parse trees.");
+                        Console.ResetColor();
+                        continue;
+                    }
+                    else if (input == "#showProgram")
+                    {
+                        showProgram = !showProgram;
+                        Console.ForegroundColor = ConsoleColor.DarkYellow;
+                        Console.WriteLine(showProgram ? "Enabled bound trees." : "Disabled bound trees.");
                         Console.ResetColor();
                         continue;
                     }
@@ -81,11 +90,10 @@ namespace Nova
                 IReadOnlyList<Diagnostic> diagnostics = result.Diagnostics;
 
                 if (showTree)
-                {
-                    Console.ForegroundColor = ConsoleColor.DarkGray;
                     syntaxTree.Root.WriteTo(Console.Out);
-                    Console.ResetColor();
-                }
+
+                if (showProgram)
+                    compilation.EmitTree(Console.Out);
 
                 if (!diagnostics.Any())
                 {   
