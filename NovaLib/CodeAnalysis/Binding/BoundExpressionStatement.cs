@@ -2,12 +2,12 @@ namespace Nova.CodeAnalysis.Binding
 {
     internal sealed class BoundExpressionStatement : BoundStatement
     {
-        public BoundExpressionStatement(BoundExpression expresion)
+        public BoundExpressionStatement(BoundExpression expression)
         {
-            Expresion = expresion;
+            Expression = expression;
         }
 
         public override BoundNodeKind Kind => BoundNodeKind.ExpressionStatement;
-        public BoundExpression Expresion { get; }
+        public BoundExpression Expression { get; }
     }
 }
