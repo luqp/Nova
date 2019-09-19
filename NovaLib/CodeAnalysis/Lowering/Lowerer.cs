@@ -57,7 +57,7 @@ namespace Nova.CodeAnalysis.Lowering
             {
                 LabelSymbol endLabel = GenerateLabel();
 
-                BoundConditionalGotoStatement gotoFalse = new BoundConditionalGotoStatement(endLabel, node.Condition, true);
+                BoundConditionalGotoStatement gotoFalse = new BoundConditionalGotoStatement(endLabel, node.Condition, false);
                 BoundLabelStatement endLabelStatement = new BoundLabelStatement(endLabel);
                 BoundBlockStatement result = new BoundBlockStatement(ImmutableArray.Create<BoundStatement>(gotoFalse, node.ThenStatement, endLabelStatement));
 
@@ -68,7 +68,7 @@ namespace Nova.CodeAnalysis.Lowering
                 LabelSymbol elseLabel = GenerateLabel();
                 LabelSymbol endLabel = GenerateLabel();
 
-                BoundConditionalGotoStatement gotoFalse = new BoundConditionalGotoStatement(elseLabel, node.Condition, true);
+                BoundConditionalGotoStatement gotoFalse = new BoundConditionalGotoStatement(elseLabel, node.Condition, false);
                 BoundGotoStatement gotoEndStatement = new BoundGotoStatement(endLabel);
                 BoundLabelStatement elseLabelStatement = new BoundLabelStatement(elseLabel);
                 BoundLabelStatement endLabelStatement = new BoundLabelStatement(endLabel);
@@ -94,7 +94,7 @@ namespace Nova.CodeAnalysis.Lowering
             BoundGotoStatement gotoCheck = new BoundGotoStatement(checkLabel);
             BoundLabelStatement continueLabelStatement = new BoundLabelStatement(continueLabel);
             BoundLabelStatement checkLabelStatement = new BoundLabelStatement(checkLabel);
-            BoundConditionalGotoStatement gotoTrue = new BoundConditionalGotoStatement(continueLabel, node.Condition, false);
+            BoundConditionalGotoStatement gotoTrue = new BoundConditionalGotoStatement(continueLabel, node.Condition, true);
             BoundLabelStatement endLabelStatement = new BoundLabelStatement(endLabel);
             BoundBlockStatement result = new BoundBlockStatement(ImmutableArray.Create<BoundStatement>(
                 gotoCheck,
