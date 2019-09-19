@@ -84,16 +84,15 @@ namespace Nova
                 Compilation compilation = previous == null 
                                             ? new Compilation(syntaxTree)
                                             : previous.ContinueWith(syntaxTree);
- 
-                EvaluationResult result = compilation.Evaluate(variables);
-
-                IReadOnlyList<Diagnostic> diagnostics = result.Diagnostics;
 
                 if (showTree)
                     syntaxTree.Root.WriteTo(Console.Out);
 
                 if (showProgram)
                     compilation.EmitTree(Console.Out);
+
+                EvaluationResult result = compilation.Evaluate(variables);
+                IReadOnlyList<Diagnostic> diagnostics = result.Diagnostics;
 
                 if (!diagnostics.Any())
                 {   
