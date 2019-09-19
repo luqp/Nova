@@ -112,11 +112,13 @@ namespace Nova.CodeAnalysis.Lowering
         {
             BoundVariableDeclaration variableDeclaration = new BoundVariableDeclaration(node.Variable, node.LowerBound);
             BoundVariableExpression variableExpression = new BoundVariableExpression(node.Variable);
+            VariableSymbol upperVariableSymbol = new VariableSymbol("upperBound", true, typeof(int));
+            BoundVariableDeclaration upperVariableDeclaration = new BoundVariableDeclaration(upperVariableSymbol, node.UpperBound);
 
             BoundBinaryExpression condition = new BoundBinaryExpression(
                 variableExpression,
                 BoundBinaryOperator.Bind(SyntaxKind.LessOrEqualsToken, typeof(int), typeof(int)),
-                node.UpperBound
+                new BoundVariableExpression(upperVariableSymbol)
             );
 
             BoundExpressionStatement increment = new BoundExpressionStatement(
@@ -133,7 +135,11 @@ namespace Nova.CodeAnalysis.Lowering
             BoundBlockStatement whileBody = new BoundBlockStatement(ImmutableArray.Create<BoundStatement>(node.Body, increment));
             BoundWhileStatement whileStatement = new BoundWhileStatement(condition, whileBody);
 
-            BoundBlockStatement result = new BoundBlockStatement(ImmutableArray.Create<BoundStatement>(variableDeclaration, whileStatement));
+            BoundBlockStatement result = new BoundBlockStatement(ImmutableArray.Create<BoundStatement>(
+                variableDeclaration,
+                upperVariableDeclaration,
+                whileStatement
+            ));
             return RewriteStatement(result);
         }
     }
