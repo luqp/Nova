@@ -52,7 +52,7 @@ namespace Nova.CodeAnalysis
             if (diagnostics.Any())
                 return new EvaluationResult(diagnostics, null);
             
-            BoundStatement statement = GetStatement();
+            BoundBlockStatement statement = GetStatement();
             Evaluator evaluator = new Evaluator(statement, variables);
             object value = evaluator.Evaluate();
             return new EvaluationResult(ImmutableArray<Diagnostic>.Empty, value);
@@ -64,7 +64,7 @@ namespace Nova.CodeAnalysis
             statement.WriteTo(writer);
         }
 
-        private BoundStatement GetStatement()
+        private BoundBlockStatement GetStatement()
         {
             BoundStatement result = GlobalScope.Statement;
             return Lowerer.Lower(result);
