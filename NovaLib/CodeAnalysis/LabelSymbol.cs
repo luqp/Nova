@@ -8,5 +8,7 @@ namespace Nova.CodeAnalysis
         }
 
         public string Name { get; }
+
+        public override string ToString() => Name;
     }
 }
