@@ -827,3 +827,168 @@ Modify `ParseBlockStatement` method in `Parser` class:
 Modify `BindNameExpression` method in `Binder` class:
   * This means the token was inserted by the parser.
   * We already reported error so we can just return an error expression.
+
+# Compiler part 8
+
+# Add new behaviors
+
+## 1.0 Bitwise operators
+Support for bitwise operators
+  * Create test cases
+  * Add `~`, `&`, `|` and `^` Bitwise operators to `Lexer` class.
+  * Add  precedence of bitwise operators and get text cases in `SyntaxFacts` class.
+  * Add operators to unary operators table in `BoundUnaryOperator` class.
+  * Add operators to binary operators table in `BoundBinaryOperator` class.
+  * Add evaluate cases in `Evaluator` class.
+
+## 2.0 Rewrite Bound Tree
+A way to get the children in `BoundNode`, 'Copy all of `SyntaxNode`'.
+ * Add `WriteNode` method.
+
+### 2.1
+Add a new command `#showProgram` to Enabled bound trees to show.
+  * Create `EmitTree` to write trees.
+
+### 2.2
+Change color by each type of bound node.
+  * Add `GetColor` method in `BoundNode` class.
+
+### 2.3
+Handle binary and unary expressions
+  * Add `GetText` method in `BoundNode` class.
+
+### 2.4
+`BoundNode` class. Add more properties to show.
+
+  * Add `GetProperties` method that return an IEnumerable
+  * Delete `WriteNode` method, to implement it into `PrettyPrint` method.
+  * Loop for properties and write them with colors.
+
+# Lowering
+
+## 3.0 Bound tree rewriter
+Add methods to rewrite Statements and Expressions.
+
+## 4.0 Lowerer class
+Create `Lower` method to rewrite a statement.
+
+## 5.0 Invoke Lowering
+`Compilation` class
+  * Create `GetStatement` method that will Lower the global scope statement.
+  * Change all `GlobalScope.Statement` for `GetStatement()`.
+
+# Lowering For - While
+
+## 6.0 Lower `for` statement into `while` statement
+```
+want to convert this:
+
+for <var> = <lower> to <upper>
+{
+    <body>
+}
+
+ to:
+------------------->
+
+{
+    var <var> = <lower>
+    let <upperBound> = <upper>
+    while (<var> <= <upperBound>)
+    {
+        <body>
+        <var> = <var + 1>
+    }
+}
+
+```
+
+  * `Lowerer` class, override `RewriteForStatement` method.
+  * `Evaluator` class, delete `EvaluateForStatement` method because we don't use it anymore.
+
+# Gotos
+"We don't add them to Syntax, because we just want to have it in internal representation."
+
+## 7.0 Add Label Symbol
+Create `LabelSymbol` class in `Nova.CodeAnalysis` namespace.
+
+## 8.0
+  *  `LabelStatement` declare the target.
+  *  `GotoStatement` jumps to the target.
+
+### 8.1
+Create `BoundGotoStatement` class, `BoundConditionalGotoStatement` class and `BoundLabelStatement` class.
+
+### 8.2
+Add `LabelStatement`, `GotoStatement` and `ConditionalGotoStatement` cases to rewriter concepts.
+
+
+## 9.0 Create Labels
+`Lowerer` class, create `GenerateLabel` method, to return numerated labels.
+
+# Lower `if` statement
+with Gotos
+
+```
+We want to convert this:
+
+- simple case:
+
+  if <condition>
+      <then>
+
+  to:
+  --------------->
+
+  gotoFalse <condition> end
+      <then>
+  end:
+
+==============================
+- complex case:
+
+  if <condition>
+      <then>
+  else
+      <else>
+
+  to:
+  --------------->
+
+  gotoFalse <condition> else
+      <then>
+  goto end
+  else:
+      <else>
+  end:
+
+```
+## 10.0 Rewrite If Statement
+`Lowerer` class, override `RewriteIfStatement` method.
+
+# lower `while` statement
+```
+We want to convert this:
+
+  while  <condition>
+    <body>
+
+to:
+------------------->
+
+goto check
+continue:
+    <body>
+check:
+gotoTrue <condition> continue
+end:
+
+```
+## 11.0 Rewrite while statement
+`Lowerer` class, override `RewriteWhileStatement` method.
+
+## 12.0 Apply evaluate
+
+### 12.1
+`Evaluator` class, modify `Evaluate` method to add a way to select evaluate the things.
+  * Delete `EvaluateStatement` method because we don't use evaluate if, while, or block statement anymore.
