@@ -66,7 +66,8 @@ namespace Nova
                     }
 
                     Console.ResetColor();
-                    Console.WriteLine(line);
+                    Console.Write(line);
+                    Console.WriteLine(new string(' ', Console.WindowWidth - line.Length));
                     lineCount++;
                 }
 
@@ -201,7 +202,7 @@ namespace Nova
         private void HandleRightArrow(ObservableCollection<string> document, SubmissionView view)
         {
             string line = document[view.CurrentLineIndex];
-            if (view.CurrentCharacter < line.Length - 1)
+            if (view.CurrentCharacter < line.Length)
                 view.CurrentCharacter++;
         }
 
@@ -224,51 +225,6 @@ namespace Nova
 
             document[lineIndex] = document[lineIndex].Insert(start, text);
             view.CurrentCharacter += text.Length; 
-        }
-
-        private string EditSubmissionOld()
-        {
-            StringBuilder textBuilder = new StringBuilder();
-
-            while (true)
-            {
-                if (textBuilder.Length == 0)
-                {
-                    Console.ForegroundColor = ConsoleColor.Cyan;
-                    Console.Write("» ");
-                }
-                else
-                {
-                    Console.ForegroundColor = ConsoleColor.DarkGray;
-                    Console.Write("· ");
-                }
-                Console.ResetColor();
-
-                string input = Console.ReadLine();
-                bool isBlank = string.IsNullOrWhiteSpace(input);
-
-                if (textBuilder.Length == 0)
-                {
-                    if (isBlank)
-                    {
-                        return null;
-                    }
-                    if (input.StartsWith("#"))
-                    {
-                        EvaluateMetaCommand(input);
-                        Console.ResetColor();
-                        continue;
-                    }
-                }
-
-                textBuilder.AppendLine(input);
-                string text = textBuilder.ToString();
-
-                if (!IsCompleteSubmission(text))
-                    continue;
-
-                return text;
-            }
         }
 
         protected virtual void EvaluateMetaCommand(string input)
