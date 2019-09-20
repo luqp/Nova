@@ -7,16 +7,16 @@ namespace Nova
 {
     internal abstract class Repl
     {
-        private string submissionText;
+        private bool done;
 
         public void Run()
         {
             while (true)
             {
                 string text = EditSubmission();
-                if (text == null)
+                if (string.IsNullOrEmpty(text))
                     return;
-
+                
                 EvaluateSubmission(text);
             }
         }
@@ -119,19 +119,19 @@ namespace Nova
 
         private string EditSubmission()
         {
-            submissionText = null;
+            done = false;
             ObservableCollection<string> document = new ObservableCollection<string>() { "" };
             SubmissionView view = new SubmissionView(document);
 
-            while (submissionText == null)
+            while (!done)
             {
                 ConsoleKeyInfo key = Console.ReadKey(true);
                 HandleKey(key, document, view);
-
             }
 
             Console.WriteLine();
-            return submissionText;
+
+            return string.Join(Environment.NewLine, document);
         }
 
         private void HandleKey(ConsoleKeyInfo key, ObservableCollection<string> document, SubmissionView view)
@@ -172,10 +172,10 @@ namespace Nova
 
         private void HandleEnter(ObservableCollection<string> document, SubmissionView view)
         {
-            string submission = string.Join(Environment.NewLine, document);
-            if (IsCompleteSubmission(submission))
+            string submissionText = string.Join(Environment.NewLine, document);
+            if (IsCompleteSubmission(submissionText))
             {
-                this.submissionText = submission;
+                done = true;
                 return;
             }
 
@@ -186,7 +186,7 @@ namespace Nova
 
         private void HandleControlEnter(ObservableCollection<string> document, SubmissionView view)
         {
-            submissionText = string.Join(Environment.NewLine, document);
+            done = true;
         }
 
         private void HandleLeftArrow(ObservableCollection<string> document, SubmissionView view)
