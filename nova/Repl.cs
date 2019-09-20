@@ -5,11 +5,21 @@ namespace Nova
 {
     internal abstract class Repl
     {
-        private readonly StringBuilder textBuilder = new StringBuilder();
-
         public void Run()
         {
-            Console.WriteLine("Commands: #trees, #cls");
+            while (true)
+            {
+                string text = EditSubmission();
+                if (text == null)
+                    return;
+
+                EvaluateSubmission(text);
+            }
+        }
+
+        private string EditSubmission()
+        {
+            StringBuilder textBuilder = new StringBuilder();
 
             while (true)
             {
@@ -32,9 +42,9 @@ namespace Nova
                 {
                     if (isBlank)
                     {
-                        break;
+                        return null;
                     }
-                    else if (input.StartsWith("#"))
+                    if (input.StartsWith("#"))
                     {
                         EvaluateMetaCommand(input);
                         Console.ResetColor();
@@ -48,9 +58,7 @@ namespace Nova
                 if (!IsCompleteSubmission(text))
                     continue;
 
-                EvaluateSubmission(text);
-
-                textBuilder.Clear();
+                return text;
             }
         }
 
