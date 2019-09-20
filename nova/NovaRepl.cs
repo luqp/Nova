@@ -44,7 +44,7 @@ namespace Nova
         protected override bool IsCompleteSubmission(string text)
         {            
             if (string.IsNullOrEmpty(text))
-                return false;
+                return true;
             
             SyntaxTree syntaxTree = SyntaxTree.Parse(text);
 
