@@ -16,8 +16,11 @@ namespace Nova
                 string text = EditSubmission();
                 if (string.IsNullOrEmpty(text))
                     return;
-                
-                EvaluateSubmission(text);
+
+                if (!text.Contains(Environment.NewLine) && text.StartsWith("#"))
+                    EvaluateMetaCommand(text);
+                else
+                    EvaluateSubmission(text);
             }
         }
 
@@ -173,7 +176,7 @@ namespace Nova
         private void HandleEnter(ObservableCollection<string> document, SubmissionView view)
         {
             string submissionText = string.Join(Environment.NewLine, document);
-            if (IsCompleteSubmission(submissionText))
+            if (submissionText.StartsWith("#") || IsCompleteSubmission(submissionText))
             {
                 done = true;
                 return;
