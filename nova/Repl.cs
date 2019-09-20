@@ -159,6 +159,12 @@ namespace Nova
                     case ConsoleKey.DownArrow:
                         HandleDownArrow(document, view);
                         break;
+                    case ConsoleKey.Backspace:
+                        HandleBackspace(document, view);
+                        break;
+                    case ConsoleKey.Delete:
+                        HandleDelete(document, view);
+                        break;
                 }
             }
             else if (key.Modifiers == ConsoleModifiers.Control)
@@ -216,6 +222,35 @@ namespace Nova
         {
             if (view.CurrentLineIndex < document.Count - 1)
                 view.CurrentLineIndex++;
+        }
+
+        private void HandleBackspace(ObservableCollection<string> document, SubmissionView view)
+        {
+            int start = view.CurrentCharacter;
+            if (start == 0)
+                return;
+
+            int lineIndex = view.CurrentLineIndex;
+            string line = document[lineIndex];
+            string before = line.Substring(0, start -1);
+            string after = line.Substring(start);
+
+            document[lineIndex] = before + after;
+            view.CurrentCharacter--; 
+        }
+
+        private void HandleDelete(ObservableCollection<string> document, SubmissionView view)
+        {
+            int lineIndex = view.CurrentLineIndex;
+            string line = document[lineIndex];
+            int start = view.CurrentCharacter;
+            if (start >= line.Length)
+                return;
+            
+            string before = line.Substring(0, start);
+            string after = line.Substring(start + 1);
+
+            document[lineIndex] = before + after;
         }
 
         private void HandleTyping(ObservableCollection<string> document, SubmissionView view, string text)
