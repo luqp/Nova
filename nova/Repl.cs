@@ -29,7 +29,7 @@ namespace Nova
             private readonly ObservableCollection<string> submissionDocument;
             private readonly int cursorTop;
             private int renderedLineCount;
-            private int currentLineIndex;
+            private int currentLine;
             private int currentCharacter;
 
             public SubmissionView(ObservableCollection<string> submissionDocument)
@@ -47,13 +47,14 @@ namespace Nova
 
             private void Render()
             {
-                Console.SetCursorPosition(0, cursorTop);
                 Console.CursorVisible = false;
 
                 int lineCount = 0;
 
                 foreach (string line in submissionDocument)
                 {
+                    Console.SetCursorPosition(0, cursorTop + lineCount);
+
                     if (lineCount == 0)
                     {
                         Console.ForegroundColor = ConsoleColor.Cyan;
@@ -91,18 +92,20 @@ namespace Nova
 
             private void UpdateCursorPosition()
             {
-                Console.CursorTop = cursorTop + currentLineIndex;
+                Console.CursorTop = cursorTop + currentLine;
                 Console.CursorLeft = 2 + currentCharacter;
             }
 
-            public int CurrentLineIndex
+            public int CurrentLine
             {
-                get => currentLineIndex;
+                get => currentLine;
                 set
                 {
-                    if (currentLineIndex != value)
+                    if (currentLine != value)
                     {
-                        currentLineIndex = value;
+                        currentLine = value;
+                        currentCharacter = Math.Min(submissionDocument[currentLine].Length, currentCharacter);
+
                         UpdateCursorPosition();
                     }
                 }
@@ -147,6 +150,9 @@ namespace Nova
                     case ConsoleKey.Enter:
                         HandleEnter(document, view);
                         break;
+                    case ConsoleKey.Escape:
+                        HandleEscape(document, view);
+                        break;
                     case ConsoleKey.LeftArrow:
                         HandleLeftArrow(document, view);
                         break;
@@ -164,6 +170,15 @@ namespace Nova
                         break;
                     case ConsoleKey.Delete:
                         HandleDelete(document, view);
+                        break;
+                    case ConsoleKey.Home:
+                        HandleHome(document, view);
+                        break;
+                    case ConsoleKey.End:
+                        HandleEnd(document, view);
+                        break;
+                    case ConsoleKey.Tab:
+                        HandleTab(document, view);
                         break;
                 }
             }
@@ -191,12 +206,18 @@ namespace Nova
 
             document.Add(string.Empty);
             view.CurrentCharacter = 0;
-            view.CurrentLineIndex = document.Count - 1;
+            view.CurrentLine = document.Count - 1;
         }
 
         private void HandleControlEnter(ObservableCollection<string> document, SubmissionView view)
         {
             done = true;
+        }
+
+        private void HandleEscape(ObservableCollection<string> document, SubmissionView view)
+        {
+            document[view.CurrentLine] = string.Empty;
+            view.CurrentCharacter = 0;
         }
 
         private void HandleLeftArrow(ObservableCollection<string> document, SubmissionView view)
@@ -207,21 +228,21 @@ namespace Nova
 
         private void HandleRightArrow(ObservableCollection<string> document, SubmissionView view)
         {
-            string line = document[view.CurrentLineIndex];
+            string line = document[view.CurrentLine];
             if (view.CurrentCharacter < line.Length)
                 view.CurrentCharacter++;
         }
 
         private void HandleUpArrow(ObservableCollection<string> document, SubmissionView view)
         {
-            if (view.CurrentLineIndex > 0)
-                view.CurrentLineIndex--;
+            if (view.CurrentLine > 0)
+                view.CurrentLine--;
         }
 
         private void HandleDownArrow(ObservableCollection<string> document, SubmissionView view)
         {
-            if (view.CurrentLineIndex < document.Count - 1)
-                view.CurrentLineIndex++;
+            if (view.CurrentLine < document.Count - 1)
+                view.CurrentLine++;
         }
 
         private void HandleBackspace(ObservableCollection<string> document, SubmissionView view)
@@ -230,7 +251,7 @@ namespace Nova
             if (start == 0)
                 return;
 
-            int lineIndex = view.CurrentLineIndex;
+            int lineIndex = view.CurrentLine;
             string line = document[lineIndex];
             string before = line.Substring(0, start -1);
             string after = line.Substring(start);
@@ -241,7 +262,7 @@ namespace Nova
 
         private void HandleDelete(ObservableCollection<string> document, SubmissionView view)
         {
-            int lineIndex = view.CurrentLineIndex;
+            int lineIndex = view.CurrentLine;
             string line = document[lineIndex];
             int start = view.CurrentCharacter;
             if (start >= line.Length)
@@ -253,9 +274,30 @@ namespace Nova
             document[lineIndex] = before + after;
         }
 
+        private void HandleHome(ObservableCollection<string> document, SubmissionView view)
+        {
+            view.CurrentCharacter = 0;
+        }
+
+        private void HandleEnd(ObservableCollection<string> document, SubmissionView view)
+        {
+            view.CurrentCharacter = document[view.CurrentLine].Length;
+        }
+
+        private void HandleTab(ObservableCollection<string> document, SubmissionView view)
+        {
+            const int TABWIDTH = 4;
+            int start = view.CurrentCharacter;
+            int remainingSpaces = TABWIDTH - start % TABWIDTH;
+            string line = document[view.CurrentLine];
+            document[view.CurrentLine] = line.Insert(start, new string(' ', remainingSpaces));
+            view.CurrentCharacter += remainingSpaces;
+
+        }
+
         private void HandleTyping(ObservableCollection<string> document, SubmissionView view, string text)
         {
-            int lineIndex = view.CurrentLineIndex;
+            int lineIndex = view.CurrentLine;
             int start = view.CurrentCharacter;
 
             document[lineIndex] = document[lineIndex].Insert(start, text);
