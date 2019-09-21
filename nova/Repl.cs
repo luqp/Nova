@@ -145,6 +145,9 @@ namespace Nova
                 HandleKey(key, document, view);
             }
 
+            view.CurrentLine = document.Count - 1;
+            view.CurrentCharacter = document[view.CurrentLine].Length;
+
             Console.WriteLine();
 
             return string.Join(Environment.NewLine, document);
