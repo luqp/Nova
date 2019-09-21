@@ -992,3 +992,89 @@ end:
 ### 12.1
 `Evaluator` class, modify `Evaluate` method to add a way to select evaluate the things.
   * Delete `EvaluateStatement` method because we don't use evaluate if, while, or block statement anymore.
+
+# Compiler part 9
+# Better REPL
+Read-Eval-Print-Loop
+Keeping track to variables or language
+
+* Support multi-line editing, syntax coloration and history.
+
+## 1.0 Create REPL
+Create `Repl` class that contains all code to run the program.
+
+## 2.0 Create specific REPL
+Create `NovaRepl` class that handles with the language specific stuff.
+
+## 3.0 Editing a document
+Change the control flow current in program, to return at a variable and you can update it in the input.
+  * Return to a particular line
+  * Typing or deleting  redraw
+
+### 3.1
+`Repl` class, convert the document input to local.
+
+## 4.0 Model Editing behavior.
+### 4.1
+Create `SubmissionView` class that handler the input like a document.
+  * `Render` method help to display document and set the cursor into right position.
+  * `EditingSubmission` class was modify to handler the inserted keys
+    * the `enter` or `controlEnter` key return all document.
+
+### 4.2
+Fix unexpected behavior that continue running with empty text.
+
+### 4.3
+Handle commands.
+  * Fix the length covered by the right key
+  * Deleted unusable method
+### 4.4
+Handle key modifiers, covered:
+  * Backspace key
+  * Delete key
+  * Home key
+  * End key
+  * Tab key
+  * Escape Key
+  * Fix the new line error
+  * Fix the adding whites space in a new line
+
+## 5.0 History
+Handle page up - page down.
+
+### 5.1
+Create a list of string that carry all input data
+
+### 5.2
+Crate `ClearHistory` method that clean history.
+
+### 5.3
+Handle `pageUp` and `pageDown` key to go through the history.
+  * Create `UpdateDocumentFromHistory` method.
+
+Fix errors:
+  * Solved exception when 'pageDown' key is clicked
+  * Fix cursor position and extra data is cleaned
+
+## 6.0 Dynamic color
+  * Create `RenderLine` method in `Repl` class.
+  * Override `RenderLine` method in `NovaRepl` class, add color to specific tokens;
+
+## 7.0 Fix evaluation result that overwrite code from history
+  * Fix output, correcting evaluation result that overwrite code from history
+  * When use 'pageUp' or 'pageDown'
+
+## 8.0 Inserting a blank line between code
+  * Use 'controlEnter' key to insert a new blank line below
+
+## 9.0 Improve delete
+Add 'delete between lines' behavior with 'Backspace' key
+
+## 10.0 Fix errors
+  * Avoid exception when accessing empty history
+    - When use `pageUp` or `pageDown` keys without history.
+  * Check whether the last token is missing
+    - Fix infinite loops when a bad typing occur
+
+## 11.0 Improve delete
+Add 'delete between lines' behavior with 'Delete' key
