@@ -353,6 +353,9 @@ namespace Nova
 
         private void UpdateDocumentFromHistory(ObservableCollection<string> document, SubmissionView view)
         {
+            if (submissionHistory.Count == 0)
+                return;
+
             document.Clear();
 
             string historyItem = submissionHistory[submissionHistoryIndex];
