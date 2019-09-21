@@ -32,14 +32,16 @@ namespace Nova
 
         private sealed class SubmissionView
         {
+            private readonly Action<string> lineRederer;
             private readonly ObservableCollection<string> submissionDocument;
             private readonly int cursorTop;
             private int renderedLineCount;
             private int currentLine;
             private int currentCharacter;
 
-            public SubmissionView(ObservableCollection<string> submissionDocument)
+            public SubmissionView(Action<string> lineRederer, ObservableCollection<string> submissionDocument)
             {
+                this.lineRederer = lineRederer;
                 this.submissionDocument = submissionDocument;
                 this.submissionDocument.CollectionChanged += SubmissionDocumentChanged;
                 cursorTop = Console.CursorTop;
@@ -73,7 +75,7 @@ namespace Nova
                     }
 
                     Console.ResetColor();
-                    Console.Write(line);
+                    lineRederer(line);
                     Console.WriteLine(new string(' ', Console.WindowWidth - line.Length));
                     lineCount++;
                 }
@@ -83,7 +85,7 @@ namespace Nova
                 if (numberOfBlankLines > 0)
                 {
                     string blankLine = new string(' ', Console.WindowWidth);
-                    for (var i = 0; i <numberOfBlankLines; i++)
+                    for (var i = 0; i < numberOfBlankLines; i++)
                     {
                         Console.SetCursorPosition(0, cursorTop + lineCount + i);
                         Console.WriteLine(blankLine);
@@ -135,7 +137,7 @@ namespace Nova
         {
             done = false;
             ObservableCollection<string> document = new ObservableCollection<string>() { "" };
-            SubmissionView view = new SubmissionView(document);
+            SubmissionView view = new SubmissionView(RenderLine, document);
 
             while (!done)
             {
@@ -352,6 +354,11 @@ namespace Nova
         protected void ClearHistory()
         {
             submissionHistory.Clear();
+        }
+
+        protected virtual void RenderLine(string line)
+        {
+            Console.Write(line);
         }
 
         protected virtual void EvaluateMetaCommand(string input)
