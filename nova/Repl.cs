@@ -278,6 +278,7 @@ namespace Nova
             {
                 if (view.CurrentLine == 0)
                     return;
+
                 string previousLine = document[view.CurrentLine - 1];
                 string currentLine = document[view.CurrentLine];
                 document.RemoveAt(view.CurrentLine);
@@ -291,7 +292,6 @@ namespace Nova
                 string line = document[lineIndex];
                 string before = line.Substring(0, start -1);
                 string after = line.Substring(start);
-
                 document[lineIndex] = before + after;
                 view.CurrentCharacter--; 
             }
@@ -303,12 +303,21 @@ namespace Nova
             string line = document[lineIndex];
             int start = view.CurrentCharacter;
             if (start >= line.Length)
-                return;
-            
-            string before = line.Substring(0, start);
-            string after = line.Substring(start + 1);
-
-            document[lineIndex] = before + after;
+            {
+                if (view.CurrentLine == document.Count - 1)
+                    return;
+                
+                int nextLineIndex = view.CurrentLine + 1;
+                string nextLine = document[nextLineIndex];
+                document[view.CurrentLine] += nextLine;
+                document.RemoveAt(nextLineIndex);
+            }
+            else
+            {
+                string before = line.Substring(0, start);
+                string after = line.Substring(start + 1);
+                document[lineIndex] = before + after;
+            }
         }
 
         private void HandleHome(ObservableCollection<string> document, SubmissionView view)
