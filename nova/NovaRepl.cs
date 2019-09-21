@@ -14,6 +14,25 @@ namespace Nova
         private bool showProgram;
         private readonly Dictionary<VariableSymbol, object> variables = new Dictionary<VariableSymbol, object>();
 
+        protected override void RenderLine(string line)
+        {
+            IEnumerable<SyntaxToken> tokens = SyntaxTree.ParseTokens(line);
+            foreach (SyntaxToken token in tokens)
+            {
+                bool isKeyword = token.Kind.ToString().EndsWith("Keyword");
+                bool isNumber = token.Kind == SyntaxKind.NumberToken;
+
+                if (isKeyword)
+                    Console.ForegroundColor = ConsoleColor.Blue;
+                else if (!isNumber)
+                    Console.ForegroundColor = ConsoleColor.DarkGray;
+
+                Console.Write(token.Text);
+                Console.ResetColor();
+            }
+
+        }
+
         protected override void EvaluateMetaCommand(string input)
         {
             switch (input)
