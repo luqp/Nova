@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Text;
@@ -7,6 +8,8 @@ namespace Nova
 {
     internal abstract class Repl
     {
+        private List<string> submissionHistory = new List<string>();
+        private int submissionHistoryIndex;
         private bool done;
 
         public void Run()
@@ -21,6 +24,9 @@ namespace Nova
                     EvaluateMetaCommand(text);
                 else
                     EvaluateSubmission(text);
+                
+                submissionHistory.Add(text);
+                submissionHistoryIndex = 0;
             }
         }
 
@@ -77,7 +83,7 @@ namespace Nova
                 if (numberOfBlankLines > 0)
                 {
                     string blankLine = new string(' ', Console.WindowWidth);
-                    while (numberOfBlankLines > 0)
+                    while (numberOfBlankLines-- > 0)
                     {
                         Console.WriteLine(blankLine);
                     }
@@ -179,6 +185,12 @@ namespace Nova
                         break;
                     case ConsoleKey.Tab:
                         HandleTab(document, view);
+                        break;
+                    case ConsoleKey.PageUp:
+                        HandlePageUp(document, view);
+                        break;
+                    case ConsoleKey.PageDown:
+                        HandlePageDown(document, view);
                         break;
                 }
             }
@@ -295,6 +307,38 @@ namespace Nova
 
         }
 
+        private void HandlePageUp(ObservableCollection<string> document, SubmissionView view)
+        {
+            submissionHistoryIndex--;
+            if (submissionHistoryIndex < 0)
+                submissionHistoryIndex = submissionHistory.Count - 1;
+            
+            UpdateDocumentFromHistory(document, view);
+        }
+
+        private void HandlePageDown(ObservableCollection<string> document, SubmissionView view)
+        {
+            
+            submissionHistoryIndex++;
+            if (submissionHistoryIndex < submissionHistory.Count - 1)
+                submissionHistoryIndex = 0;
+            
+            UpdateDocumentFromHistory(document, view);
+        }
+
+        private void UpdateDocumentFromHistory(ObservableCollection<string> document, SubmissionView view)
+        {
+            document.Clear();
+
+            string historyItem = submissionHistory[submissionHistoryIndex];
+            string[] lines = historyItem.Split(Environment.NewLine);
+            foreach (string line in lines)
+                document.Add(line);
+            
+            view.CurrentLine = document.Count - 1;
+            view.CurrentCharacter = document[view.CurrentLine].Length;
+        }
+
         private void HandleTyping(ObservableCollection<string> document, SubmissionView view, string text)
         {
             int lineIndex = view.CurrentLine;
@@ -302,6 +346,11 @@ namespace Nova
 
             document[lineIndex] = document[lineIndex].Insert(start, text);
             view.CurrentCharacter += text.Length; 
+        }
+
+        protected void ClearHistory()
+        {
+            submissionHistory.Clear();
         }
 
         protected virtual void EvaluateMetaCommand(string input)
