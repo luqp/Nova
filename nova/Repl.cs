@@ -232,8 +232,11 @@ namespace Nova
 
         private static void InserLine(ObservableCollection<string> document, SubmissionView view)
         {
+            string remainder = document[view.CurrentLine].Substring(view.CurrentCharacter);
+            document[view.CurrentLine] = document[view.CurrentLine].Substring(0, view.CurrentCharacter);
+
             int lineIndex = view.CurrentLine + 1;
-            document.Insert(lineIndex, string.Empty);
+            document.Insert(lineIndex, remainder);
             view.CurrentCharacter = 0;
             view.CurrentLine = lineIndex;
         }
@@ -272,15 +275,26 @@ namespace Nova
         {
             int start = view.CurrentCharacter;
             if (start == 0)
-                return;
+            {
+                if (view.CurrentLine == 0)
+                    return;
+                string previousLine = document[view.CurrentLine - 1];
+                string currentLine = document[view.CurrentLine];
+                document.RemoveAt(view.CurrentLine);
+                view.CurrentLine--;
+                document[view.CurrentLine] = previousLine + currentLine;
+                view.CurrentCharacter = previousLine.Length;
+            }
+            else
+            {
+                int lineIndex = view.CurrentLine;
+                string line = document[lineIndex];
+                string before = line.Substring(0, start -1);
+                string after = line.Substring(start);
 
-            int lineIndex = view.CurrentLine;
-            string line = document[lineIndex];
-            string before = line.Substring(0, start -1);
-            string after = line.Substring(start);
-
-            document[lineIndex] = before + after;
-            view.CurrentCharacter--; 
+                document[lineIndex] = before + after;
+                view.CurrentCharacter--; 
+            }
         }
 
         private void HandleDelete(ObservableCollection<string> document, SubmissionView view)
