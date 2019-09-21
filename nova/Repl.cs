@@ -222,16 +222,21 @@ namespace Nova
                 return;
             }
 
-            document.Add(string.Empty);
-            view.CurrentCharacter = 0;
-            view.CurrentLine = document.Count - 1;
+            InserLine(document, view);
         }
 
         private void HandleControlEnter(ObservableCollection<string> document, SubmissionView view)
         {
-            done = true;
+            InserLine(document, view);
         }
 
+        private static void InserLine(ObservableCollection<string> document, SubmissionView view)
+        {
+            int lineIndex = view.CurrentLine + 1;
+            document.Insert(lineIndex, string.Empty);
+            view.CurrentCharacter = 0;
+            view.CurrentLine = lineIndex;
+        }
         private void HandleEscape(ObservableCollection<string> document, SubmissionView view)
         {
             document[view.CurrentLine] = string.Empty;
