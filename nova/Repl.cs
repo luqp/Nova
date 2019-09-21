@@ -83,8 +83,9 @@ namespace Nova
                 if (numberOfBlankLines > 0)
                 {
                     string blankLine = new string(' ', Console.WindowWidth);
-                    while (numberOfBlankLines-- > 0)
+                    for (var i = 0; i <numberOfBlankLines; i++)
                     {
+                        Console.SetCursorPosition(0, cursorTop + lineCount + i);
                         Console.WriteLine(blankLine);
                     }
                 }
@@ -320,7 +321,7 @@ namespace Nova
         {
             
             submissionHistoryIndex++;
-            if (submissionHistoryIndex < submissionHistory.Count - 1)
+            if (submissionHistoryIndex > submissionHistory.Count - 1)
                 submissionHistoryIndex = 0;
             
             UpdateDocumentFromHistory(document, view);
