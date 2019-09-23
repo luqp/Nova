@@ -96,13 +96,9 @@ namespace Nova.CodeAnalysis.Binding
 
         private BoundStatement BindVariableDeclaration(VariableDeclarationSyntax syntax)
         {
-            string name = syntax.Identifier.Text;
             bool isReadOnly = syntax.Keyword.Kind == SyntaxKind.LetKeyword;
             BoundExpression initializer = BindExpression(syntax.Initializer);
-            VariableSymbol variable = new VariableSymbol(name, isReadOnly, initializer.Type);
-
-            if (!scope.TryDeclare(variable))
-                diagnostics.ReportVariableAlreadyDeclared(syntax.Identifier.Span, name);
+            VariableSymbol variable = BindVariable(syntax.Identifier, isReadOnly, initializer.Type);
             
             return new BoundVariableDeclaration(variable, initializer);
         }
@@ -124,17 +120,15 @@ namespace Nova.CodeAnalysis.Binding
 
         private BoundStatement BindForStatement(ForStatementSyntax syntax)
         {
-            BoundExpression lowerBound = BindExpression(syntax.LowerBound, TypeSymbol.Int);
-            BoundExpression upperBound = BindExpression(syntax.UpperBound, TypeSymbol.Int);
+            TypeSymbol intType = TypeSymbol.Int;
+            BoundExpression lowerBound = BindExpression(syntax.LowerBound, intType);
+            BoundExpression upperBound = BindExpression(syntax.UpperBound, intType);
 
-            scope = new BoundScope (scope);
+            scope = new BoundScope(scope);
 
-            string name = syntax.Identifier.Text;
-            VariableSymbol variable = new VariableSymbol(name, true, TypeSymbol.Int);
-            if (!scope.TryDeclare(variable))
-                diagnostics.ReportVariableAlreadyDeclared(syntax.Identifier.Span, name);
-            
+            VariableSymbol variable = BindVariable(syntax.Identifier, isReadOnly: true, intType);
             BoundStatement body = BindStatement(syntax.Body);
+
             scope = scope.Parent;
             return new BoundForStatement(variable, lowerBound, upperBound, body);
         }
@@ -148,8 +142,12 @@ namespace Nova.CodeAnalysis.Binding
         private BoundExpression BindExpression(ExpressionSyntax syntax, TypeSymbol targetType)
         {
             BoundExpression result = BindExpression(syntax);
-            if (result.Type != targetType)
+            if (targetType != TypeSymbol.Error &&
+                result.Type != TypeSymbol.Error &&
+                result.Type != targetType)
+            {
                 diagnostics.ReportCannotConvert(syntax.Span, result.Type, targetType);
+            }
             
             return result;
         }
@@ -261,6 +259,18 @@ namespace Nova.CodeAnalysis.Binding
             }
 
             return new BoundBinaryExpression(boundLeft, boundOperator, boundRight);
+        }
+
+        private VariableSymbol BindVariable(SyntaxToken identifier, bool isReadOnly, TypeSymbol type)
+        {
+            string name = identifier.Text ?? "?";
+            bool declare = !identifier.IsMissing;
+            VariableSymbol variable = new VariableSymbol(name, isReadOnly, type);
+
+            if (declare && !scope.TryDeclare(variable))
+                diagnostics.ReportVariableAlreadyDeclared(identifier.Span, name);
+
+            return variable;
         }
     }
 }
