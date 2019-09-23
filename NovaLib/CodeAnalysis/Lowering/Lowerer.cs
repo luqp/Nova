@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using Nova.CodeAnalysis.Binding;
+using Nova.CodeAnalysis.Symbols;
 using Nova.CodeAnalysis.Syntax;
 
 namespace Nova.CodeAnalysis.Lowering

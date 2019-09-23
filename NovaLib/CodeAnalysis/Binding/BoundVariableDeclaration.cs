@@ -1,3 +1,5 @@
+using Nova.CodeAnalysis.Symbols;
+
 namespace Nova.CodeAnalysis.Binding
 {
     internal sealed class BoundVariableDeclaration : BoundStatement

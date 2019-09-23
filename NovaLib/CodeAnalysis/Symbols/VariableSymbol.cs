@@ -1,6 +1,6 @@
 using System;
 
-namespace Nova.CodeAnalysis
+namespace Nova.CodeAnalysis.Symbols
 {
     public sealed class VariableSymbol
     {

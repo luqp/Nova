@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Nova.CodeAnalysis;
+using Nova.CodeAnalysis.Symbols;
 using Nova.CodeAnalysis.Syntax;
 using Xunit;
 

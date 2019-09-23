@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Nova.CodeAnalysis;
+using Nova.CodeAnalysis.Symbols;
 using Nova.CodeAnalysis.Syntax;
 using Nova.CodeAnalysis.Text;
 

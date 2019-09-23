@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading;
 using Nova.CodeAnalysis.Binding;
 using Nova.CodeAnalysis.Lowering;
+using Nova.CodeAnalysis.Symbols;
 using Nova.CodeAnalysis.Syntax;
 
 namespace Nova.CodeAnalysis

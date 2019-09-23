@@ -1,4 +1,5 @@
 using System;
+using Nova.CodeAnalysis.Symbols;
 
 namespace Nova.CodeAnalysis.Binding
 {
