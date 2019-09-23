@@ -6,6 +6,7 @@ namespace Nova.CodeAnalysis.Syntax
         BadToken,
         EndOfFileToken,
         WhiteSpaceToken,
+        StringToken,
         NumberToken,
         PlusToken,
         MinusToken,

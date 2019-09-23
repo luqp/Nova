@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Text;
 using Nova.CodeAnalysis.Text;
 
 namespace Nova.CodeAnalysis.Syntax
@@ -158,6 +160,9 @@ namespace Nova.CodeAnalysis.Syntax
                         position++;
                     }
                     break;
+                case '"':
+                    ReadString();
+                    break;
                 case '0': case '1': case '2': case '3': case '4':
                 case '5': case '6': case '7': case '8': case '9':
                     ReadNumberToken();
@@ -192,6 +197,46 @@ namespace Nova.CodeAnalysis.Syntax
                 tokenText = text.ToString(start, length);
 
             return new SyntaxToken(kind, start, tokenText, value);
+        }
+
+        private void ReadString()
+        {
+            position++;
+            StringBuilder sb = new StringBuilder();
+            bool done = false;
+
+            while (!done)
+            {
+                switch (Current)
+                {
+                    case '\0':
+                    case '\r':
+                    case '\n':
+                        TextSpan span = new TextSpan(start, 1);
+                        diagnostics.ReportUnterminatedString(span);
+                        done = true;
+                        break;
+                    case '"':
+                        position++;
+                        if (Current == '"')
+                        {
+                            sb.Append(Current);
+                            position++;
+                        }
+                        else
+                        {
+                            done = true;
+                        }
+                        break;
+                    default:
+                        sb.Append(Current);
+                        position++;
+                        break;
+                }
+            }
+
+            kind = SyntaxKind.StringToken;
+            value = sb.ToString();
         }
 
         private void ReadWhiteSpace()

@@ -226,6 +226,9 @@ namespace Nova.CodeAnalysis.Syntax
 
                 case SyntaxKind.NumberToken:
                     return ParseNumberLiteral();
+                
+                case SyntaxKind.StringToken:
+                    return ParseStringLiteral();
 
                 case SyntaxKind.IdentifierToken:                
                 default:
@@ -253,6 +256,12 @@ namespace Nova.CodeAnalysis.Syntax
         {
             SyntaxToken numberToken = MatchToken(SyntaxKind.NumberToken);
             return new LiteralExpressionSyntax(numberToken);
+        }
+
+        private ExpressionSyntax ParseStringLiteral()
+        {
+            SyntaxToken stringToken = MatchToken(SyntaxKind.StringToken);
+            return new LiteralExpressionSyntax(stringToken);
         }
 
         private ExpressionSyntax ParseNameExpression()

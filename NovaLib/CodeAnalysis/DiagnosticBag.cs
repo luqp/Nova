@@ -38,6 +38,12 @@ namespace Nova.CodeAnalysis
             Report(span, message);
         }
 
+        internal void ReportUnterminatedString(TextSpan span)
+        {
+            string message = "Unterminated string literal.";
+            Report(span, message);
+        }
+
         public void ReportUnexpectedToken(TextSpan span, SyntaxKind currendKind, SyntaxKind expectedKind)
         {
             string message = $"Unexpected token <{currendKind}>, expected <{expectedKind}>.";
