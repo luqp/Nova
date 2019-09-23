@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Nova.CodeAnalysis.Binding;
+using Nova.CodeAnalysis.Symbols;
 
 namespace Nova.CodeAnalysis
 {
