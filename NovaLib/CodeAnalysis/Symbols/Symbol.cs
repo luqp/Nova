@@ -2,7 +2,7 @@ namespace Nova.CodeAnalysis.Symbols
 {
     public abstract class Symbol
     {
-        public Symbol(string name)
+        private protected Symbol(string name)
         {
             Name = name;
         }
