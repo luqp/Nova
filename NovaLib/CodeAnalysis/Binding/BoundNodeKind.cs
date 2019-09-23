@@ -14,6 +14,7 @@ namespace Nova.CodeAnalysis.Binding
         ConditionalGotoStatement,
 
         // Expressions
+        ErrorExpression,
         LiteralExpression,
         VariableExpression,
         AssignmentExpression,
