@@ -113,12 +113,12 @@ namespace Nova.CodeAnalysis.Lowering
         {
             BoundVariableDeclaration variableDeclaration = new BoundVariableDeclaration(node.Variable, node.LowerBound);
             BoundVariableExpression variableExpression = new BoundVariableExpression(node.Variable);
-            VariableSymbol upperVariableSymbol = new VariableSymbol("upperBound", true, typeof(int));
+            VariableSymbol upperVariableSymbol = new VariableSymbol("upperBound", true, TypeSymbol.Int);
             BoundVariableDeclaration upperVariableDeclaration = new BoundVariableDeclaration(upperVariableSymbol, node.UpperBound);
 
             BoundBinaryExpression condition = new BoundBinaryExpression(
                 variableExpression,
-                BoundBinaryOperator.Bind(SyntaxKind.LessOrEqualsToken, typeof(int), typeof(int)),
+                BoundBinaryOperator.Bind(SyntaxKind.LessOrEqualsToken, TypeSymbol.Int, TypeSymbol.Int),
                 new BoundVariableExpression(upperVariableSymbol)
             );
 
@@ -127,7 +127,7 @@ namespace Nova.CodeAnalysis.Lowering
                     node.Variable,
                     new BoundBinaryExpression(
                         variableExpression,
-                        BoundBinaryOperator.Bind(SyntaxKind.PlusToken, typeof(int), typeof(int)),
+                        BoundBinaryOperator.Bind(SyntaxKind.PlusToken, TypeSymbol.Int, TypeSymbol.Int),
                         new BoundLiteralExpression(1)
                     )
                 )

@@ -1,4 +1,5 @@
 using System;
+using Nova.CodeAnalysis.Symbols;
 
 namespace Nova.CodeAnalysis.Binding
 {
@@ -11,7 +12,7 @@ namespace Nova.CodeAnalysis.Binding
             Right = right;
         }
         public override BoundNodeKind Kind => BoundNodeKind.BinaryExpression;
-        public override Type Type => Op.Type;
+        public override TypeSymbol Type => Op.Type;
         public BoundExpression Left { get; }
         public BoundBinaryOperator Op { get; }
         public BoundExpression Right { get; }
