@@ -188,7 +188,7 @@ namespace Nova.CodeAnalysis.Binding
         {
             string name = syntax.IdentifierToken.Text;
 
-            if (string.IsNullOrEmpty(name))
+            if (syntax.IdentifierToken.IsMissing)
             {
                 return new BoundErrorExpression();
             }
