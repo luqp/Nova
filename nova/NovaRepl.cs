@@ -70,6 +70,15 @@ namespace Nova
             if (string.IsNullOrEmpty(text))
                 return true;
             
+            bool lastTwoLineAreBlank = text.Split(Environment.NewLine)
+                                          .Reverse()
+                                          .TakeWhile(s => string.IsNullOrEmpty(s))
+                                          .Take(2)
+                                          .Count() == 2;
+
+            if (lastTwoLineAreBlank)
+                return true;
+
             SyntaxTree syntaxTree = SyntaxTree.Parse(text);
 
             if (syntaxTree.Root.Statement.GetLastToken().IsMissing)
