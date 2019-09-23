@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Nova.CodeAnalysis.Symbols;
 using Nova.CodeAnalysis.Text;
 
 namespace Nova.CodeAnalysis.Syntax
@@ -254,7 +255,7 @@ namespace Nova.CodeAnalysis.Syntax
             int length = position - start;
             string tokenText = text.ToString(start, length);
             if (!int.TryParse(tokenText, out var tokenValue))
-                diagnostics.ReportInvalidNumber(new TextSpan(start, length), tokenText, typeof(int));
+                diagnostics.ReportInvalidNumber(new TextSpan(start, length), tokenText, TypeSymbol.Int);
 
             value = tokenValue;
             kind = SyntaxKind.NumberToken;

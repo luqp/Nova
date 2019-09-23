@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Nova.CodeAnalysis.Symbols;
 using Nova.CodeAnalysis.Syntax;
 using Nova.CodeAnalysis.Text;
 
@@ -25,7 +26,7 @@ namespace Nova.CodeAnalysis
             diagnostics.Add(diagnostic);
         }
 
-        public void ReportInvalidNumber(TextSpan span, string tokenText, Type type)
+        public void ReportInvalidNumber(TextSpan span, string tokenText, TypeSymbol type)
         {
             string message = $"The number '{tokenText}' isn't valid <{type}>.";
             Report(span, message);
@@ -50,13 +51,13 @@ namespace Nova.CodeAnalysis
             Report(span, message);
         }
 
-        public void ReportUndefinedUnaryOperator(TextSpan span, string operatorText, Type operandType)
+        public void ReportUndefinedUnaryOperator(TextSpan span, string operatorText, TypeSymbol operandType)
         {
             string message = $"Unary operator '{operatorText}' is not defined for type <{operandType}>.";
             Report(span, message);
         }
 
-        public void ReportUndefinedBinaryOperator(TextSpan span, string operatorText, Type leftType, Type rightType)
+        public void ReportUndefinedBinaryOperator(TextSpan span, string operatorText, TypeSymbol leftType, TypeSymbol rightType)
         {
             string message = $"Binary operator '{operatorText}' is not defined for types <{leftType}> and <{rightType}>.";
             Report(span, message);
@@ -68,7 +69,7 @@ namespace Nova.CodeAnalysis
             Report(span, message);
         }
 
-        public void ReportCannotConvert(TextSpan span, Type fromType, Type toType)
+        public void ReportCannotConvert(TextSpan span, TypeSymbol fromType, TypeSymbol toType)
         {
             string message = $"Cannot convert type '{fromType}' to '{toType}'.";
             Report(span, message);

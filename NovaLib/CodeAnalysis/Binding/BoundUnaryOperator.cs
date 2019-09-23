@@ -1,16 +1,17 @@
 using System;
+using Nova.CodeAnalysis.Symbols;
 using Nova.CodeAnalysis.Syntax;
 
 namespace Nova.CodeAnalysis.Binding
 {
     internal sealed class BoundUnaryOperator
     {
-        public BoundUnaryOperator(SyntaxKind syntaxKind, BoundUnaryOperatorKind kind, Type operatorType)
+        public BoundUnaryOperator(SyntaxKind syntaxKind, BoundUnaryOperatorKind kind, TypeSymbol operatorType)
         : this(syntaxKind, kind, operatorType, operatorType)
         {
         }
 
-        public BoundUnaryOperator(SyntaxKind syntaxKind, BoundUnaryOperatorKind kind, Type operandType, Type resultType)
+        public BoundUnaryOperator(SyntaxKind syntaxKind, BoundUnaryOperatorKind kind, TypeSymbol operandType, TypeSymbol resultType)
         {
             SyntaxKind = syntaxKind;
             Kind = kind;
@@ -20,19 +21,19 @@ namespace Nova.CodeAnalysis.Binding
 
         public SyntaxKind SyntaxKind { get; }
         public BoundUnaryOperatorKind Kind { get; }
-        public Type OperandType { get; }
-        public Type Type { get; }
+        public TypeSymbol OperandType { get; }
+        public TypeSymbol Type { get; }
 
         private static BoundUnaryOperator[] operators =
         {
-            new BoundUnaryOperator(SyntaxKind.BangToken, BoundUnaryOperatorKind.LogicalNegation, typeof(bool)),
+            new BoundUnaryOperator(SyntaxKind.BangToken, BoundUnaryOperatorKind.LogicalNegation, TypeSymbol.Bool),
 
-            new BoundUnaryOperator(SyntaxKind.PlusToken, BoundUnaryOperatorKind.Identity, typeof(int)),
-            new BoundUnaryOperator(SyntaxKind.MinusToken, BoundUnaryOperatorKind.Negation, typeof(int)),
-            new BoundUnaryOperator(SyntaxKind.TildeToken, BoundUnaryOperatorKind.OnesComplement, typeof(int))
+            new BoundUnaryOperator(SyntaxKind.PlusToken, BoundUnaryOperatorKind.Identity, TypeSymbol.Int),
+            new BoundUnaryOperator(SyntaxKind.MinusToken, BoundUnaryOperatorKind.Negation, TypeSymbol.Int),
+            new BoundUnaryOperator(SyntaxKind.TildeToken, BoundUnaryOperatorKind.OnesComplement, TypeSymbol.Int)
         };
 
-        public static BoundUnaryOperator Bind(SyntaxKind syntaxKind, Type operandType)
+        public static BoundUnaryOperator Bind(SyntaxKind syntaxKind, TypeSymbol operandType)
         {
             foreach (BoundUnaryOperator op in operators)
             {
