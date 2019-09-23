@@ -14,10 +14,10 @@ namespace Nova.CodeAnalysis.Lowering
         {
         }
 
-        private LabelSymbol GenerateLabel()
+        private BoundLabel GenerateLabel()
         {
             string name = $"Label {++labelCount}";
-            return new LabelSymbol(name);
+            return new BoundLabel(name);
         }
 
         public static BoundBlockStatement Lower(BoundStatement statement)
@@ -55,7 +55,7 @@ namespace Nova.CodeAnalysis.Lowering
         {
             if (node.ElseStatement == null)
             {
-                LabelSymbol endLabel = GenerateLabel();
+                BoundLabel endLabel = GenerateLabel();
 
                 BoundConditionalGotoStatement gotoFalse = new BoundConditionalGotoStatement(endLabel, node.Condition, false);
                 BoundLabelStatement endLabelStatement = new BoundLabelStatement(endLabel);
@@ -65,8 +65,8 @@ namespace Nova.CodeAnalysis.Lowering
             }
             else
             {
-                LabelSymbol elseLabel = GenerateLabel();
-                LabelSymbol endLabel = GenerateLabel();
+                BoundLabel elseLabel = GenerateLabel();
+                BoundLabel endLabel = GenerateLabel();
 
                 BoundConditionalGotoStatement gotoFalse = new BoundConditionalGotoStatement(elseLabel, node.Condition, false);
                 BoundGotoStatement gotoEndStatement = new BoundGotoStatement(endLabel);
@@ -87,9 +87,9 @@ namespace Nova.CodeAnalysis.Lowering
 
         protected override BoundStatement RewriteWhileStatement(BoundWhileStatement node)
         {
-            LabelSymbol continueLabel = GenerateLabel();
-            LabelSymbol checkLabel = GenerateLabel();
-            LabelSymbol endLabel = GenerateLabel();
+            BoundLabel continueLabel = GenerateLabel();
+            BoundLabel checkLabel = GenerateLabel();
+            BoundLabel endLabel = GenerateLabel();
 
             BoundGotoStatement gotoCheck = new BoundGotoStatement(checkLabel);
             BoundLabelStatement continueLabelStatement = new BoundLabelStatement(continueLabel);
