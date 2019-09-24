@@ -33,6 +33,12 @@ namespace Nova.CodeAnalysis.Syntax
                     if (child != null)
                         yield return child;
                 }
+                else if (typeof(SeparatedSyntaxList).IsAssignableFrom(property.PropertyType))
+                {
+                    SeparatedSyntaxList separatedSyntaxList = (SeparatedSyntaxList) property.GetValue(this);
+                    foreach (SyntaxNode child in separatedSyntaxList.GetWithSeparators())
+                        yield return child;
+                }
                 else if (typeof(IEnumerable<SyntaxNode>).IsAssignableFrom(property.PropertyType))
                 {
                     IEnumerable<SyntaxNode> children = (IEnumerable<SyntaxNode>) property.GetValue(this);

@@ -4,7 +4,12 @@ using System.Collections.Immutable;
 
 namespace Nova.CodeAnalysis.Syntax
 {
-    public sealed class SeparatedSyntaxList<T> : IEnumerable<T>
+    public abstract class SeparatedSyntaxList
+    {
+        public abstract ImmutableArray<SyntaxNode> GetWithSeparators();
+    }
+
+    public sealed class SeparatedSyntaxList<T> : SeparatedSyntaxList, IEnumerable<T>
         where T: SyntaxNode
     {
         private readonly ImmutableArray<SyntaxNode> nodesAndSeparators;
@@ -20,7 +25,7 @@ namespace Nova.CodeAnalysis.Syntax
 
         public SyntaxToken GetSeparator(int index) => (SyntaxToken) nodesAndSeparators[index * 2 + 1];
 
-        public ImmutableArray<SyntaxNode> GetWithSeparators() => nodesAndSeparators;
+        public override ImmutableArray<SyntaxNode> GetWithSeparators() => nodesAndSeparators;
 
         public IEnumerator<T> GetEnumerator()
         {
