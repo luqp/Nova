@@ -21,15 +21,18 @@ namespace Nova
             foreach (SyntaxToken token in tokens)
             {
                 bool isKeyword = token.Kind.ToString().EndsWith("Keyword");
-                bool isNumber = token.Kind == SyntaxKind.NumberToken;
                 bool isIdentifier = token.Kind == SyntaxKind.IdentifierToken;
-
+                bool isNumber = token.Kind == SyntaxKind.NumberToken;
+                bool isString = token.Kind == SyntaxKind.StringToken;
+    
                 if (isKeyword)
                     Console.ForegroundColor = ConsoleColor.Blue;
                 else if (isIdentifier)
                     Console.ForegroundColor = ConsoleColor.DarkYellow;
                 else if (isNumber)
                     Console.ForegroundColor = ConsoleColor.Cyan;
+                else if (isString)
+                    Console.ForegroundColor = ConsoleColor.Green;
                 else
                     Console.ForegroundColor = ConsoleColor.DarkGray;
 
@@ -107,7 +110,7 @@ namespace Nova
 
             if (!diagnostics.Any())
             {
-                Console.ForegroundColor = ConsoleColor.DarkMagenta;
+                Console.ForegroundColor = ConsoleColor.White;
                 Console.WriteLine(result.Value);
                 Console.ResetColor();
                 previous = compilation;
