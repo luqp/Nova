@@ -65,12 +65,12 @@ namespace Nova
 
                     if (lineCount == 0)
                     {
-                        Console.ForegroundColor = ConsoleColor.Cyan;
+                        Console.ForegroundColor = ConsoleColor.DarkMagenta;
                         Console.Write("» ");
                     }
                     else
                     {
-                        Console.ForegroundColor = ConsoleColor.DarkGray;
+                        Console.ForegroundColor = ConsoleColor.Magenta;
                         Console.Write("· ");
                     }
 
