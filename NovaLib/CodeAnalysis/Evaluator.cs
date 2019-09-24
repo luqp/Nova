@@ -141,7 +141,10 @@ namespace Nova.CodeAnalysis
             switch (b.Op.Kind)
             {
                 case BoundBinaryOperatorKind.Addition:
-                    return (int)left + (int)right;
+                    if (b.Type == TypeSymbol.Int)
+                        return (int)left + (int)right;
+                    else
+                        return (string)left + (string)right;
                 case BoundBinaryOperatorKind.Subtraction:
                     return (int)left - (int)right;
                 case BoundBinaryOperatorKind.Multiplication:
@@ -149,17 +152,17 @@ namespace Nova.CodeAnalysis
                 case BoundBinaryOperatorKind.Division:
                     return (int)left / (int)right;
                 case BoundBinaryOperatorKind.BitwiseAnd:
-                    if (b.Type == (TypeSymbol.Int))
+                    if (b.Type == TypeSymbol.Int)
                         return (int)left & (int)right;
                     else
                         return (bool)left & (bool)right;
                 case BoundBinaryOperatorKind.BitwiseOr:
-                    if (b.Type == (TypeSymbol.Int))
+                    if (b.Type == TypeSymbol.Int)
                         return (int)left | (int)right;
                     else
                         return (bool)left | (bool)right;
                 case BoundBinaryOperatorKind.BitwiseXor:
-                    if (b.Type == (TypeSymbol.Int))
+                    if (b.Type == TypeSymbol.Int)
                         return (int)left ^ (int)right;
                     else
                         return (bool)left ^ (bool)right;
