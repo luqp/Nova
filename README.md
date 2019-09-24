@@ -1078,3 +1078,99 @@ Add 'delete between lines' behavior with 'Backspace' key
 
 ## 11.0 Improve delete
 Add 'delete between lines' behavior with 'Delete' key
+
+# Compiler part 10
+
+## 1.0 Right place
+  * Move GetLastToken() to 'SyntaxNode' class.
+  * Prettify the output
+    - add coloration to Identifier
+    - add coloration to numbers
+
+## 2.0 Allow REPL to force evaluation
+Sometimes our heuristic for detecting whether the submission is complete
+doesn't work, in which case we want the user to have the ability to force
+the completion. We do this by adding two blank lines.
+
+* `NovaRepl` class, modify `IsCompleteSubmission` method to end the program when detect two blank lines.
+
+## 3.0 Add ability to get lexer diagnostics
+When parsing tokens only, we currently have no way to get access to the
+lexer's diagnostics. This adds an optional out parameter.
+
+The real fix, of course, would be to mirror what Roslyn is doing, which is
+exposing the diagnostics on the actual tokens, which makes the output neatly
+self-contained.
+
+* `SyntaxTree` class, overload the `ParseTokens` method and change the return type.
+
+## 4.0 Add support for string literals
+To catch the quote symbol into a string, use helpers:
+```
+the input:
+---------
+  Test " asdsd
+
+the output:
+---------
+one way:
+  "Test \" asdsd"
+
+second way:
+  "Test "" asdsd"  <--
+```
+
+### 4.1
+`Lexer` class, match `"` quote symbol, and add `ReadString` method.
+  * Return report when a string is incomplete
+
+### 4.2
+`DiagnosticBag` class, add a report to `ReportUnterminatedString`
+
+### 4.3
+`Parser` class, add `ParserStringLiteral` method.
+
+### 4.4
+`LexerTests` class, add `LexerLexesUnterminatedString` method to test a specific case:
+  * `"\"Test"`
+
+## 5.0 Rename `LabelSymbol` to `BoundLabel`
+That is because `LabelSymbol` was used only for binder to represent all loops.
+  * Also, this class is an internal helper.
+Move `BoundLabel` class to Binding namespace.
+
+## 6.0 Create `Symbols` namespace
+  * Move 'VariableSymbol' to a separate namespace
+  * Enables to add more Symbols.
+
+### 6.1
+  * Create `Symbol` abstract class.
+  * Create `SymbolKind` enum, that has all type of symbols
+
+## 7.0 Type Symbols
+Create `TypeSymbol` class to replace 'System.Type'
+
+## 8.0 Cascading errors
+Add concept of error, Add 'TypeSymbol.Error' to represent unbindable expressions
+This avoids cascading errors when part of an expression cannot be bound.
+Higher nodes, such as binary expressions, can detect this case and bail early.
+
+### 8.1
+Add `Error` type in `TypeSymbol` class.
+
+### 8.2
+Create `BoundErrorExpression` class, to return it into:
+  * `BindUnaryExpression` method, when the type  is incorrect
+  * `BindBinaryExpression` method, when the one side's type  is incorrect or operator is missing
+  * `BindNameExpression` method, if we don't know what name it is or when we can't lookup the name
+
+Not return it in:
+  * `BindAssignmentExpression` method, is not useful, because assignments are right associative and need more information.
+  * `BindLiteralExpression` are always define.
+
+### 8.3
+`BoundTreeRewriter`, add 'ErrorExpression' to 'RewriteExpression' method.
+
+## 9.0 Fix exception when evaluating token sequences
+  * <ArbitraryToken> <IdentifierToken>
+  * Or incomplete Assignation statements
