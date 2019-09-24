@@ -31,6 +31,7 @@ namespace Nova.CodeAnalysis.Syntax
         OpenBraceToken,
         CloseBraceToken,
         IdentifierToken,
+        CommaToken,
 
         // Keywords
         FalseKeyword,
@@ -62,5 +63,6 @@ namespace Nova.CodeAnalysis.Syntax
         BinaryExpression,
         ParenthesizedExpression,
         AssignmentExpression,
+        CallExpression,
     }
 }
