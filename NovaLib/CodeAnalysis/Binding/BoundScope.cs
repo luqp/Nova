@@ -6,7 +6,8 @@ namespace Nova.CodeAnalysis.Binding
 {
     internal sealed class BoundScope
     {
-        private Dictionary<string,VariableSymbol> variables = new Dictionary<string, VariableSymbol>();
+        private Dictionary<string,VariableSymbol> variables;
+        private Dictionary<string,FunctionSymbol> functions;
 
         public BoundScope(BoundScope parent)
         {
@@ -15,8 +16,11 @@ namespace Nova.CodeAnalysis.Binding
 
         public BoundScope Parent { get; }
 
-        public bool TryDeclare(VariableSymbol variable)
+        public bool TryDeclareVariable(VariableSymbol variable)
         {
+            if (variables == null)
+                variables = new Dictionary<string, VariableSymbol>();
+
             if (variables.ContainsKey(variable.Name))
                 return false;
 
@@ -24,20 +28,58 @@ namespace Nova.CodeAnalysis.Binding
             return true;
         }
 
-        public bool TryLookup(string name, out VariableSymbol variable)
+        public bool TryLookupVariable(string name, out VariableSymbol variable)
         {
-            if (variables.TryGetValue(name, out variable))
+            variable = null;
+
+            if (variables != null && variables.TryGetValue(name, out variable))
                 return true;
             
             if (Parent == null)
                 return false;
             
-            return Parent.TryLookup(name, out variable);
+            return Parent.TryLookupVariable(name, out variable);
+        }
+
+        public bool TryDeclareFunction(FunctionSymbol function)
+        {
+            if (functions == null)
+                functions = new Dictionary<string, FunctionSymbol>();
+
+            if (functions.ContainsKey(function.Name))
+                return false;
+
+            functions.Add(function.Name, function);
+            return true;
+        }
+
+        public bool TryLookupFunction(string name, out FunctionSymbol function)
+        {
+            function = null;
+
+            if (functions != null && functions.TryGetValue(name, out function))
+                return true;
+            
+            if (Parent == null)
+                return false;
+            
+            return Parent.TryLookupFunction(name, out function);
         }
 
         public ImmutableArray<VariableSymbol> GetDeclaredVariables()
         {
+            if (variables == null)
+                return ImmutableArray<VariableSymbol>.Empty;
+
             return variables.Values.ToImmutableArray();
+        }
+
+        public ImmutableArray<FunctionSymbol> GetDeclaredFunctions()
+        {
+            if (variables == null)
+                return ImmutableArray<FunctionSymbol>.Empty;
+
+            return functions.Values.ToImmutableArray();
         }
     }
 }
