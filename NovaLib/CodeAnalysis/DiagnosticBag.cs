@@ -86,5 +86,29 @@ namespace Nova.CodeAnalysis
             string message = $"Variable '{name}' is read-only and cannot be assigned to.";
             Report(span, message);
         }
+
+        public void ReportUndefinedFunction(TextSpan span, string name)
+        {
+            string message = $"Function '{name}' doesn't exist.";
+            Report(span, message);
+        }
+
+        public void ReportWrongArgumentCount(TextSpan span, string name, int expectedCount, int actualCount)
+        {
+            string message = $"Function '{name}' requires {expectedCount} arguments but was given {actualCount}.";
+            Report(span, message);
+        }
+
+        public void ReportWrongArgumentType(TextSpan span, string name, TypeSymbol expectedType, TypeSymbol actualType)
+        {
+            string message = $"Parameter '{name}' requires a value of type <{expectedType}> but was given a value of type <{actualType}>.";
+            Report(span, message);
+        }
+
+        public void ReportExpressionMustHaveValue(TextSpan span)
+        {
+            string message = "Expression must be have a value";
+            Report(span, message);
+        }
     }
 }
