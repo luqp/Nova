@@ -12,7 +12,6 @@ namespace Nova.CodeAnalysis.Symbols
         }
 
         public override SymbolKind Kind => SymbolKind.Function;
-
         public ImmutableArray<ParameterSymbol> Parameters { get; }
         public TypeSymbol Type { get; }
     }

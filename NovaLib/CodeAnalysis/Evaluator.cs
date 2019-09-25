@@ -92,6 +92,8 @@ namespace Nova.CodeAnalysis
                     return EvaluateUnaryExpression((BoundUnaryExpression)node);
                 case BoundNodeKind.BinaryExpression:
                     return EvaluateBinaryExpression((BoundBinaryExpression)node);
+                case BoundNodeKind.CallExpression:
+                    return EvaluateCallExpression((BoundCallExpression)node);
                 default:
                     throw new Exception($"Unexpected node <{node.Kind}>");
             }
@@ -185,6 +187,20 @@ namespace Nova.CodeAnalysis
                 default:
                     throw new Exception($"Unexpected binary operator <{b.Op}>");
             }
+        }
+
+        private object EvaluateCallExpression(BoundCallExpression node)
+        {
+            if (node.Function == BuiltinFunctions.Input)
+                return Console.ReadLine();
+            else if (node.Function == BuiltinFunctions.Print)
+            {
+                string message = (string) EvaluateExpression(node.Arguments[0]);
+                Console.WriteLine(message);
+                return null;
+            }
+            else
+                throw new Exception($"Unexpected function {node.Function.Name}");
         }
     }
 }
