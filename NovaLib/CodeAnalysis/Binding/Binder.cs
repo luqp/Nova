@@ -40,8 +40,7 @@ namespace Nova.CodeAnalysis.Binding
                 stack.Push(previous);
                 previous = previous.Previous;
             }
-
-            BoundScope parent = null;
+            BoundScope parent = CreateRootScope();
 
             while (stack.Count > 0)
             {
@@ -49,10 +48,20 @@ namespace Nova.CodeAnalysis.Binding
                 BoundScope scope = new BoundScope(parent);
                 foreach (VariableSymbol v in previous.Variables)
                     scope.TryDeclareVariable(v);
-                
+
                 parent = scope;
             }
             return parent;
+        }
+
+        private static BoundScope CreateRootScope()
+        {
+            BoundScope result = new BoundScope(null);
+
+            foreach (FunctionSymbol f in BuiltinFunctions.GetALL())
+                result.TryDeclareFunction(f);
+
+            return result;
         }
 
         public DiagnosticBag Diagnostics => diagnostics;
