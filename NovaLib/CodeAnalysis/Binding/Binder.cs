@@ -287,6 +287,9 @@ namespace Nova.CodeAnalysis.Binding
 
         private BoundExpression BindCallExpression(CallExpressionSyntax syntax)
         {
+            if (syntax.Arguments.Count == 1 && LookupType(syntax.Identifier.Text) is TypeSymbol type)
+                return BindConversion(type, syntax.Arguments[0]);
+
             var boundArguments = ImmutableArray.CreateBuilder<BoundExpression>();
 
             foreach (ExpressionSyntax argument in syntax.Arguments)
@@ -322,6 +325,20 @@ namespace Nova.CodeAnalysis.Binding
             return new BoundCallExpression(function, boundArguments.ToImmutable());
         }
 
+        private BoundExpression BindConversion(TypeSymbol type, ExpressionSyntax syntax)
+        {
+            BoundExpression expression = BindExpression(syntax);
+            Conversion conversion = Conversion.Classify(expression.Type, type);
+
+            if (!conversion.Exists)
+            {
+                diagnostics.ReportCannotConvert(syntax.Span, expression.Type, type);
+                return new BoundErrorExpression();
+            }
+
+            return new BoundConversionExpression(type, expression);
+        }
+
         private VariableSymbol BindVariable(SyntaxToken identifier, bool isReadOnly, TypeSymbol type)
         {
             string name = identifier.Text ?? "?";
@@ -332,6 +349,21 @@ namespace Nova.CodeAnalysis.Binding
                 diagnostics.ReportVariableAlreadyDeclared(identifier.Span, name);
 
             return variable;
+        }
+
+        private TypeSymbol LookupType(string name)
+        {
+            switch (name)
+            {
+                case "bool":
+                    return TypeSymbol.Bool;
+                case "int":
+                    return TypeSymbol.Int;
+                case "string":
+                    return TypeSymbol.String;
+                default:
+                    return null;
+            }
         }
     }
 }
