@@ -1174,3 +1174,124 @@ Not return it in:
 ## 9.0 Fix exception when evaluating token sequences
   * <ArbitraryToken> <IdentifierToken>
   * Or incomplete Assignation statements
+
+# Compiler part 11
+
+# String and Function calls
+
+## 1.0 Add string concatenation
+  * `BoundBinaryOperator` class, add new operator to the table, to handler string.
+  * `Evaluator` class, evaluate 'adding' string.
+  * `Evaluator` class, Fix bugs of conditions, remove excess brackets.
+
+## 2.0 Highlighting String
+  * `Repl` class, Change coloration of '>>, ·' symbols.
+  * `NovaRepl` class, Add highlighting color for string tokens.
+
+## 3.0 Add support for calling built-in functions
+  * Create `ParameterSymbol` class, used in functions, It inherit from `VariableSymbol`
+  * Create `FunctionSymbol` class, that contains an Arrays of parameters.
+  * Add `Void` type to `TypeSymbol` class, that it's need to some functions.
+  * Create `BuiltinFunctions` class, In which define all functions to be use.
+
+### 3.1
+Call expression, some examples:
+```
+Some calls:
+  * print("Hello")
+  * add(1, 2)
+```
+  * Create `CallExpressionSyntax` class, has the syntax of a call of function, but need arguments.
+  * Create `SeparatedSyntaxList<T>` class, where `T` = `SyntaxNode` this return:
+    - the quantity of arguments that has
+    - Arguments
+    - Separators
+    - Arguments (Nodes) and separators
+
+
+### 3.2
+Interpret the input: `add(1, 2)`:
+
+  * `Lexer` class, match ',' symbol
+  * 'SyntaxFacts' class, handler `CommaToken`.
+  * 'Parser' class, modify the case to `IdentifierToken`:
+      - Add `ParseNameOrCallExpression` method, who identify if parse `NameExpression` or parse 'CallExpression'.
+      - Add `ParseCallExpression` method, that collects its parameters and arguments.
+      - Add `ParseArguments` method, add all tokens inside of Parenthesis.
+  * `Binder` class, create `BindCallExpression`, not implemented yet. Return an Error.
+
+### 3.3
+Show `CommaToken` when printing parser trees
+  * Create `SeparatedSyntaxList` like abstract class, to generalice the return of Arguments (Nodes) and separators.
+  * `SyntaxNode` class, modify `GetChildren` method to handler properties from type of `SeparatedSyntaxList`
+
+### 3.4
+Verify the input function
+  * `BuiltinFunctions` class, add `GetAll` method that return all available functions.
+  * `Binder` class, modify `BindCallExpression` method:
+      - Check if the input function is right.
+      - Add some conditions to check if the right parameters was passed.
+      - Change name of `BindExpression` to `BindExpressionInternal` to internal calls
+      - `BindExpression` method is rewrite, to control functions that can't be void.
+      - modify `BindExpressionStatement` method, to call the new `BindExpression`.
+  * Add more diagnostics to `DiagnosticBag` class.
+
+### 3.5
+Apply to repl concept to rewrite and evaluate the right function.
+  * Create `BoundCallExpression` class, to define call functions.
+  * `BoundTreeRewriter` class, add new method `RewriteCallExpression`, rewrite all arguments too.
+  * `Evaluator` class add `EvaluateCallExpression` method to eject the correct function.
+  * `NovaRepl` class, doesn't care null result.
+
+## 4.0 Add support for looking up functions
+  * Add  functions to the scope
+  * Declare functions
+
+### 4.1
+`BoundScope` class, Add the function concept.
+  * functions dictionary,
+  * change `TryDeclare` for `TryDeclareVariable` and `TryDeclareFunction`
+  * change `TryLookup` for `TryLookupVariable` and `TryLookupFunction`
+  * Add `GetDeclaredFunctions` method.
+
+Each new submissions should be in nested scope.
+
+### 4.2
+`Binder` class:
+  * Refactor 'BindCallExpression' with scope to access to the function
+  * Create `CreateRootScope` method to look up functions
+
+## 5.0 Add support for random function
+  * Create `Rnd` function in `BuiltinFunctions` class, that create a random function.
+  * `Evaluator` class, evaluate random function.
+
+## 6.0 Add conversions
+Create `Conversion` class to work with types:
+  * Identity, that means conversion between the same type.
+  * Implicit, conversion to an type that we don't have in our language `int   To  float`. Don't loose data
+      - Explicit, `float  To  int`. Loose data
+
+Create `Classify` method, that is where define which conversion are available.
+
+### 6.1
+`Conversion` class has next properties:
+  * None
+  * Identity
+  * Implicit
+  * Explicit
+
+### 6.2
+`Binder` class:
+  * Create `LookupType` method, to match type ("int", "bool", ...) and return the `TypeSymbol` of each one.
+  * Modify `BindCallExpression` method to add a condition to match conversion functions
+  * Add `BindConverision` method, to return a `BoundConversionExpression`, that is the conversion itself.
+
+### 6.3
+`BoundTreeRewriter` class, add `RewriteConversionExpression` to rewrite the expression.
+
+### 6.4
+`Evaluator` class create `EvaluateConversionExpression` method to match with the correct evaluate conversion.
+
+## 7.0 Bug in for Loop
+Bug: Print the last evaluation of the incrementor.
+  * We will fix it soon ;)
