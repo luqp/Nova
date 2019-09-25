@@ -135,7 +135,7 @@ namespace Nova.CodeAnalysis.Binding
 
         private BoundStatement BindExpressionStatement(ExpressionStatementSyntax syntax)
         {
-            BoundExpression expression = BindExpression(syntax.Expression);
+            BoundExpression expression = BindExpression(syntax.Expression, canBeVoid: true);
             return new BoundExpressionStatement(expression);
         }
 
@@ -152,7 +152,20 @@ namespace Nova.CodeAnalysis.Binding
             return result;
         }
 
-        private BoundExpression BindExpression(ExpressionSyntax syntax)
+        private BoundExpression BindExpression(ExpressionSyntax syntax, bool canBeVoid = false)
+        {
+            BoundExpression result = BindExpressionInternal(syntax);
+
+            if (!canBeVoid && result.Type == TypeSymbol.Void)
+            {
+                diagnostics.ReportExpressionMustHaveValue(syntax.Span);
+                return new BoundErrorExpression();
+            }
+
+            return result;
+        }
+
+        private BoundExpression BindExpressionInternal(ExpressionSyntax syntax)
         {
             switch (syntax.Kind)
             {
@@ -265,8 +278,42 @@ namespace Nova.CodeAnalysis.Binding
 
         private BoundExpression BindCallExpression(CallExpressionSyntax syntax)
         {
-            diagnostics.ReportBadCharacter(syntax.Identifier.Span.Start, 'X');
-            return new BoundErrorExpression();
+            var boundArguments = ImmutableArray.CreateBuilder<BoundExpression>();
+
+            foreach (ExpressionSyntax argument in syntax.Arguments)
+            {
+                BoundExpression boundArgument = BindExpression(argument);
+                boundArguments.Add(boundArgument);
+            }
+
+            IEnumerable<FunctionSymbol> functions = BuiltinFunctions.GetALL();
+            FunctionSymbol function = functions.SingleOrDefault(f => f.Name == syntax.Identifier.Text);
+
+            if (function == null)
+            {
+                diagnostics.ReportUndefinedFunction(syntax.Identifier.Span, syntax.Identifier.Text);
+                return new BoundErrorExpression();
+            }
+
+            if (syntax.Arguments.Count != function.Parameters.Length)
+            {
+                diagnostics.ReportWrongArgumentCount(syntax.Span, function.Name, function.Parameters.Length, syntax.Arguments.Count);
+                return new BoundErrorExpression();
+            }
+
+            for (int i = 0; i < syntax.Arguments.Count; i++)
+            {
+                BoundExpression argument = boundArguments[i];
+                ParameterSymbol parameter = function.Parameters[i];
+
+                if (argument.Type != parameter.Type)
+                {
+                    diagnostics.ReportWrongArgumentType(syntax.Span, parameter.Name, parameter.Type, argument.Type);
+                    return new BoundErrorExpression();
+                }
+            }
+
+            return new BoundCallExpression(function, boundArguments.ToImmutable());
         }
 
         private VariableSymbol BindVariable(SyntaxToken identifier, bool isReadOnly, TypeSymbol type)
