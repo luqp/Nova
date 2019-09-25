@@ -48,7 +48,7 @@ namespace Nova.CodeAnalysis.Binding
                 previous = stack.Pop();
                 BoundScope scope = new BoundScope(parent);
                 foreach (VariableSymbol v in previous.Variables)
-                    scope.TryDeclare(v);
+                    scope.TryDeclareVariable(v);
                 
                 parent = scope;
             }
@@ -208,7 +208,7 @@ namespace Nova.CodeAnalysis.Binding
                 return new BoundErrorExpression();
             }
 
-            if (!scope.TryLookup(name, out var variable))
+            if (!scope.TryLookupVariable(name, out var variable))
             {
                 diagnostics.ReportUndefinedName(syntax.IdentifierToken.Span, name);
                 return new BoundErrorExpression();                
@@ -221,7 +221,7 @@ namespace Nova.CodeAnalysis.Binding
             string name = syntax.IdentifierToken.Text;
             BoundExpression boundExpression = BindExpression(syntax.Expression);
 
-            if (!scope.TryLookup(name, out var variable))
+            if (!scope.TryLookupVariable(name, out var variable))
             {
                 diagnostics.ReportUndefinedName(syntax.IdentifierToken.Span, name);
                 return boundExpression;
@@ -286,10 +286,7 @@ namespace Nova.CodeAnalysis.Binding
                 boundArguments.Add(boundArgument);
             }
 
-            IEnumerable<FunctionSymbol> functions = BuiltinFunctions.GetALL();
-            FunctionSymbol function = functions.SingleOrDefault(f => f.Name == syntax.Identifier.Text);
-
-            if (function == null)
+            if (!scope.TryLookupFunction(syntax.Identifier.Text, out FunctionSymbol function))
             {
                 diagnostics.ReportUndefinedFunction(syntax.Identifier.Span, syntax.Identifier.Text);
                 return new BoundErrorExpression();
@@ -322,7 +319,7 @@ namespace Nova.CodeAnalysis.Binding
             bool declare = !identifier.IsMissing;
             VariableSymbol variable = new VariableSymbol(name, isReadOnly, type);
 
-            if (declare && !scope.TryDeclare(variable))
+            if (declare && !scope.TryDeclareVariable(variable))
                 diagnostics.ReportVariableAlreadyDeclared(identifier.Span, name);
 
             return variable;
