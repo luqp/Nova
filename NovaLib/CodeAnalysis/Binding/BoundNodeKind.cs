@@ -20,5 +20,6 @@ namespace Nova.CodeAnalysis.Binding
         AssignmentExpression,
         UnaryExpression,
         BinaryExpression,
+        CallExpression,
     }
 }
