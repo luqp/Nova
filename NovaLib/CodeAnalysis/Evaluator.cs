@@ -9,6 +9,7 @@ namespace Nova.CodeAnalysis
     {
         private readonly BoundBlockStatement root;
         private readonly Dictionary<VariableSymbol, object> variables;
+        private Random random;
 
         private object lastValue;
 
@@ -198,6 +199,14 @@ namespace Nova.CodeAnalysis
                 string message = (string) EvaluateExpression(node.Arguments[0]);
                 Console.WriteLine(message);
                 return null;
+            }
+            else if (node.Function == BuiltinFunctions.Rnd)
+            {
+                int max = (int) EvaluateExpression(node.Arguments[0]);
+                if (random == null);
+                    random = new Random();
+
+                return random.Next(max);
             }
             else
                 throw new Exception($"Unexpected function {node.Function.Name}");
