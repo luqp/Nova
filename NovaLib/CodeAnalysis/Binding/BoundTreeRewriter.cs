@@ -19,6 +19,8 @@ namespace Nova.CodeAnalysis.Binding
                     return RewriteIfStatement((BoundIfStatement)node);
                 case BoundNodeKind.WhileStatement:
                     return RewriteWhileStatement((BoundWhileStatement)node);
+                case BoundNodeKind.DoWhileStatement:
+                    return RewriteDoWhileStatement((BoundDoWhileStatement)node);
                 case BoundNodeKind.ForStatement:
                     return RewriteForStatement((BoundForStatement)node);
                 case BoundNodeKind.LabelStatement:
@@ -98,6 +100,17 @@ namespace Nova.CodeAnalysis.Binding
             BoundStatement body = RewriteStatement(node.Body);
 
             if (condition == node.Condition && body == node.Body)
+                return node;
+            
+            return new BoundWhileStatement(condition, body);
+        }
+
+        protected virtual BoundStatement RewriteDoWhileStatement(BoundDoWhileStatement node)
+        {
+            BoundExpression condition = RewriteExpression(node.Condition);
+            BoundStatement body = RewriteStatement(node.Body);
+
+            if (body == node.Body && condition == node.Condition)
                 return node;
             
             return new BoundWhileStatement(condition, body);

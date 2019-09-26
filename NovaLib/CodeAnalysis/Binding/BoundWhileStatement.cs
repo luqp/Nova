@@ -7,6 +7,7 @@ namespace Nova.CodeAnalysis.Binding
             Condition = condition;
             Body = body;
         }
+
         public override BoundNodeKind Kind => BoundNodeKind.WhileStatement;
         public BoundExpression Condition { get; }
         public BoundStatement Body { get; }

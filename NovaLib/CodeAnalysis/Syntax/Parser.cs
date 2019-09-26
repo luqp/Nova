@@ -82,6 +82,8 @@ namespace Nova.CodeAnalysis.Syntax
                     return ParseIfStatement();
                 case SyntaxKind.WhileKeyword:
                     return ParseWhileStatement();
+                case SyntaxKind.DoKeyword:
+                    return ParseDoWhileStatement();
                 case SyntaxKind.ForKeyword:
                     return ParseForStatement();
                 default:
@@ -146,6 +148,15 @@ namespace Nova.CodeAnalysis.Syntax
             ExpressionSyntax condition = ParseExpression();
             StatementSyntax body = ParseStatement();
             return new WhileStatementSyntax(keyword, condition, body);
+        }
+
+        private StatementSyntax ParseDoWhileStatement()
+        {
+            SyntaxToken doKeyword = MatchToken(SyntaxKind.DoKeyword);
+            StatementSyntax body = ParseStatement();
+            SyntaxToken whileKeyword = MatchToken(SyntaxKind.WhileKeyword);
+            ExpressionSyntax condition = ParseExpression();
+            return new DoWhileStatementSyntax(doKeyword, body, whileKeyword, condition);
         }
 
         private StatementSyntax ParseForStatement()
