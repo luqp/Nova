@@ -1,13 +1,13 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Linq;
 using Nova.CodeAnalysis.Symbols;
 
 namespace Nova.CodeAnalysis.Binding
 {
     internal sealed class BoundScope
     {
-        private Dictionary<string,VariableSymbol> variables;
-        private Dictionary<string,FunctionSymbol> functions;
+        private Dictionary<string, Symbol> symbols;
 
         public BoundScope(BoundScope parent)
         {
@@ -16,70 +16,65 @@ namespace Nova.CodeAnalysis.Binding
 
         public BoundScope Parent { get; }
 
-        public bool TryDeclareVariable(VariableSymbol variable)
+        private bool TryDeclareSymbol<TSymbol>(TSymbol symbol)
+            where TSymbol : Symbol
         {
-            if (variables == null)
-                variables = new Dictionary<string, VariableSymbol>();
-
-            if (variables.ContainsKey(variable.Name))
+            if (symbols == null)
+                symbols = new Dictionary<string, Symbol>();
+            else if (symbols.ContainsKey(symbol.Name))
                 return false;
-
-            variables.Add(variable.Name, variable);
+            
+            symbols.Add(symbol.Name, symbol);
             return true;
         }
+
+        private bool TryLookupSymbol<TSymbol>(string name, out TSymbol symbol)
+            where TSymbol: Symbol
+        {
+            symbol = null;
+
+            if (symbols != null && symbols.TryGetValue(name, out var symbolValue))
+            {
+                if (symbolValue is TSymbol result)
+                {
+                    symbol = result;
+                    return true;
+                }
+
+                return false;
+            }
+
+            if (Parent == null)
+                return false;
+            
+            return Parent.TryLookupSymbol(name, out symbol);
+        }
+
+        public bool TryDeclareVariable(VariableSymbol variable)
+            => TryDeclareSymbol(variable);
 
         public bool TryLookupVariable(string name, out VariableSymbol variable)
-        {
-            variable = null;
-
-            if (variables != null && variables.TryGetValue(name, out variable))
-                return true;
-            
-            if (Parent == null)
-                return false;
-            
-            return Parent.TryLookupVariable(name, out variable);
-        }
+            => TryLookupSymbol(name, out variable);
 
         public bool TryDeclareFunction(FunctionSymbol function)
-        {
-            if (functions == null)
-                functions = new Dictionary<string, FunctionSymbol>();
-
-            if (functions.ContainsKey(function.Name))
-                return false;
-
-            functions.Add(function.Name, function);
-            return true;
-        }
+            => TryDeclareSymbol(function);
 
         public bool TryLookupFunction(string name, out FunctionSymbol function)
-        {
-            function = null;
+            => TryLookupSymbol(name, out function);
 
-            if (functions != null && functions.TryGetValue(name, out function))
-                return true;
-            
-            if (Parent == null)
-                return false;
-            
-            return Parent.TryLookupFunction(name, out function);
+        public ImmutableArray<TSymbol> GetDeclaredSymbols<TSymbol>()
+            where TSymbol : Symbol
+        {
+            if (symbols == null)
+                return ImmutableArray<TSymbol>.Empty;
+
+            return symbols.Values.OfType<TSymbol>().ToImmutableArray();
         }
 
         public ImmutableArray<VariableSymbol> GetDeclaredVariables()
-        {
-            if (variables == null)
-                return ImmutableArray<VariableSymbol>.Empty;
-
-            return variables.Values.ToImmutableArray();
-        }
+            => GetDeclaredSymbols<VariableSymbol>();
 
         public ImmutableArray<FunctionSymbol> GetDeclaredFunctions()
-        {
-            if (variables == null)
-                return ImmutableArray<FunctionSymbol>.Empty;
-
-            return functions.Values.ToImmutableArray();
-        }
+            => GetDeclaredSymbols<FunctionSymbol>();
     }
 }
