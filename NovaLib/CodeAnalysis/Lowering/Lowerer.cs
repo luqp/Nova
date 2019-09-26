@@ -109,6 +109,27 @@ namespace Nova.CodeAnalysis.Lowering
             return RewriteStatement(result);
         }
 
+        protected override BoundStatement RewriteDoWhileStatement(BoundDoWhileStatement node)
+        {
+            BoundLabel continueLabel = GenerateLabel();
+            BoundLabel checkLabel = GenerateLabel();
+            BoundLabel endLabel = GenerateLabel();
+
+            BoundLabelStatement continueLabelStatement = new BoundLabelStatement(continueLabel);
+            BoundLabelStatement checkLabelStatement = new BoundLabelStatement(checkLabel);
+            BoundConditionalGotoStatement gotoTrue = new BoundConditionalGotoStatement(continueLabel, node.Condition, true);
+            BoundLabelStatement endLabelStatement = new BoundLabelStatement(endLabel);
+            BoundBlockStatement result = new BoundBlockStatement(ImmutableArray.Create<BoundStatement>(
+                continueLabelStatement,
+                node.Body,
+                checkLabelStatement,
+                gotoTrue,
+                endLabelStatement
+            ));
+            
+            return RewriteStatement(result);
+        }
+
         protected override BoundStatement RewriteForStatement(BoundForStatement node)
         {
             BoundVariableDeclaration variableDeclaration = new BoundVariableDeclaration(node.Variable, node.LowerBound);

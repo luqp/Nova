@@ -8,6 +8,7 @@ namespace Nova.CodeAnalysis.Binding
         BlockStatement,
         IfStatement,
         WhileStatement,
+        DoWhileStatement,
         ForStatement,
         LabelStatement,
         GotoStatement,
