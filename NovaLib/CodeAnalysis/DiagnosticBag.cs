@@ -75,9 +75,9 @@ namespace Nova.CodeAnalysis
             Report(span, message);
         }
 
-        public void ReportVariableAlreadyDeclared(TextSpan span, string name)
+        public void ReportSymbolAlreadyDeclared(TextSpan span, string name)
         {
-            string message = $"Variable '{name}' is already declared.";
+            string message = $"'{name}' is already declared.";
             Report(span, message);
         }
 
@@ -89,7 +89,7 @@ namespace Nova.CodeAnalysis
 
         public void ReportUndefinedFunction(TextSpan span, string name)
         {
-            string message = $"Function '{name}' doesn't exist.";
+            string message = $"'{name}' is not a function.";
             Report(span, message);
         }
 

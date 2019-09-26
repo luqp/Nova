@@ -96,7 +96,7 @@ namespace Nova.Tests.CodeAnalysis
             ";
 
             var diagnostics = @"
-                Variable 'x' is already declared.
+                'x' is already declared.
             ";
 
             AssertDiagnostics(text, diagnostics);
@@ -280,6 +280,23 @@ namespace Nova.Tests.CodeAnalysis
 
             var diagnostics = @"
                 Cannot convert type 'bool' to 'int'.
+            ";
+
+            AssertDiagnostics(text, diagnostics);
+        }
+
+        [Fact]
+        public void EvaluatorVariablesCanShadowFunctions()
+        {
+            var text = @"
+                {
+                    let print = ""test""
+                    [print](print)
+                }
+            ";
+
+            var diagnostics = @"
+                'print' is not a function.
             ";
 
             AssertDiagnostics(text, diagnostics);
