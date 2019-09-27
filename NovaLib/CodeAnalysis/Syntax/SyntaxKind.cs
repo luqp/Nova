@@ -31,6 +31,7 @@ namespace Nova.CodeAnalysis.Syntax
         OpenBraceToken,
         CloseBraceToken,
         IdentifierToken,
+        ColonToken,
         CommaToken,
 
         // Keywords
@@ -47,6 +48,7 @@ namespace Nova.CodeAnalysis.Syntax
         // Nodes
         CompilationUnit,
         ElseClause,
+        TypeClause,
 
         // Statements
         VariableDeclaration,

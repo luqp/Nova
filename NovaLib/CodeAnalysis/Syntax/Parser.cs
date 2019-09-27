@@ -118,9 +118,25 @@ namespace Nova.CodeAnalysis.Syntax
             SyntaxKind expected = Current.Kind == SyntaxKind.LetKeyword ? SyntaxKind.LetKeyword : SyntaxKind.VarKeyword;
             SyntaxToken keyword = MatchToken(expected);
             SyntaxToken identifier = MatchToken(SyntaxKind.IdentifierToken);
+            TypeClauseSyntax typeClause = ParseOptionalTypeClause();
             SyntaxToken equals = MatchToken(SyntaxKind.EqualsToken);
             ExpressionSyntax initializer = ParseExpression();
-            return new VariableDeclarationSyntax(keyword, identifier, equals, initializer);
+            return new VariableDeclarationSyntax(keyword, identifier, typeClause, equals, initializer);
+        }
+
+        private TypeClauseSyntax ParseOptionalTypeClause()
+        {
+            if (Current.Kind != SyntaxKind.ColonToken)
+                return null;
+
+            return ParseTypeClause();
+        }
+
+        private TypeClauseSyntax ParseTypeClause()
+        {
+            SyntaxToken colonToken = MatchToken(SyntaxKind.ColonToken);
+            SyntaxToken identifier = MatchToken(SyntaxKind.IdentifierToken);
+            return new TypeClauseSyntax(colonToken, identifier);
         }
 
         private StatementSyntax ParseIfStatement()
