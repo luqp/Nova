@@ -69,6 +69,12 @@ namespace Nova.CodeAnalysis
             Report(span, message);
         }
 
+        internal void ReportParameterAlreadyDeclared(TextSpan span, string parameterName)
+        {
+            string message = $"A parameter with the '{parameterName}' already exists.";
+            Report(span, message);
+        }
+
         public void ReportUndefinedType(TextSpan span, string name)
         {
             string message = $"Type {name} doesn't exist";
@@ -120,6 +126,12 @@ namespace Nova.CodeAnalysis
         public void ReportExpressionMustHaveValue(TextSpan span)
         {
             string message = "Expression must be have a value";
+            Report(span, message);
+        }
+
+        public void XXX_ReportFunctionsAreUnsupported(TextSpan span)
+        {
+            string message = "Functions with return values are unsupported";
             Report(span, message);
         }
     }

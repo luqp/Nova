@@ -44,6 +44,7 @@ namespace Nova.CodeAnalysis.Syntax
         WhileKeyword,
         DoKeyword,
         ForKeyword,
+        FunctionKeyword,
 
         // Nodes
         CompilationUnit,

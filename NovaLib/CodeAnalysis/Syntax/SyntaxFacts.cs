@@ -78,6 +78,8 @@ namespace Nova.CodeAnalysis.Syntax
                     return SyntaxKind.ForKeyword;
                 case "to":
                     return SyntaxKind.ToKeyword;
+                case "function":
+                    return SyntaxKind.FunctionKeyword;
                 default:
                     return SyntaxKind.IdentifierToken;
             }
@@ -175,6 +177,8 @@ namespace Nova.CodeAnalysis.Syntax
                     return "for";
                 case SyntaxKind.ToKeyword:
                     return "to";
+                case SyntaxKind.FunctionKeyword:
+                    return "function";
                 default:
                     return null;
             }

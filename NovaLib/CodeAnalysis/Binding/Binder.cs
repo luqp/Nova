@@ -23,14 +23,61 @@ namespace Nova.CodeAnalysis.Binding
         {
             BoundScope parentScope = CreateParentScopes(previous);
             Binder binder = new Binder(parentScope);
-            BoundStatement expression = binder.BindStatement(syntax.Statement);
+
+            foreach (FunctionDeclarationSyntax function in syntax.Members.OfType<FunctionDeclarationSyntax>())
+                binder.BindFunctionDeclaration(function);
+
+            var statementBuilder = ImmutableArray.CreateBuilder<BoundStatement>();
+            
+            foreach (GlobalStatementSyntax globalStatement in syntax.Members.OfType<GlobalStatementSyntax>())
+            {
+                var s = binder.BindStatement(globalStatement.Statement);
+                statementBuilder.Add(s);
+            }
+
+            BoundBlockStatement statement = new BoundBlockStatement(statementBuilder.ToImmutable());
+
+            ImmutableArray<FunctionSymbol> functions = binder.scope.GetDeclaredFunctions();
             ImmutableArray<VariableSymbol> variables = binder.scope.GetDeclaredVariables();
             ImmutableArray<Diagnostic> diagnostics = binder.Diagnostics.ToImmutableArray();
 
             if (previous != null)
                 diagnostics = diagnostics.InsertRange(0, previous.Diagnostics);
 
-            return new BoundGlobalScope(previous, diagnostics, variables, expression);
+            return new BoundGlobalScope(previous, diagnostics, functions, variables, statement);
+        }
+
+        private void BindFunctionDeclaration(FunctionDeclarationSyntax syntax)
+        {
+            var parameters = ImmutableArray.CreateBuilder<ParameterSymbol>();
+            HashSet<string> seenParameterNames = new HashSet<string>();
+
+            foreach (ParameterSyntax parameterSyntax in syntax.Parameters)
+            {
+                string parameterName = parameterSyntax.Identifier.Text;
+                TypeSymbol parameterType = BindTypeClause(parameterSyntax.Type);
+
+                if (!seenParameterNames.Add(parameterName))
+                {
+                    diagnostics.ReportParameterAlreadyDeclared(parameterSyntax.Span, parameterName);
+                }
+                else
+                {
+                    ParameterSymbol parameter = new ParameterSymbol(parameterName, parameterType);
+                    parameters.Add(parameter);
+                }
+            }
+
+            TypeSymbol type = BindTypeClause(syntax.Type) ?? TypeSymbol.Void;
+
+            if (type != TypeSymbol.Void)
+                diagnostics.XXX_ReportFunctionsAreUnsupported(syntax.Type.Span);
+
+            FunctionSymbol function = new FunctionSymbol(syntax.Identifier.Text, parameters.ToImmutable(), type);
+
+            if (!scope.TryDeclareFunction(function))
+                diagnostics.ReportSymbolAlreadyDeclared(syntax.Identifier.Span, function.Name);
+
         }
 
         public static BoundScope CreateParentScopes(BoundGlobalScope previous)
@@ -47,6 +94,10 @@ namespace Nova.CodeAnalysis.Binding
             {
                 previous = stack.Pop();
                 BoundScope scope = new BoundScope(parent);
+
+                foreach (FunctionSymbol f in previous.Functions)
+                    scope.TryDeclareFunction(f);
+
                 foreach (VariableSymbol v in previous.Variables)
                     scope.TryDeclareVariable(v);
 
