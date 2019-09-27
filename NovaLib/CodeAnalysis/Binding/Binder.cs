@@ -109,10 +109,25 @@ namespace Nova.CodeAnalysis.Binding
         private BoundStatement BindVariableDeclaration(VariableDeclarationSyntax syntax)
         {
             bool isReadOnly = syntax.Keyword.Kind == SyntaxKind.LetKeyword;
+            TypeSymbol type = BindTypeClause(syntax.TypeClause);
             BoundExpression initializer = BindExpression(syntax.Initializer);
-            VariableSymbol variable = BindVariable(syntax.Identifier, isReadOnly, initializer.Type);
+            TypeSymbol variableType = type ?? initializer.Type;
+            VariableSymbol variable = BindVariable(syntax.Identifier, isReadOnly, variableType);
+            BoundExpression convertedInitializer = BindConversion(syntax.Initializer.Span, initializer, variableType);
             
-            return new BoundVariableDeclaration(variable, initializer);
+            return new BoundVariableDeclaration(variable, convertedInitializer);
+        }
+
+        private TypeSymbol BindTypeClause(TypeClauseSyntax syntax)
+        {
+            if (syntax == null)
+                return null;
+            
+            TypeSymbol type = LookupType(syntax.Identifier.Text);
+            if (type == null)
+                diagnostics.ReportUndefinedType(syntax.Identifier.Span, syntax.Identifier.Text);
+
+            return type;
         }
 
         private BoundStatement BindIfStatement(IfStatementSyntax syntax)
@@ -286,7 +301,7 @@ namespace Nova.CodeAnalysis.Binding
         private BoundExpression BindCallExpression(CallExpressionSyntax syntax)
         {
             if (syntax.Arguments.Count == 1 && LookupType(syntax.Identifier.Text) is TypeSymbol type)
-                return BindConversion(syntax.Arguments[0], type);
+                return BindConversion(syntax.Arguments[0], type, allowExplicit: true);
 
             var boundArguments = ImmutableArray.CreateBuilder<BoundExpression>();
 
@@ -323,25 +338,26 @@ namespace Nova.CodeAnalysis.Binding
             return new BoundCallExpression(function, boundArguments.ToImmutable());
         }
 
-        private BoundExpression BindConversion(ExpressionSyntax syntax, TypeSymbol type)
+        private BoundExpression BindConversion(ExpressionSyntax syntax, TypeSymbol type, bool allowExplicit = false)
         {
             BoundExpression expression = BindExpression(syntax);
-            return BindConversion(syntax.Span, expression, type);
+            return BindConversion(syntax.Span, expression, type, allowExplicit);
         }
 
-        private BoundExpression BindConversion(TextSpan diagnosticSpan, BoundExpression expression, TypeSymbol type)
+        private BoundExpression BindConversion(TextSpan diagnosticSpan, BoundExpression expression, TypeSymbol type, bool allowExplicit = false)
         {
             Conversion conversion = Conversion.Classify(expression.Type, type);
 
             if (!conversion.Exists)
             {
                 if (expression.Type != TypeSymbol.Error && type != TypeSymbol.Error)
-                {
                     diagnostics.ReportCannotConvert(diagnosticSpan, expression.Type, type);
-                }
 
                 return new BoundErrorExpression();
             }
+
+            if (!allowExplicit && conversion.IsExplicit)
+                diagnostics.ReportCannotConvertImplicitly(diagnosticSpan, expression.Type, type);
 
             if (conversion.IsIdentity)
                 return expression;
