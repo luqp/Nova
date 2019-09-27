@@ -47,8 +47,11 @@ namespace Nova.CodeAnalysis.Syntax
 
         // Nodes
         CompilationUnit,
-        ElseClause,
+        FunctionDeclaration,
+        GlobalStatement,
+        Parameter,
         TypeClause,
+        ElseClause,
 
         // Statements
         VariableDeclaration,
