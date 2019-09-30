@@ -1295,3 +1295,61 @@ Create `Classify` method, that is where define which conversion are available.
 ## 7.0 Bug in for Loop
 Bug: Print the last evaluation of the incrementor.
   * We will fix it soon ;)
+
+# Compiler part 12
+
+# Refactor and Function declaration
+
+# 1.0 Centralize  Conversion errors
+`Binder` class:
+  * Modify `BindConversion` and create a overcharge of this.
+    - add more condition to avoid cascade errors
+    - return the same expression if is Identity
+
+  * Modify `BindExpression` method
+  * Modify `BindAssignmentExpression` method.
+
+## 2.0 Type clause
+You can define the type of the variable that you are declaring.
+### 2.1
+  * Add `:` symbol to `Lexer` class
+  * Add `ColonToken` concep to `SyntaxFacts` class.
+  * Create `TypeClauseSyntax` class.
+  * `Parser` class:
+    - Modify `ParseVariableDeclaration` to add the type clause.
+    - Add `ParseOptionalTypeClause` and `ParseTypeClause` methods.
+  * Add `TypeClause` property to `VariableDeclarationSyntax` class.
+  * `Binder` class:
+    - Modify `BindVariableDeclaration` method, to handle type symbols.
+    - Add `BindTypeClause` method that return the type of optional clause.
+    - `BindConversion` method add `allowExplicit` property
+
+## 3.0 Procedures
+Are functions that not return values
+Add functions to global scope concept
+Add local concept
+
+### 3.1
+Create functions
+  * Create `MemberSyntax` abstract class, that represent whatever you put in the file.
+  * Create `GlobalStatementSyntax` class
+  * Create `ParameterSyntax` class to represent parameters
+  * Create `FunctionDeclarationSyntax` class that contains the definition of complete function.
+
+### 3.2
+Apply the function concept:
+  * `CompilationUnitSyntax` class, now accept members instead a only statement.
+  * `NovaRelp` use the last member to complete the submission.
+  * `SyntaxFacts` class, add `FunctionKeyword`
+  * Update `Parser` class to handle functions, parameters and the body.
+  * Update `Binder` class.
+      - `BindGlobalScope` check for functions into members and try to declare them, after convert the Global statement members into statements.
+      -  Add `BindFunctionDeclaration` to check function before declare them.
+
+With this the program already accept functions, but not execute  them yet.
+
+### 3.3
+Implement `execute` behavior at functions.
+  * Add Global and Locals variables.
+  * Centralize diagnostics
+  * Fix tests, etc.
