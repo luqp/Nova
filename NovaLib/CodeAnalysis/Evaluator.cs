@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using Nova.CodeAnalysis.Binding;
 using Nova.CodeAnalysis.Symbols;
 
@@ -8,25 +7,23 @@ namespace Nova.CodeAnalysis
 {
     internal sealed class Evaluator
     {
-        private readonly ImmutableDictionary<FunctionSymbol, BoundBlockStatement> functionBodies;
-        private readonly BoundBlockStatement root;
+        private readonly BoundProgram program;
         private readonly Dictionary<VariableSymbol, object> globals;
         private readonly Stack<Dictionary<VariableSymbol, object>> locals = new Stack<Dictionary<VariableSymbol, object>>();
         private Random random;
 
         private object lastValue;
 
-        public Evaluator(ImmutableDictionary<FunctionSymbol, BoundBlockStatement> functionBodies, BoundBlockStatement root, Dictionary<VariableSymbol, object> variables)
+        public Evaluator(BoundProgram program, Dictionary<VariableSymbol, object> variables)
         {
-            this.functionBodies = functionBodies;
-            this.root = root;
+            this.program = program;
             this.globals = variables;
             locals.Push(new Dictionary<VariableSymbol, object>());
         }
 
         public object Evaluate()
         {
-            return EvaluateStatement(root);
+            return EvaluateStatement(program.Statement);
         }
 
         private object EvaluateStatement(BoundBlockStatement body)
@@ -240,7 +237,7 @@ namespace Nova.CodeAnalysis
                 }
 
                 locals.Push(localVars);
-                BoundBlockStatement statement = functionBodies[node.Function];
+                BoundBlockStatement statement = program.Functions[node.Function];
                 object result = EvaluateStatement(statement);
                 locals.Pop();
 
