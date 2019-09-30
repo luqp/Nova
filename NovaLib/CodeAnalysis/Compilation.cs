@@ -20,7 +20,7 @@ namespace Nova.CodeAnalysis
         {
         }
 
-        public Compilation(Compilation previous, SyntaxTree syntaxTree)
+        private Compilation(Compilation previous, SyntaxTree syntaxTree)
         {
             Previous = previous;
             SyntaxTree = syntaxTree;
@@ -52,9 +52,13 @@ namespace Nova.CodeAnalysis
             ImmutableArray<Diagnostic> diagnostics = SyntaxTree.Diagnostics.Concat(GlobalScope.Diagnostics).ToImmutableArray();
             if (diagnostics.Any())
                 return new EvaluationResult(diagnostics, null);
-            
+
+            BoundProgram program = Binder.BindProgram(GlobalScope);
+            if (program.Diagnostics.Any())
+                return new EvaluationResult(program.Diagnostics.ToImmutableArray(), null);
+
             BoundBlockStatement statement = GetStatement();
-            Evaluator evaluator = new Evaluator(statement, variables);
+            Evaluator evaluator = new Evaluator(program.FunctionBodies, statement, variables);
             object value = evaluator.Evaluate();
             return new EvaluationResult(ImmutableArray<Diagnostic>.Empty, value);
         }
