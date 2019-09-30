@@ -1,11 +1,9 @@
-using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 using System.Threading;
 using Nova.CodeAnalysis.Binding;
-using Nova.CodeAnalysis.Lowering;
 using Nova.CodeAnalysis.Symbols;
 using Nova.CodeAnalysis.Syntax;
 
@@ -57,22 +55,15 @@ namespace Nova.CodeAnalysis
             if (program.Diagnostics.Any())
                 return new EvaluationResult(program.Diagnostics.ToImmutableArray(), null);
 
-            BoundBlockStatement statement = GetStatement();
-            Evaluator evaluator = new Evaluator(program.FunctionBodies, statement, variables);
+            Evaluator evaluator = new Evaluator(program, variables);
             object value = evaluator.Evaluate();
             return new EvaluationResult(ImmutableArray<Diagnostic>.Empty, value);
         }
 
         public void EmitTree(TextWriter writer)
         {
-            BoundStatement statement = GetStatement();
-            statement.WriteTo(writer);
-        }
-
-        private BoundBlockStatement GetStatement()
-        {
-            BoundStatement result = GlobalScope.Statement;
-            return Lowerer.Lower(result);
+           BoundProgram program = Binder.BindProgram(GlobalScope);
+           program.Statement.WriteTo(writer);
         }
     }
 }
