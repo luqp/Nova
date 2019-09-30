@@ -96,8 +96,9 @@ namespace Nova.Tests.CodeAnalysis.Syntax
         {
             SyntaxTree syntaxTree = SyntaxTree.Parse(text);
             CompilationUnitSyntax root = syntaxTree.Root;
-            StatementSyntax statement = root.Statement;
-            return Assert.IsType<ExpressionStatementSyntax>(statement).Expression;
+            MemberSyntax member = Assert.Single(root.Members);
+            GlobalStatementSyntax globalStatement = Assert.IsType<GlobalStatementSyntax>(member);
+            return Assert.IsType<ExpressionStatementSyntax>(globalStatement.Statement).Expression;
         }
 
         public static IEnumerable<object[]> GetBinaryOperatorPairsData()

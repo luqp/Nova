@@ -21,6 +21,7 @@ namespace Nova.CodeAnalysis
             this.functionBodies = functionBodies;
             this.root = root;
             this.globals = variables;
+            locals.Push(new Dictionary<VariableSymbol, object>());
         }
 
         public object Evaluate()
