@@ -134,7 +134,7 @@ namespace Nova.CodeAnalysis.Lowering
         {
             BoundVariableDeclaration variableDeclaration = new BoundVariableDeclaration(node.Variable, node.LowerBound);
             BoundVariableExpression variableExpression = new BoundVariableExpression(node.Variable);
-            VariableSymbol upperVariableSymbol = new VariableSymbol("upperBound", true, TypeSymbol.Int);
+            VariableSymbol upperVariableSymbol = new LocalVariableSymbol("upperBound", true, TypeSymbol.Int);
             BoundVariableDeclaration upperVariableDeclaration = new BoundVariableDeclaration(upperVariableSymbol, node.UpperBound);
 
             BoundBinaryExpression condition = new BoundBinaryExpression(

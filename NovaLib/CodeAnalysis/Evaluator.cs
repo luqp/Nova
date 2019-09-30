@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using Nova.CodeAnalysis.Binding;
 using Nova.CodeAnalysis.Symbols;
 
@@ -7,32 +8,40 @@ namespace Nova.CodeAnalysis
 {
     internal sealed class Evaluator
     {
+        private readonly ImmutableDictionary<FunctionSymbol, BoundBlockStatement> functionBodies;
         private readonly BoundBlockStatement root;
-        private readonly Dictionary<VariableSymbol, object> variables;
+        private readonly Dictionary<VariableSymbol, object> globals;
+        private readonly Stack<Dictionary<VariableSymbol, object>> locals = new Stack<Dictionary<VariableSymbol, object>>();
         private Random random;
 
         private object lastValue;
 
-        public Evaluator(BoundBlockStatement root, Dictionary<VariableSymbol, object> variables)
+        public Evaluator(ImmutableDictionary<FunctionSymbol, BoundBlockStatement> functionBodies, BoundBlockStatement root, Dictionary<VariableSymbol, object> variables)
         {
+            this.functionBodies = functionBodies;
             this.root = root;
-            this.variables = variables;
+            this.globals = variables;
         }
 
         public object Evaluate()
         {
+            return EvaluateStatement(root);
+        }
+
+        private object EvaluateStatement(BoundBlockStatement body)
+        {
             var labelToIndex = new Dictionary<BoundLabel, int>();
 
-            for (int i = 0; i < root.Statements.Length; i++)
+            for (int i = 0; i < body.Statements.Length; i++)
             {
-                if (root.Statements[i] is BoundLabelStatement l)
+                if (body.Statements[i] is BoundLabelStatement l)
                     labelToIndex.Add(l.Label, i + 1);
             }
 
             int index = 0;
-            while (index < root.Statements.Length)
+            while (index < body.Statements.Length)
             {
-                BoundStatement s = root.Statements[index];
+                BoundStatement s = body.Statements[index];
 
                 switch (s.Kind)
                 {
@@ -70,7 +79,7 @@ namespace Nova.CodeAnalysis
         private void EvaluateVariableDeclaration(BoundVariableDeclaration node)
         {
             object value = EvaluateExpression(node.Initializer);
-            variables[node.Variable] = value;
+            Assign(node.Variable, value);
             lastValue = value;
         }
 
@@ -109,13 +118,21 @@ namespace Nova.CodeAnalysis
 
         private object EvaluateVariableExpression(BoundVariableExpression v)
         {
-            return variables[v.Variable];
+            if (v.Variable.Kind == SymbolKind.GlobalVariable)
+            {
+                return globals[v.Variable];
+            }
+            else
+            {
+                Dictionary<VariableSymbol, object> localsVar = locals.Peek();
+                return localsVar[v.Variable];
+            }
         }
 
         private object EvaluateAssignmentExpression(BoundAssignmentExpression a)
         {
             object value = EvaluateExpression(a.Expression);
-            variables[a.Variable] = value;
+            Assign(a.Variable, value);
             return value;
         }
 
@@ -211,7 +228,24 @@ namespace Nova.CodeAnalysis
                 return random.Next(max);
             }
             else
-                throw new Exception($"Unexpected function {node.Function.Name}");
+            {
+                Dictionary<VariableSymbol, object> localVars = new Dictionary<VariableSymbol, object>();
+
+                for (int i = 0; i < node.Arguments.Length; i++)
+                {
+                    ParameterSymbol parameter = node.Function.Parameters[i];
+                    object value = EvaluateExpression(node.Arguments[i]);
+                    localVars.Add(parameter, value);
+                }
+
+                locals.Push(localVars);
+                BoundBlockStatement statement = functionBodies[node.Function];
+                object result = EvaluateStatement(statement);
+                locals.Pop();
+
+                return result;
+            }
+
         }
 
         private object EvaluateConversionExpression(BoundConversionExpression node)
@@ -226,6 +260,19 @@ namespace Nova.CodeAnalysis
                 return Convert.ToString(value);
             else
                 throw new Exception($"Unexpected type <{node.Type}>");
+        }
+
+        private void Assign(VariableSymbol variable, object value)
+        {
+            if (variable.Kind == SymbolKind.GlobalVariable)
+            {
+                globals[variable] = value;
+            }
+            else
+            {
+                Dictionary<VariableSymbol, object> localsVar = locals.Peek();
+                localsVar[variable] = value;
+            }
         }
     }
 }

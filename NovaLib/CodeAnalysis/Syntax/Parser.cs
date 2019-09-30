@@ -64,9 +64,9 @@ namespace Nova.CodeAnalysis.Syntax
 
         public CompilationUnitSyntax ParseCompilationUnit()
         {
-            ImmutableArray<MemberSyntax> statement = ParseMembers();
+            ImmutableArray<MemberSyntax> members = ParseMembers();
             SyntaxToken endOfFileToken = MatchToken(SyntaxKind.EndOfFileToken);
-            return new CompilationUnitSyntax(statement, endOfFileToken);
+            return new CompilationUnitSyntax(members, endOfFileToken);
         }
 
         private ImmutableArray<MemberSyntax> ParseMembers()

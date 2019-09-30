@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using Nova.CodeAnalysis.Lowering;
 using Nova.CodeAnalysis.Symbols;
 using Nova.CodeAnalysis.Syntax;
 using Nova.CodeAnalysis.Text;
@@ -11,18 +12,25 @@ namespace Nova.CodeAnalysis.Binding
     internal sealed class Binder
     {
         private readonly DiagnosticBag diagnostics = new DiagnosticBag();
-        
+        private readonly FunctionSymbol function;
         private BoundScope scope;
 
-        public Binder(BoundScope parent)
+        public Binder(BoundScope parent, FunctionSymbol function)
         {
             scope = new BoundScope(parent);
+            this.function = function;
+
+            if (function != null)
+            {
+                foreach (ParameterSymbol p in function.Parameters)
+                    scope.TryDeclareVariable(p);
+            }
         }
 
         public static BoundGlobalScope BindGlobalScope(BoundGlobalScope previous, CompilationUnitSyntax syntax)
         {
-            BoundScope parentScope = CreateParentScopes(previous);
-            Binder binder = new Binder(parentScope);
+            BoundScope parentScope = CreateParentScope(previous);
+            Binder binder = new Binder(parentScope, function: null);
 
             foreach (FunctionDeclarationSyntax function in syntax.Members.OfType<FunctionDeclarationSyntax>())
                 binder.BindFunctionDeclaration(function);
@@ -45,6 +53,30 @@ namespace Nova.CodeAnalysis.Binding
                 diagnostics = diagnostics.InsertRange(0, previous.Diagnostics);
 
             return new BoundGlobalScope(previous, diagnostics, functions, variables, statement);
+        }
+
+        public static BoundProgram BindProgram(BoundGlobalScope globalScope)
+        {
+            BoundScope parentScope = CreateParentScope(globalScope);
+            var functionBodies = ImmutableDictionary.CreateBuilder<FunctionSymbol, BoundBlockStatement>();
+            DiagnosticBag diagnostics = new DiagnosticBag();
+            BoundGlobalScope scope = globalScope;
+
+            while (scope != null)
+            {
+                foreach (FunctionSymbol function in scope.Functions)
+                {
+                    Binder binder = new Binder(parentScope, function);
+                    BoundStatement body = binder.BindStatement(function.Declaration.Body);
+                    BoundBlockStatement loweredBody = Lowerer.Lower(body);
+                    functionBodies.Add(function, loweredBody);
+                    diagnostics.AddRange(binder.Diagnostics);
+                }
+
+                scope = scope.Previous;
+            }
+
+            return new BoundProgram(globalScope, diagnostics, functionBodies.ToImmutable());
         }
 
         private void BindFunctionDeclaration(FunctionDeclarationSyntax syntax)
@@ -73,14 +105,14 @@ namespace Nova.CodeAnalysis.Binding
             if (type != TypeSymbol.Void)
                 diagnostics.XXX_ReportFunctionsAreUnsupported(syntax.Type.Span);
 
-            FunctionSymbol function = new FunctionSymbol(syntax.Identifier.Text, parameters.ToImmutable(), type);
+            FunctionSymbol function = new FunctionSymbol(syntax.Identifier.Text, parameters.ToImmutable(), type, syntax);
 
             if (!scope.TryDeclareFunction(function))
                 diagnostics.ReportSymbolAlreadyDeclared(syntax.Identifier.Span, function.Name);
 
         }
 
-        public static BoundScope CreateParentScopes(BoundGlobalScope previous)
+        public static BoundScope CreateParentScope(BoundGlobalScope previous)
         {
             Stack<BoundGlobalScope> stack = new Stack<BoundGlobalScope>();
             while (previous != null)
@@ -307,9 +339,9 @@ namespace Nova.CodeAnalysis.Binding
             if (variable.IsReadOnly)
                 diagnostics.ReportCannotAssign(syntax.EqualsToken.Span, name);
 
-            BoundExpression convertExpression = BindConversion(syntax.Expression.Span, boundExpression, variable.Type);
+            BoundExpression convertedExpression = BindConversion(syntax.Expression.Span, boundExpression, variable.Type);
 
-            return new BoundAssignmentExpression(variable, convertExpression);
+            return new BoundAssignmentExpression(variable, convertedExpression);
         }
 
         private BoundExpression BindUnaryExpression(UnaryExpressionSyntax syntax)
@@ -381,7 +413,7 @@ namespace Nova.CodeAnalysis.Binding
 
                 if (argument.Type != parameter.Type)
                 {
-                    diagnostics.ReportWrongArgumentType(syntax.Span, parameter.Name, parameter.Type, argument.Type);
+                    diagnostics.ReportWrongArgumentType(syntax.Arguments[i].Span, parameter.Name, parameter.Type, argument.Type);
                     return new BoundErrorExpression();
                 }
             }
@@ -420,7 +452,9 @@ namespace Nova.CodeAnalysis.Binding
         {
             string name = identifier.Text ?? "?";
             bool declare = !identifier.IsMissing;
-            VariableSymbol variable = new VariableSymbol(name, isReadOnly, type);
+            VariableSymbol variable = function == null
+                            ? (VariableSymbol) new GlobalVariableSymbol(name, isReadOnly, type)
+                            : new LocalVariableSymbol(name, isReadOnly, type);
 
             if (declare && !scope.TryDeclareVariable(variable))
                 diagnostics.ReportSymbolAlreadyDeclared(identifier.Span, name);
