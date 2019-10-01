@@ -242,8 +242,9 @@ namespace Nova
         }
         private void HandleEscape(ObservableCollection<string> document, SubmissionView view)
         {
-            document[view.CurrentLine] = string.Empty;
-            view.CurrentCharacter = 0;
+            document.Clear();
+            document.Add(string.Empty);
+            view.CurrentLine = 0;
         }
 
         private void HandleLeftArrow(ObservableCollection<string> document, SubmissionView view)
