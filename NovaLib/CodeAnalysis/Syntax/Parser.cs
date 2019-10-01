@@ -110,17 +110,23 @@ namespace Nova.CodeAnalysis.Syntax
         private SeparatedSyntaxList<ParameterSyntax> ParseParameterList()
         {
             var nodesAndSeparators = ImmutableArray.CreateBuilder<SyntaxNode>();
+            bool parseNextToken = true;
 
-            while (Current.Kind != SyntaxKind.CloseParenthesisToken &&
+            while (parseNextToken &&
+                   Current.Kind != SyntaxKind.CloseParenthesisToken &&
                    Current.Kind != SyntaxKind.EndOfFileToken)
             {
                 ParameterSyntax parameter = ParseParameter();
                 nodesAndSeparators.Add(parameter);
 
-                if (Current.Kind != SyntaxKind.CloseParenthesisToken)
+                if (Current.Kind == SyntaxKind.CommaToken)
                 {
                     SyntaxToken comma = MatchToken(SyntaxKind.CommaToken);
                     nodesAndSeparators.Add(comma);
+                }
+                else
+                {
+                    parseNextToken = false;
                 }
             }
 
@@ -383,17 +389,23 @@ namespace Nova.CodeAnalysis.Syntax
         private SeparatedSyntaxList<ExpressionSyntax> ParseArguments()
         {
             var nodesAndSeparators = ImmutableArray.CreateBuilder<SyntaxNode>();
+            bool parseNextToken = true;
 
-            while (Current.Kind != SyntaxKind.CloseParenthesisToken &&
+            while (parseNextToken &&
+                   Current.Kind != SyntaxKind.CloseParenthesisToken &&
                    Current.Kind != SyntaxKind.EndOfFileToken)
             {
                 ExpressionSyntax expression = ParseExpression();
                 nodesAndSeparators.Add(expression);
 
-                if (Current.Kind != SyntaxKind.CloseParenthesisToken)
+                if (Current.Kind == SyntaxKind.CommaToken)
                 {
                     SyntaxToken comma = MatchToken(SyntaxKind.CommaToken);
                     nodesAndSeparators.Add(comma);
+                }
+                else
+                {
+                    parseNextToken = false;
                 }
             }
 
