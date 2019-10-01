@@ -46,15 +46,15 @@ namespace Nova
         {
             switch (input)
             {
-                case "#trees":
+                case "#showTree":
                     showTree = !showTree;
                     Console.ForegroundColor = ConsoleColor.DarkYellow;
-                    Console.WriteLine(showTree ? "Enabled parse trees." : "Disabled parse trees.");
+                    Console.WriteLine(showTree ? "Enabled parse tree." : "Disabled parse tree.");
                     break;
                 case "#showProgram":
                     showProgram = !showProgram;
                     Console.ForegroundColor = ConsoleColor.DarkYellow;
-                    Console.WriteLine(showProgram ? "Enabled bound trees." : "Disabled bound trees.");
+                    Console.WriteLine(showProgram ? "Enabled bound tree nodes." : "Disabled bound tree nodes.");
                     break;
                 case "#cls":
                     Console.Clear();
