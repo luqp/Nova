@@ -121,7 +121,7 @@ namespace Nova
             }
             else
             {
-                foreach (Diagnostic diagnostic in diagnostics)
+                foreach (Diagnostic diagnostic in diagnostics.OrderBy(d => d.Span, new TextSpanComparer()))
                 {
                     SourceText treeText = syntaxTree.Text;
                     int lineIndex = treeText.GetLineIndex(diagnostic.Span.Start);
