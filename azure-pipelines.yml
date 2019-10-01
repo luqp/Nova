@@ -11,14 +11,15 @@ pool:
 
 variables:
   buildConfiguration: 'Release'
-  tests: './Nova.Tests/Nova.Tests.csproj'
+  sln: './src/Nova.sln'
+  tests: './src/Nova.Tests/Nova.Tests.csproj'
 
 steps:
 - task: DotNetCoreInstaller@1
   inputs:
     version: 3.0.100-preview8-013656
     includePreviewVersions: true
-- script: dotnet build --configuration $(buildConfiguration)
+- script: dotnet build --configuration $(buildConfiguration) $(sln)
   displayName: 'dotnet build $(buildConfiguration)'
 - script: dotnet test $(tests) --logger "xunit;LogFileName=TestResults.xml"
   displayName: 'dotnet test'

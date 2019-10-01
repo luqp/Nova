@@ -1,4 +1,3 @@
 @echo off
 
-cd .\nova\
-dotnet run
+dotnet run --project .\src\novai\novai.csproj
