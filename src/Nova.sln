@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26124.0
 MinimumVisualStudioVersion = 15.0.26124.0
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "nova", "nova\nova.csproj", "{01645BC2-2367-48FD-ABAF-B03985495E4A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "novai", "novai\novai.csproj", "{01645BC2-2367-48FD-ABAF-B03985495E4A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NovaLib", "NovaLib\NovaLib.csproj", "{5CCB0B76-88E6-41C2-BDAD-5FCA27EEDCA7}"
 EndProject

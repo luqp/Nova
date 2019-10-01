@@ -1,4 +1,4 @@
 @echo off
 
-dotnet build
-dotnet test .\Nova.Tests\Nova.Tests.csproj
+dotnet build .\src\Nova.sln /nologo
+dotnet test .\src\Nova.Tests\Nova.Tests.csproj
