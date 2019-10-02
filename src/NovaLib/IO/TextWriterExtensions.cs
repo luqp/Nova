@@ -1,6 +1,7 @@
 using System;
 using System.CodeDom.Compiler;
 using System.IO;
+using Nova.CodeAnalysis.Syntax;
 
 namespace Nova.IO
 {
@@ -16,16 +17,21 @@ namespace Nova.IO
             return false;
         }
 
-        public static void SetForeground(this TextWriter writer, ConsoleColor color)
+        private static void SetForeground(this TextWriter writer, ConsoleColor color)
         {
             if (writer.IsConsoleOut())
                 Console.ForegroundColor = color;
         }
 
-        public static void ResetColor(this TextWriter writer)
+        private static void ResetColor(this TextWriter writer)
         {
             if (writer.IsConsoleOut())
                 Console.ResetColor();
+        }
+
+        public static void WriteKeyword(this TextWriter writer, SyntaxKind kind)
+        {
+            writer.WriteKeyword(SyntaxFacts.GetText(kind));
         }
 
         public static void WriteKeyword(this TextWriter writer, string text)
@@ -56,11 +62,21 @@ namespace Nova.IO
             writer.ResetColor();
         }
 
+        public static void WritePunctuation(this TextWriter writer, SyntaxKind kind)
+        {
+            writer.WritePunctuation(SyntaxFacts.GetText(kind));
+        }
+
         public static void WritePunctuation(this TextWriter writer, string text)
         {
             writer.SetForeground(ConsoleColor.DarkGray);
             writer.Write(text);
             writer.ResetColor();
+        }
+
+        public static void WriteWhiteSpace(this TextWriter writer)
+        {
+            writer.Write(" ");
         }
     }
 }
