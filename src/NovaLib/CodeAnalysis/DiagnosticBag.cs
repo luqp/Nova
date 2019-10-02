@@ -125,7 +125,13 @@ namespace Nova.CodeAnalysis
 
         public void ReportExpressionMustHaveValue(TextSpan span)
         {
-            string message = "Expression must be have a value";
+            string message = "Expression must be have a value.";
+            Report(span, message);
+        }
+
+        public void ReportInvalidBreakOrContinue(TextSpan span, string text)
+        {
+            string message = $"The keyword '{text}' can only be used inside of loops.";
             Report(span, message);
         }
 

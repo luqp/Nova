@@ -88,14 +88,14 @@ namespace Nova.CodeAnalysis.Lowering
 
         protected override BoundStatement RewriteWhileStatement(BoundWhileStatement node)
         {
-            BoundLabel continueLabel = GenerateLabel();
             BoundLabel checkLabel = GenerateLabel();
             BoundLabel endLabel = GenerateLabel();
 
             BoundGotoStatement gotoCheck = new BoundGotoStatement(checkLabel);
-            BoundLabelStatement continueLabelStatement = new BoundLabelStatement(continueLabel);
+            BoundLabelStatement continueLabelStatement = new BoundLabelStatement(node.ContinueLabel);
             BoundLabelStatement checkLabelStatement = new BoundLabelStatement(checkLabel);
-            BoundConditionalGotoStatement gotoTrue = new BoundConditionalGotoStatement(continueLabel, node.Condition, true);
+            BoundConditionalGotoStatement gotoTrue = new BoundConditionalGotoStatement(node.ContinueLabel, node.Condition, true);
+            BoundLabelStatement breakLabelStatement = new BoundLabelStatement(node.BreakLabel);
             BoundLabelStatement endLabelStatement = new BoundLabelStatement(endLabel);
             BoundBlockStatement result = new BoundBlockStatement(ImmutableArray.Create<BoundStatement>(
                 gotoCheck,
@@ -103,6 +103,7 @@ namespace Nova.CodeAnalysis.Lowering
                 node.Body,
                 checkLabelStatement,
                 gotoTrue,
+                breakLabelStatement,
                 endLabelStatement
             ));
             
@@ -111,19 +112,20 @@ namespace Nova.CodeAnalysis.Lowering
 
         protected override BoundStatement RewriteDoWhileStatement(BoundDoWhileStatement node)
         {
-            BoundLabel continueLabel = GenerateLabel();
             BoundLabel checkLabel = GenerateLabel();
             BoundLabel endLabel = GenerateLabel();
 
-            BoundLabelStatement continueLabelStatement = new BoundLabelStatement(continueLabel);
+            BoundLabelStatement continueLabelStatement = new BoundLabelStatement(node.ContinueLabel);
             BoundLabelStatement checkLabelStatement = new BoundLabelStatement(checkLabel);
-            BoundConditionalGotoStatement gotoTrue = new BoundConditionalGotoStatement(continueLabel, node.Condition, true);
+            BoundConditionalGotoStatement gotoTrue = new BoundConditionalGotoStatement(node.ContinueLabel, node.Condition, true);
+            BoundLabelStatement breakLabelStatement = new BoundLabelStatement(node.BreakLabel);
             BoundLabelStatement endLabelStatement = new BoundLabelStatement(endLabel);
             BoundBlockStatement result = new BoundBlockStatement(ImmutableArray.Create<BoundStatement>(
                 continueLabelStatement,
                 node.Body,
                 checkLabelStatement,
                 gotoTrue,
+                breakLabelStatement,
                 endLabelStatement
             ));
             
@@ -142,7 +144,7 @@ namespace Nova.CodeAnalysis.Lowering
                 BoundBinaryOperator.Bind(SyntaxKind.LessOrEqualsToken, TypeSymbol.Int, TypeSymbol.Int),
                 new BoundVariableExpression(upperVariableSymbol)
             );
-
+            BoundLabelStatement continueLabelStatement = new BoundLabelStatement(node.ContinueLabel);
             BoundExpressionStatement increment = new BoundExpressionStatement(
                 new BoundAssignmentExpression(
                     node.Variable,
@@ -154,8 +156,12 @@ namespace Nova.CodeAnalysis.Lowering
                 )
             );
 
-            BoundBlockStatement whileBody = new BoundBlockStatement(ImmutableArray.Create<BoundStatement>(node.Body, increment));
-            BoundWhileStatement whileStatement = new BoundWhileStatement(condition, whileBody);
+            BoundBlockStatement whileBody = new BoundBlockStatement(ImmutableArray.Create<BoundStatement>(
+                node.Body,
+                continueLabelStatement,
+                increment
+            ));
+            BoundWhileStatement whileStatement = new BoundWhileStatement(condition, whileBody, node.BreakLabel, GenerateLabel());
 
             BoundBlockStatement result = new BoundBlockStatement(ImmutableArray.Create<BoundStatement>(
                 variableDeclaration,
