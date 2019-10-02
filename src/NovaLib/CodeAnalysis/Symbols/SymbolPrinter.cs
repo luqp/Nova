@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using Nova.CodeAnalysis.Syntax;
 using Nova.IO;
 
 namespace Nova.CodeAnalysis.Symbols
@@ -32,42 +33,51 @@ namespace Nova.CodeAnalysis.Symbols
 
         private static void WriteFunction(FunctionSymbol symbol, TextWriter writer)
         {
-            writer.WriteKeyword("function ");
+            writer.WriteKeyword(SyntaxKind.FunctionKeyword);
+            writer.WriteWhiteSpace();
             writer.WriteIdentifier(symbol.Name);
-            writer.WritePunctuation("(");
+            writer.WritePunctuation(SyntaxKind.OpenParenthesisToken);
 
             for (int i = 0; i < symbol.Parameters.Length; i++)
             {
                 if (i > 0)
-                    writer.WritePunctuation(", ");
+                    {
+                        writer.WritePunctuation(SyntaxKind.CommaToken);
+                        writer.WriteWhiteSpace();
+                    }
                 
                 symbol.Parameters[i].WriteTo(writer);
             }
 
-            writer.WritePunctuation(")");
+            writer.WritePunctuation(SyntaxKind.CloseParenthesisToken);
             writer.WriteLine();
         }
 
         private static void WriteGlobalVariable(GlobalVariableSymbol symbol, TextWriter writer)
         {
-            writer.WriteKeyword(symbol.IsReadOnly ? "let " : "var ");
+            writer.WriteKeyword(symbol.IsReadOnly ? SyntaxKind.LetKeyword : SyntaxKind.VarKeyword);
+            writer.WriteWhiteSpace();
             writer.WriteIdentifier(symbol.Name);
-            writer.WritePunctuation(": ");
+            writer.WritePunctuation(SyntaxKind.ColonToken);
+            writer.WriteWhiteSpace();
             symbol.Type.WriteTo(writer);
         }
 
         private static void WriteLocalVariable(LocalVariableSymbol symbol, TextWriter writer)
         {
-            writer.WriteKeyword(symbol.IsReadOnly ? "let " : "var ");
+            writer.WriteKeyword(symbol.IsReadOnly ? SyntaxKind.LetKeyword : SyntaxKind.VarKeyword);
+            writer.WriteWhiteSpace();
             writer.WriteIdentifier(symbol.Name);
-            writer.WritePunctuation(": ");
+            writer.WritePunctuation(SyntaxKind.ColonToken);
+            writer.WriteWhiteSpace();
             symbol.Type.WriteTo(writer);
         }
 
         private static void WriteParameter(ParameterSymbol symbol, TextWriter writer)
         {
             writer.WriteIdentifier(symbol.Name);
-            writer.WritePunctuation(": ");
+            writer.WritePunctuation(SyntaxKind.ColonToken);
+            writer.WriteWhiteSpace();
             symbol.Type.WriteTo(writer);
         }
 
