@@ -80,6 +80,8 @@ namespace Nova.Tests.CodeAnalysis
         [InlineData("{ var x = 0 if true x = 3 else x = 9 x }", 3)]
         [InlineData("{ var x = 0 if false x = 8 else x = 9 x }", 9)]
         [InlineData("{ var i = 0 var result = 10 while i < 10  { result = result + i i = i + 1 } result }", 55)]
+        [InlineData("{ var i = 0 while i < 5 { i = i + 1 if i == 5 continue } i }", 5)]
+        [InlineData("{ var i = 0 do { i = i + 1 if i == 5 continue } while i < 5 i }", 5)]
         [InlineData("{ var i = 0 do i = i + 10 while i < 100  i }", 100)]
         [InlineData("{ var result = 10 for i = 1 to 10  { result = result + i } result }", 65)]
         [InlineData("{ var x = 10 for i = 1 to (x = x -1)  { } x }", 9)]

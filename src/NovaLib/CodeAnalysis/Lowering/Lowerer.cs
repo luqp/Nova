@@ -88,20 +88,20 @@ namespace Nova.CodeAnalysis.Lowering
 
         protected override BoundStatement RewriteWhileStatement(BoundWhileStatement node)
         {
-            BoundLabel checkLabel = GenerateLabel();
-            BoundLabel endLabel = GenerateLabel();
+            BoundLabel bodyLabel = GenerateLabel();
+            BoundLabel endLabel = new BoundLabel("End");
 
-            BoundGotoStatement gotoCheck = new BoundGotoStatement(checkLabel);
+            BoundGotoStatement gotoContinueLabel = new BoundGotoStatement(node.ContinueLabel);
+            BoundLabelStatement bodyLabelStatement = new BoundLabelStatement(bodyLabel);
             BoundLabelStatement continueLabelStatement = new BoundLabelStatement(node.ContinueLabel);
-            BoundLabelStatement checkLabelStatement = new BoundLabelStatement(checkLabel);
-            BoundConditionalGotoStatement gotoTrue = new BoundConditionalGotoStatement(node.ContinueLabel, node.Condition, true);
+            BoundConditionalGotoStatement gotoTrue = new BoundConditionalGotoStatement(bodyLabel, node.Condition, true);
             BoundLabelStatement breakLabelStatement = new BoundLabelStatement(node.BreakLabel);
             BoundLabelStatement endLabelStatement = new BoundLabelStatement(endLabel);
             BoundBlockStatement result = new BoundBlockStatement(ImmutableArray.Create<BoundStatement>(
-                gotoCheck,
-                continueLabelStatement,
+                gotoContinueLabel,
+                bodyLabelStatement,
                 node.Body,
-                checkLabelStatement,
+                continueLabelStatement,
                 gotoTrue,
                 breakLabelStatement,
                 endLabelStatement
@@ -112,18 +112,18 @@ namespace Nova.CodeAnalysis.Lowering
 
         protected override BoundStatement RewriteDoWhileStatement(BoundDoWhileStatement node)
         {
-            BoundLabel checkLabel = GenerateLabel();
-            BoundLabel endLabel = GenerateLabel();
+            BoundLabel bodyLabel = GenerateLabel();
+            BoundLabel endLabel = new BoundLabel("End");
 
+            BoundLabelStatement bodyLabelStatement = new BoundLabelStatement(bodyLabel);
             BoundLabelStatement continueLabelStatement = new BoundLabelStatement(node.ContinueLabel);
-            BoundLabelStatement checkLabelStatement = new BoundLabelStatement(checkLabel);
-            BoundConditionalGotoStatement gotoTrue = new BoundConditionalGotoStatement(node.ContinueLabel, node.Condition, true);
+            BoundConditionalGotoStatement gotoTrue = new BoundConditionalGotoStatement(bodyLabel, node.Condition, true);
             BoundLabelStatement breakLabelStatement = new BoundLabelStatement(node.BreakLabel);
             BoundLabelStatement endLabelStatement = new BoundLabelStatement(endLabel);
             BoundBlockStatement result = new BoundBlockStatement(ImmutableArray.Create<BoundStatement>(
-                continueLabelStatement,
+                bodyLabelStatement,
                 node.Body,
-                checkLabelStatement,
+                continueLabelStatement,
                 gotoTrue,
                 breakLabelStatement,
                 endLabelStatement
