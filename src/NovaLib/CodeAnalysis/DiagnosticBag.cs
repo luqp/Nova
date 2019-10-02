@@ -135,9 +135,21 @@ namespace Nova.CodeAnalysis
             Report(span, message);
         }
 
-        public void XXX_ReportFunctionsAreUnsupported(TextSpan span)
+        public void ReportInvalidReturn(TextSpan span)
         {
-            string message = "Functions with return values are unsupported";
+            string message = "The 'return' keyword can only be used inside of functions.";
+            Report(span, message);
+        }
+
+        public void ReportInvalidReturnExpression(TextSpan span, string functionName)
+        {
+            string message = $"since the function '{functionName}' does not return a value the 'return' keyword cannot be followed by an expression.";
+            Report(span, message);
+        }
+
+        public void ReportMissingReturnExpression(TextSpan span, TypeSymbol returnType)
+        {
+            string message = $"An expression of type {returnType} is expected.";
             Report(span, message);
         }
     }

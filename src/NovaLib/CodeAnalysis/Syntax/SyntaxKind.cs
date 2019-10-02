@@ -48,6 +48,7 @@ namespace Nova.CodeAnalysis.Syntax
         BreakKeyword,
         ContinueKeyword,
         FunctionKeyword,
+        ReturnKeyword,
 
         // Nodes
         CompilationUnit,
@@ -67,6 +68,7 @@ namespace Nova.CodeAnalysis.Syntax
         ForStatement,
         BreakStatement,
         ContinueStatement,
+        ReturnStatement,
 
         // Expressions
         LiteralExpression,

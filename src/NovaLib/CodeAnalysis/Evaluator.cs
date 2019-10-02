@@ -66,6 +66,10 @@ namespace Nova.CodeAnalysis
                     case BoundNodeKind.LabelStatement:
                         index++;
                         break;
+                    case BoundNodeKind.ReturnStatement:
+                        BoundReturnStatement rs = (BoundReturnStatement)s;
+                        lastValue = rs.Expression == null ? null : EvaluateExpression(rs.Expression);
+                        return lastValue;
                     default:
                         throw new Exception($"Unexpected node <{s.Kind}>");
                 }

@@ -167,6 +167,8 @@ namespace Nova.CodeAnalysis.Syntax
                     return ParseBreakStatement();
                 case SyntaxKind.ContinueKeyword:
                     return ParseContinueStatement();
+                case SyntaxKind.ReturnKeyword:
+                    return ParseReturnStatement();
                 default:
                     return ParseExpressionStatement();
             }
@@ -278,6 +280,17 @@ namespace Nova.CodeAnalysis.Syntax
         {
             SyntaxToken keyword = MatchToken(SyntaxKind.ContinueKeyword);
             return new ContinueStatementSyntax(keyword);
+        }
+
+        private StatementSyntax ParseReturnStatement()
+        {
+            SyntaxToken keyword = MatchToken(SyntaxKind.ReturnKeyword);
+            int keywordLine = text.GetLineIndex(keyword.Span.Start);
+            int currentLine = text.GetLineIndex(Current.Span.Start);
+            bool isEoF = Current.Kind == SyntaxKind.EndOfFileToken;
+            bool sameLine = !isEoF && keywordLine == currentLine;
+            ExpressionSyntax expression = sameLine ? ParseExpression() : null; 
+            return new ReturnStatementSyntax(keyword, expression);
         }
 
         private ExpressionStatementSyntax ParseExpressionStatement()
