@@ -1353,3 +1353,184 @@ Implement `execute` behavior at functions.
   * Add Global and Locals variables.
   * Centralize diagnostics
   * Fix tests, etc.
+
+# Compiler part 13
+
+# Annoying bugs
+
+## 1.0 Improve interactive experience
+To group all code, move the solution to `src` folder
+
+### 1.1
+Change `nova` project for `novai` because this represent the interpreter.
+
+## 2.0 `ESC` delete everything
+Update `Repl` class to `ESC` keyword clean the all document instead of the current line.
+
+## 3.0 Add string equality operations
+Update `BoundBinaryOperator` table to add `==` and `!=` behaviors
+  *  Add basic string test.
+
+# Prettify nodes
+
+## 4.0 TextWriterExtensions
+Create  `IO` namespace, and create `TextWriterExtensions` handler the output console
+  * Set up the color to each token.
+
+## 5.0  Separate behaviors
+`BoundNode` class now only contain `kind` and handles string returns.
+
+Create `BoundNodePrinter` class, that handles a fashion way to print each sentences, and centralize the config of output to write trees or labels.
+  * Output for bound nodes
+
+# Add `break` and `continue` keywords
+
+## 6.0 Add keywords
+`SyntaxFacts` class add `break` and `continue` keywords
+`Parser` class handles `break` and `continue` tokens
+Create `break` and `continue` statements.
+  * `BreakStatementSyntax`
+  * `ContinueStatementSyntax`
+
+## 7.0 Interpret `break` and `continue`
+To interpret them we need to track of the current loops, use a stack to ensure that binding loops contain can use `break` and `continue`.
+that effective generate the corresponding labels.
+  Create a stack of `Stack<(BoundLabel BreakLabel, BoundLabel ContinueLabel)>`
+
+### 7.1
+Need report errors during the binding to know if we are able to loop or not.
+`Binder` class, modify loops:
+  * `BindWhileStatement`, `BindDoWhileStatement` and `BindForStatement`  methods, the body generates the `breakLabel` and `continueLabel`
+  * Add `BindLoopBody` method, to create `break` and `continue` labels and the Stack control what number of label is used.
+  * Add `BindBreakStatement` and `BindContinueStatement` to return goto statements to able to jump inside of the code block.
+  * Add `BindErrorStatement` method to handler errors.
+
+Create `BoundLoopStatement` to abstract keyword labels.
+  * Modify `BindWhileStatement`, `BindDoWhileStatement` and `BindForStatement`  methods to have breakLabel and continueLabel
+    - This methods inheritance of `BoundLoopStatement` now.
+
+`BoundTreeRewriter` class, add `breakLabel` and `continueLabel` to loops.
+
+`Lowerer` class, uses `breakLabel` and `continueLabel` labels created to build block of loops.
+
+  * while loops block:
+```
+  while <condition>
+       <body>
+
+  ----->
+
+  goto continue
+  body:
+  <body>
+  continue:
+  gotoTrue <condition> body
+  break:
+
+```
+
+  * Do-while loops block:
+```
+  do
+       <body>
+  while <condition>
+
+  ----->
+
+  body:
+  <body>
+  continue:
+  gotoTrue <condition> body
+  break:
+
+```
+
+  * For loops block:
+```
+  for <var> = <lower> to <upper>
+       <body>
+
+  ---->
+
+  {
+       var <var> = <lower>
+       let upperBound = <upper>
+       while (<var> <= upperBound)
+       {
+           <body>
+           continue:
+           <var> = <var> + 1
+       }
+  }
+```
+
+# Prettify symbols
+## 8.0 Use TextWriterExtensions
+Create `SymbolPrinter` that builds the block symbols to show:
+  * Output for symbols
+  * Use `TextWriterExtensions` to write the output
+
+Modify `Symbol` class
+  * Add `WriteTo` method that use `SymbolPrinter`.
+  * Modify `ToString` that `WriteTo` the string.
+
+Modify `Compilation` class in `EmitTree` method:
+  * Check if there are functions to write them.
+  * Write header functions and body functions.
+
+# Fix bugs
+
+## 9.0 Fix while and do-while statements
+The loop condition be re-evaluated after continue.
+In the following sample:
+```
+{
+    var i = 0
+    while i < 5
+    {
+        i = i + 1
+        if i == 5
+            continue
+    }
+    print(string(i))
+}
+
+```
+was printing 6 as a result, while the equivalent C# would print 5.
+
+  * `Lowerer` class, modify  `RewriteWhileStatement` and `RewriteDoWhileStatement` to add `bodyLabel`.
+
+  * While loops block:
+```
+        goto continue
+        body:
+          <body>
+        continue:
+        gotoTrue <condition> body
+        break:
+        endLabel
+
+```
+  * Do-while loops block:
+```
+        body:
+          <body>
+        continue:
+        gotoTrue <condition> body
+        break:
+        endLabel
+```
+
+## 10.0 `SyntaxFacts` to print text
+Use SyntaxFacts to get the text to print, it makes use of the `SyntaxFacts` class to get the text to print, for the sake of the DRY principle.
+  * `TextWriterExtensions` overload methods to use `SyntaxFacts` and add a method to write space.
+  * Update `BoundNodePrinter` and `SymbolPrinter` to use `SyntaxKind` to specific tokens.
+
+## 11.0 Minor fixes to binding of call arguments
+
+  * Added tests for exceeding/missing arguments
+  * Improved error span to something more sensible
+      - When there are missing or exceeding arguments, highlihgt the missing location (closing parenthesis) or the exceeding tokens, instead of the whole syntax node.
+  * Report errors for every mismatching argument type in a function call
+  * Ignore type errors for BoundErrorExpression
+      - e.g. when the call syntax is `print(x)` and `x` is undefined, or `print(,)`
