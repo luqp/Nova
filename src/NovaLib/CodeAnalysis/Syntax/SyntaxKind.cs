@@ -44,6 +44,9 @@ namespace Nova.CodeAnalysis.Syntax
         WhileKeyword,
         DoKeyword,
         ForKeyword,
+        ToKeyword,
+        BreakKeyword,
+        ContinueKeyword,
         FunctionKeyword,
 
         // Nodes
@@ -62,7 +65,8 @@ namespace Nova.CodeAnalysis.Syntax
         WhileStatement,
         DoWhileStatement,
         ForStatement,
-        ToKeyword,
+        BreakStatement,
+        ContinueStatement,
 
         // Expressions
         LiteralExpression,
