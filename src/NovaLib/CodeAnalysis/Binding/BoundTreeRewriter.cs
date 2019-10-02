@@ -29,6 +29,8 @@ namespace Nova.CodeAnalysis.Binding
                     return RewriteGotoStatement((BoundGotoStatement)node);
                 case BoundNodeKind.ConditionalGotoStatement:
                     return RewriteConditionalGotoStatement((BoundConditionalGotoStatement)node);
+                case BoundNodeKind.ReturnStatement:
+                    return RewriteReturnStatement((BoundReturnStatement)node);
                 default:
                     throw new Exception ($"Unexpected node: {node.Kind}");
             }
@@ -145,6 +147,15 @@ namespace Nova.CodeAnalysis.Binding
                 return node;
             
             return new BoundConditionalGotoStatement(node.Label, condition, node.JumpIfTrue);
+        }
+
+        protected virtual BoundStatement RewriteReturnStatement(BoundReturnStatement node)
+        {
+            BoundExpression expression = node.Expression == null ? null : RewriteExpression(node.Expression);
+            if (expression == node.Expression)
+                return node;
+            
+            return new BoundReturnStatement(expression);
         }
 
         public virtual BoundExpression RewriteExpression(BoundExpression node)

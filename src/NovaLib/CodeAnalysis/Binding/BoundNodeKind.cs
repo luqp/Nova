@@ -4,7 +4,6 @@ namespace Nova.CodeAnalysis.Binding
     {
         // Statemens
         VariableDeclaration,
-        ExpressionStatement,
         BlockStatement,
         IfStatement,
         WhileStatement,
@@ -13,6 +12,8 @@ namespace Nova.CodeAnalysis.Binding
         LabelStatement,
         GotoStatement,
         ConditionalGotoStatement,
+        ReturnStatement,
+        ExpressionStatement,
 
         // Expressions
         ErrorExpression,

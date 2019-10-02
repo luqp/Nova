@@ -104,9 +104,6 @@ namespace Nova.CodeAnalysis.Binding
 
             TypeSymbol type = BindTypeClause(syntax.Type) ?? TypeSymbol.Void;
 
-            if (type != TypeSymbol.Void)
-                diagnostics.XXX_ReportFunctionsAreUnsupported(syntax.Type.Span);
-
             FunctionSymbol function = new FunctionSymbol(syntax.Identifier.Text, parameters.ToImmutable(), type, syntax);
 
             if (!scope.TryDeclareFunction(function))
@@ -177,6 +174,8 @@ namespace Nova.CodeAnalysis.Binding
                     return BindBreakStatement((BreakStatementSyntax)syntax);
                 case SyntaxKind.ContinueStatement:
                     return BindContinueStatement((ContinueStatementSyntax)syntax);
+                case SyntaxKind.ReturnStatement:
+                    return BindReturnStatement((ReturnStatementSyntax)syntax);
                 case SyntaxKind.ExpressionStatement:
                     return BindExpressionStatement((ExpressionStatementSyntax)syntax);
                 default:
@@ -296,6 +295,33 @@ namespace Nova.CodeAnalysis.Binding
 
             BoundLabel continueLabel = loopStack.Peek().ContinueLabel;
             return new BoundGotoStatement(continueLabel);
+        }
+
+        private BoundStatement BindReturnStatement(ReturnStatementSyntax syntax)
+        {
+            BoundExpression expression = syntax.Expression == null ? null : BindExpression(syntax.Expression);
+            
+            if (function == null)
+            {
+                diagnostics.ReportInvalidReturn(syntax.ReturnKeyword.Span);
+            }
+            else
+            {
+                if (function.Type == TypeSymbol.Void)
+                {
+                    if (expression != null)
+                        diagnostics.ReportInvalidReturnExpression(syntax.Expression.Span, function.Name);
+                }
+                else
+                {
+                    if (expression == null)
+                        diagnostics.ReportMissingReturnExpression(syntax.ReturnKeyword.Span, function.Type);
+                    else
+                        expression = BindConversion(syntax.Expression.Span, expression, function.Type);
+                }
+            }
+
+            return new BoundReturnStatement(expression);
         }
 
         private BoundStatement BindExpressionStatement(ExpressionStatementSyntax syntax)
