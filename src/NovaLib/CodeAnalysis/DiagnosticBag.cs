@@ -135,6 +135,12 @@ namespace Nova.CodeAnalysis
             Report(span, message);
         }
 
+        internal void ReportAllPathsMustReturn(TextSpan span)
+        {
+            string message = "Not all code paths return a value.";
+            Report(span, message);
+        }
+
         public void ReportInvalidReturn(TextSpan span)
         {
             string message = "The 'return' keyword can only be used inside of functions.";

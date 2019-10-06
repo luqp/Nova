@@ -70,6 +70,10 @@ namespace Nova.CodeAnalysis.Binding
                     Binder binder = new Binder(parentScope, function);
                     BoundStatement body = binder.BindStatement(function.Declaration.Body);
                     BoundBlockStatement loweredBody = Lowerer.Lower(body);
+
+                    if (function.Type != TypeSymbol.Void && !ControlFlowGraph.AllPathsReturn(loweredBody))
+                        binder.Diagnostics.ReportAllPathsMustReturn(function.Declaration.Identifier.Span);
+
                     functionBodies.Add(function, loweredBody);
                     diagnostics.AddRange(binder.Diagnostics);
                 }
