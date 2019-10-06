@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
@@ -52,6 +53,17 @@ namespace Nova.CodeAnalysis
                 return new EvaluationResult(diagnostics, null);
 
             BoundProgram program = Binder.BindProgram(GlobalScope);
+
+            string appPath = Environment.GetCommandLineArgs()[0];
+            string appDirectory = Path.GetDirectoryName(appPath);
+            string cfgPath = Path.Combine(appDirectory, "cfg.dot");
+            BoundBlockStatement cfgStatement = !program.Statement.Statements.Any() && program.Functions.Any()
+                                                  ? program.Functions.Last().Value
+                                                  : program.Statement;
+            var cfg = ControlFlowGraph.Create(cfgStatement);
+            using (StreamWriter streamWriter = new StreamWriter(cfgPath))
+                cfg.WriteTo(streamWriter);
+
             if (program.Diagnostics.Any())
                 return new EvaluationResult(program.Diagnostics.ToImmutableArray(), null);
 
