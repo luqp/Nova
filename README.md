@@ -1534,3 +1534,26 @@ Use SyntaxFacts to get the text to print, it makes use of the `SyntaxFacts` clas
   * Report errors for every mismatching argument type in a function call
   * Ignore type errors for BoundErrorExpression
       - e.g. when the call syntax is `print(x)` and `x` is undefined, or `print(,)`
+
+
+# Compiler Part 14
+
+# Return Statement
+Functions are able to return type.
+
+## 1.0 Add Return Keyword
+  * `SyntaxFacts` class add `return` like a Keyword
+  * Create `ReturnStatementSyntax` class
+  * `Parser` class, handler return concept and match tokens.
+
+## 2.0 Interpret return concept
+  * Create `BoundReturnStatement` class.
+  * `Binder` class
+    - Delete unsupported report for functions with return type.
+    - Add `BindReturnStatement` method what controls that there is a function, return statements have an expression and types are matching.
+    - `DiagnosticBag` have more report for `return` statements.
+  * `BoundTreeRewriter` class add `RewriteReturnStatement` method.
+  * `Evaluator` class handles return types.
+
+## 3.0 Controlflow
+Set up class to generate a grapf.dot file
