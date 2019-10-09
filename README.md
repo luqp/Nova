@@ -1,6 +1,9 @@
 # Nova
 
-[![Build Status](https://windyriey.visualstudio.com/Nova/_apis/build/status/luqp.Nova?branchName=master)](https://windyriey.visualstudio.com/Nova/_build/latest?definitionId=2&branchName=master)
+[![Build Status](https://windyriey.visualstudio.com/Nova/_apis/build/status/luqp.Nova?branchName=master)](https://windyriey.visualstudio.com/Nova/_build/latest?definitionId=2&branchName=master) 
+
+> Tests :  3540 pased 
+
 
 Nova is a handwritten compiler in C#, in which you can solve expressions, write function and variables, and execute them.
 
@@ -12,7 +15,7 @@ Nova is base on Roslyn Compiler architecture.
 The main structure is divided in: Syntax Trees, Symbols, Binder and Flow Analysis that are showed by the Emit.
 
 <p align="center">
-  <img src=".\Images\Readme\Structure.png">
+  <img src=".\Images\Readme\NovaStructure.png">
 </p>
 
 Nova Compiler has a REPL that handle the compilation of the code, and add some characteristics like:
