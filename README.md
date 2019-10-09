@@ -18,12 +18,13 @@ The main structure is divided in: Syntax Trees, Symbols, Binder and Flow Analysi
   <img src=".\Images\Readme\NovaStructure.png">
 </p>
 
-Nova Compiler has a REPL that handle the compilation of the code, and add some characteristics like:
+## REPL
+Nova Compiler has a `REPL` that handle the compilation of the code, and add some characteristics like:
 
-#### Render Line with colors
+### Render Line with Colors
 The input source code is represented by tokens, so the document can identify each token and render it by colors.
 
-#### Document
+### Document
 The input source code is handler by a `document` that allow:
   * Multiline
   * Back to edit
@@ -34,7 +35,7 @@ The input source code is handler by a `document` that allow:
   <img src=".\Images\Gifs\02_Document.gif">
 </p>
 
-#### Basic command
+### Basic command
   * `#showTree` - Render the syntax tree representation of input.
   * `#showProgram` - Render the structure created by semantic analysis.
   * `#cls` - Clean the screen.
@@ -45,9 +46,9 @@ The input source code is handler by a `document` that allow:
 </p>
 
 
-# Syntax
+## Syntax
 
-## Trees
+### Trees
 The Syntax Tree represent the lexical and syntactic structure of source code.
   * Hold all the source information in full fidelity.
   * Divide the source in lexical tokens.
@@ -64,9 +65,9 @@ Each syntax tree is made up of nodes, tokens, and trivia.
   * Tokens: Represent the smallest syntactic fragments of the code (Keywords, Identifiers, Literals, and Punctuation)
   * Trivia: Source text insignificant (Whitespace)
 
-# Semantics
+## Semantics
 
-## Binding
+### Binding
 Checks the semantic consistency of the code. It uses the syntax tree of the previous phase along with the symbol table to verify that the given source code is semantically consistent.
 
 Functions of semantic analysis:
@@ -77,10 +78,10 @@ Functions of semantic analysis:
 * Checks if the source language permits the operands or not.
 * Identify the unary and binary expressions.
 
-## Symbol Table
+### Symbol Table
 A symbol table contains a record for each identifier with fields for the attributes of the identifier. This component makes it easier for the compiler to search the identifier record and retrieve it quickly.
 
-### Symbols
+#### Symbols
 Every namespace, type, method, property, field, parameter, or local variable is represented by a symbol.
 
 
@@ -88,7 +89,7 @@ Every namespace, type, method, property, field, parameter, or local variable is 
   <img src=".\Images\Gifs\05_Show_Program.gif">
 </p>
 
-## Control Flow
+### Control Flow
 Nova compiler create a graph that represents the control flow of the function or expressions executed.
 
   * All nodes in the graph are called basic blocks.
@@ -98,7 +99,7 @@ Nova compiler create a graph that represents the control flow of the function or
   <img src=".\Images\Gifs\07_graphs.gif">
 </p>
 
-# Diagnostics
+## Diagnostics
 In each phases of the compiler errors are catch by a diagnostic bag that return the fauld details.
 
 <p align="center">
