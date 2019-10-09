@@ -70,7 +70,7 @@ namespace Nova
                     }
                     else
                     {
-                        Console.ForegroundColor = ConsoleColor.Magenta;
+                        Console.ForegroundColor = ConsoleColor.DarkGray;
                         Console.Write("· ");
                     }
 
@@ -245,6 +245,7 @@ namespace Nova
             document.Clear();
             document.Add(string.Empty);
             view.CurrentLine = 0;
+            view.CurrentCharacter = 0;
         }
 
         private void HandleLeftArrow(ObservableCollection<string> document, SubmissionView view)

@@ -24,15 +24,21 @@ namespace Nova
                 bool isIdentifier = token.Kind == SyntaxKind.IdentifierToken;
                 bool isNumber = token.Kind == SyntaxKind.NumberToken;
                 bool isString = token.Kind == SyntaxKind.StringToken;
-    
-                if (isKeyword)
-                    Console.ForegroundColor = ConsoleColor.Blue;
+                bool isType = token.Kind == SyntaxKind.LetKeyword ||
+                                  token.Kind == SyntaxKind.VarKeyword ||
+                                  token.Kind == SyntaxKind.TrueKeyword ||
+                                  token.Kind == SyntaxKind.FalseKeyword;
+
+                if (isType)
+                    Console.ForegroundColor = ConsoleColor.DarkBlue;
+                else if (isKeyword)
+                    Console.ForegroundColor = ConsoleColor.Magenta;
                 else if (isIdentifier)
-                    Console.ForegroundColor = ConsoleColor.DarkYellow;
+                    Console.ForegroundColor = ConsoleColor.DarkCyan;
                 else if (isNumber)
-                    Console.ForegroundColor = ConsoleColor.Cyan;
+                    Console.ForegroundColor = ConsoleColor.Yellow;
                 else if (isString)
-                    Console.ForegroundColor = ConsoleColor.Green;
+                    Console.ForegroundColor = ConsoleColor.DarkGreen;
                 else
                     Console.ForegroundColor = ConsoleColor.DarkGray;
 
@@ -48,12 +54,12 @@ namespace Nova
             {
                 case "#showTree":
                     showTree = !showTree;
-                    Console.ForegroundColor = ConsoleColor.DarkYellow;
+                    Console.ForegroundColor = ConsoleColor.Gray;
                     Console.WriteLine(showTree ? "Enabled parse tree." : "Disabled parse tree.");
                     break;
                 case "#showProgram":
                     showProgram = !showProgram;
-                    Console.ForegroundColor = ConsoleColor.DarkYellow;
+                    Console.ForegroundColor = ConsoleColor.Gray;
                     Console.WriteLine(showProgram ? "Enabled bound tree nodes." : "Disabled bound tree nodes.");
                     break;
                 case "#cls":
