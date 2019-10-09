@@ -15,7 +15,7 @@ Nova is base on Roslyn Compiler architecture.
 The main structure is divided in: Syntax Trees, Symbols, Binder and Flow Analysis that are showed by the Emit.
 
 <p align="center">
-  <img src=".\Images\Readme\NovaStructure.png" style="max-width=600px; border-radius: 10px;">
+  <img src=".\Images\Readme\NovaStructure.png" style="max-width=300px; border-radius: 10px;">
 </p>
 
 ## REPL
