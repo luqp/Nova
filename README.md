@@ -8,14 +8,14 @@
 Nova is a handwritten compiler in C#, in which you can solve expressions, write function and variables, and execute them.
 
 <p align="center">
-  <img src=".\Images\Gifs\01_Initial.gif">
+  <img src=".\Images\Gifs\01_Initial.gif" style="border-radius: 10px;">
 </p>
 Nova is base on Roslyn Compiler architecture.
 
 The main structure is divided in: Syntax Trees, Symbols, Binder and Flow Analysis that are showed by the Emit.
 
 <p align="center">
-  <img src=".\Images\Readme\NovaStructure.png">
+  <img src=".\Images\Readme\NovaStructure.png" style="max-width=600px; border-radius: 10px;">
 </p>
 
 ## REPL
@@ -32,7 +32,7 @@ The input source code is handler by a `document` that allow:
   * Browse history
 
 <p align="center">
-  <img src=".\Images\Gifs\02_Document.gif">
+  <img src=".\Images\Gifs\02_Document.gif" style="border-radius: 10px;">
 </p>
 
 ### Basic command
@@ -42,7 +42,7 @@ The input source code is handler by a `document` that allow:
   * `#reset` - Clean the variables declared in the scope.
 
 <p align="center">
-  <img src=".\Images\Gifs\03_Commands.gif">
+  <img src=".\Images\Gifs\03_Commands.gif" style="border-radius: 10px;">
 </p>
 
 
@@ -57,7 +57,7 @@ The Syntax Tree represent the lexical and syntactic structure of source code.
   * Syntax trees can be used as a way to construct and edit source text.
 
 <p align="center">
-  <img src=".\Images\Gifs\04_Show_Tree.gif">
+  <img src=".\Images\Gifs\04_Show_Tree.gif" style="border-radius: 10px;">
 </p>
 
 Each syntax tree is made up of nodes, tokens, and trivia.
@@ -86,7 +86,7 @@ Every namespace, type, method, property, field, parameter, or local variable is 
 
 
 <p align="center">
-  <img src=".\Images\Gifs\05_Show_Program.gif">
+  <img src=".\Images\Gifs\05_Show_Program.gif" style="border-radius: 10px;">
 </p>
 
 ### Control Flow
@@ -96,12 +96,12 @@ Nova compiler create a graph that represents the control flow of the function or
   * Basic block is a list of statements that are executed in sequence.
 
 <p align="center">
-  <img src=".\Images\Gifs\07_graphs.gif">
+  <img src=".\Images\Gifs\07_graphs.gif" style="border-radius: 10px;">
 </p>
 
 ## Diagnostics
 In each phases of the compiler errors are catch by a diagnostic bag that return the fauld details.
 
 <p align="center">
-  <img src=".\Images\Gifs\06_Diagnostics.gif">
+  <img src=".\Images\Gifs\06_Diagnostics.gif" style="border-radius: 10px;">
 </p>
